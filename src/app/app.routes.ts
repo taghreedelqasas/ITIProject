@@ -4,7 +4,6 @@ import { Home } from './components/home/home';
 import { Booking } from './components/booking/booking';
 import { Doctors } from './components/doctors/doctors';
 import { DoctorProfile } from './components/doctor-profile/doctor-profile';
-import { PatientProfile } from './components/patient-profile/patient-profile';
 import { ConsultRequest } from './components/consult-request/consult-request';
 import { DoctorChat } from './components/doctor-chat/doctor-chat';
 import { LoginComponent } from './features/auth/login/login.component';
@@ -19,6 +18,10 @@ import { DocPayments } from './DoctorDashboard/doc-payments/doc-payments';
 import { DocProfile } from './DoctorDashboard/doc-profile/doc-profile';
 import { DocSettings } from './DoctorDashboard/doc-settings/doc-settings';
 import { authGuard } from './core/services/auth.guard';
+import { NavbarPatient } from './components/navbar-patient/navbar-patient';
+import { UserProfileComponent } from './components/features/profile/profile';
+import { MedicalHistory } from './components/medical-history/medical-history';
+
 
 export const routes: Routes = [
   // مسارات المريض والصفحات العامة
@@ -27,7 +30,15 @@ export const routes: Routes = [
   { path: 'doctors', component: Doctors  },
   { path: 'doctor/:id', component: DoctorProfile },
   { path: 'booking', component: Booking },
-  { path: 'profile', component: PatientProfile },
+  { path: 'profile', component: NavbarPatient ,
+  children :[
+    {path:'' ,redirectTo:'patientProfile' ,pathMatch: 'full'},
+    {path:'patientProfile' , component:UserProfileComponent} ,
+    {path:'medicalHistory' , component:MedicalHistory} ,
+   
+  ]
+
+  },
   { path: 'consult', component: ConsultRequest },
   { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
 

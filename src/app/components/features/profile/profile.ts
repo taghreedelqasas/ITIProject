@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // مهم جداً عشان الـ *ngIf
-import { FormsModule } from '@angular/forms'; // مهم جداً عشان الـ [(ngModel)] و ngForm
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AppointmentService } from '../../../DoctorDashboard/services/appointment';
+import { UpdateProfileDto } from '../../../DoctorDashboard/services/dashboard';
 
 @Component({
   selector: 'app-user-profile',
@@ -9,27 +11,68 @@ import { FormsModule } from '@angular/forms'; // مهم جداً عشان الـ
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
-export class UserProfileComponent {
-  isEditing: boolean = false;
+export class UserProfileComponent implements OnInit {
+
+  protected patientServices = inject(AppointmentService);
+
+  isEditing = false;
 
   userData = {
-    fullName: 'يونس أحمد عبدالله',
-    email: 'yonesA@gmail.com',
-    phone: '01115887563',
-    birthDate: '1990-03-13',
-    gender: 'ذكر',
-    address: 'القاهرة، المعادي، شارع 9'
+    fullName: '',
+    email: '',
+    phone: '',
+    birthDate: '',
+    gender: 1
   };
+
+  ngOnInit(): void {
+    this.getProfile();
+  }
+
+  getProfile() {
+    this.patientServices.getUserProfile().subscribe({
+      next: (res: any) => {
+
+        this.patientServices.userProfile.set(res);
+          console.log(typeof res.gender);
+          console.log(this.userData.gender);
+        this.userData = {
+          fullName: res.fullName,
+          email: res.email,
+          phone: res.phoneNumber,
+          birthDate: res.birthDate?.split('T')[0],
+          gender: res.gender
+        };
+      },
+      error: (err) => console.log(err)
+    });
+  }
 
   toggleEdit() {
     this.isEditing = true;
+    console.log(this.isEditing);
   }
 
-  // بتتنادى دلوقتي من (ngSubmit) على الـ form مش من (click) على الزرار
-  // فـ Angular بيتأكد إن الفورم صحيحة (Validation) قبل ما ينفذ الدالة أصلاً
   saveData() {
+
+    const names = this.userData.fullName.trim().split(' ');
+
+ const body: UpdateProfileDto = {
+  firstName: names[0] ?? undefined,
+  lastName: names.slice(1).join(' ') || undefined,
+  phoneNumber: this.userData.phone,
+  birthDate: this.userData.birthDate,
+  gender: this.userData.gender
+};
+
+this.patientServices.updateUserProfile(body).subscribe({
+  next: (res) => {
+    console.log(res);
     this.isEditing = false;
-    // ملحوظة مستقبلية: هنا هنربط مع الـ API لحفظ البيانات المعدلة
-    console.log('تم حفظ البيانات بنجاح:', this.userData);
+    this.getProfile();
+  },
+  error: (err) => console.log(err)
+});
   }
+
 }
