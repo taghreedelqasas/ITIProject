@@ -1,0 +1,99 @@
+
+<div class="container  bg-slate-50">
+<section
+  dir="rtl"
+  class="relative overflow-hidden  w-[90%]  mx-auto    font-[Tajawal] py-16 px-6 md:px-12"
+>
+  <svg
+    class="absolute -bottom-16 -left-16 w-72 h-72 text-slate-300 pointer-events-none hidden md:block"
+    viewBox="0 0 200 200"
+    fill="none"
+  >
+    <circle cx="100" cy="100" r="95" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 8" />
+  </svg>
+
+  <div class="max-w-7xl mx-auto relative z-10">
+
+    <div class="flex justify-center mb-6">
+      <span
+        class="inline-block rounded-full px-6 py-2 text-sm font-bold text-[#3a1560] bg-gradient-to-l from-[#c9b6ea] to-[#bdeef0] shadow-sm"
+      >
+        {{ badgeLabel }}
+      </span>
+    </div>
+
+    <h2 class="text-center text-3xl md:text-5xl font-extrabold text-[#3a1560] mb-4 leading-tight">
+      {{ title }}
+    </h2>
+
+    <p class="text-center text-slate-500 text-lg md:text-xl mb-12">
+      {{ subtitle }}
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div
+        *ngFor="let t of testimonials; let i = index"
+        (click)="setActiveSlide(i)"
+        class="relative bg-white rounded-2xl shadow-sm border p-7 flex flex-col justify-between cursor-pointer select-none transition-all duration-300"
+        [ngClass]="i === activeSlide ? 'border-cyan-400 border-2 shadow-md' : 'border-slate-100'"
+      >
+        <span class="absolute top-6 left-7 text-cyan-400 text-4xl font-serif leading-none select-none">
+          &rdquo;
+        </span>
+
+        <p class="text-slate-600 leading-loose mb-8 pl-8">
+          &quot;{{ t.quote }}&quot;
+        </p>
+
+        <div class="flex items-center justify-between mt-auto">
+          <div class="flex flex-col gap-1">
+            <div class="flex gap-0.5">
+              <svg
+                *ngFor="let star of getStars(t.rating)"
+                class="w-4 h-4"
+                [ngClass]="star === 'empty' ? 'text-slate-200' : 'text-amber-400'"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  *ngIf="star === 'full'"
+                  d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
+                <path
+                  *ngIf="star === 'half'"
+                  d="M10 1.5v13.4l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
+                <path
+                  *ngIf="star === 'empty'"
+                  d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
+              </svg>
+            </div>
+            <h4 class="font-bold text-[#3a1560]">{{ t.name }}</h4>
+            <p class="text-slate-400 text-sm">{{ t.location }}</p>
+          </div>
+
+          <img
+            [src]="t.avatar"
+            [alt]="t.name"
+            class="w-14 h-14 rounded-full object-cover border transition-all duration-300"
+            [ngClass]="i === activeSlide ? 'border-cyan-400 border-2' : 'border-slate-100'"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-2 mt-10">
+      <button
+        *ngFor="let t of testimonials; let i = index"
+        (click)="setActiveSlide(i)"
+        [ngClass]="i === activeSlide ? 'bg-cyan-400 w-3 h-3' : 'bg-cyan-100 w-2.5 h-2.5'"
+        class="rounded-full transition-all focus:outline-none"
+        [attr.aria-label]="'التقييم رقم ' + (i + 1)"
+      ></button>
+    </div>
+  </div>
+</section>
+
+</div>
+

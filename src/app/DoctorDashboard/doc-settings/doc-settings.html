@@ -1,0 +1,137 @@
+<div class="space-y-6  container    w-[90%]   p-6 max-w-4xl mx-auto" dir="rtl" *ngIf="appointmentService.settingsData() as settings">
+
+  <!-- هيدر العنوان -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-[#1E1B4B]">الإعدادات</h2>
+    <p class="text-xs text-gray-400 mt-1">تحكّم في حسابك من هنا بكل سهولة</p>
+  </div>
+
+  <!-- 1. بلوك إعدادات الإشعارات -->
+  <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+    <div class="flex items-center gap-2 text-sm font-bold text-purple-900 border-b border-gray-50 pb-3">
+      <span class="text-cyan-500">🔔</span>
+      <h3>إعدادات الإشعارات</h3>
+    </div>
+
+    <div class="space-y-5">
+      <!-- إشعارات البريد الإلكتروني -->
+      <div class="flex justify-between items-center text-xs">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">إشعارات البريد الإلكتروني</span>
+          <span class="text-[10px] text-gray-400 block">التحديثات والتقارير بالبريد</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="settings.emailNotifications" (change)="onToggleChange()" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-700"></div>
+        </label>
+      </div>
+
+      <!-- الرسائل النصية SMS -->
+      <div class="flex justify-between items-center text-xs">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">الرسائل النصية SMS</span>
+          <span class="text-[10px] text-gray-400 block">تذكيرات المواعيد عبر الجوال</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="settings.smsNotifications" (change)="onToggleChange()" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-700"></div>
+        </label>
+      </div>
+
+      <!-- إشعارات الموقع -->
+      <div class="flex justify-between items-center text-xs">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">إشعارات الموقع</span>
+          <span class="text-[10px] text-gray-400 block">تنبيهات فورية على الموقع</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="settings.websiteNotifications" (change)="onToggleChange()" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-700"></div>
+        </label>
+      </div>
+
+      <!-- تذكير قبل الموعد -->
+      <div class="flex justify-between items-center text-xs">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">تذكير قبل الموعد</span>
+          <span class="text-[10px] text-gray-400 block">تذكير قبل 24 ساعة من مواعيد اليوم</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="settings.appointmentReminder" (change)="onToggleChange()" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-700"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. بلوك الخصوصية والأمان -->
+  <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+    <div class="flex items-center gap-2 text-sm font-bold text-purple-900 border-b border-gray-50 pb-3">
+      <span class="text-purple-600">🛡️</span>
+      <h3>الخصوصية والأمان</h3>
+    </div>
+
+    <div class="space-y-5">
+      <!-- إظهار رقم الهاتف للمرضى -->
+      <div class="flex justify-between items-center text-xs">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">إظهار رقم الهاتف الشخصي للمرضى</span>
+          <span class="text-[10px] text-gray-400 block">يسمح لكل المرضى برؤية رقم هاتفك</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="settings.showPhoneNumber" (change)="onToggleChange()" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-700"></div>
+        </label>
+      </div>
+
+      <!-- قفل الإستشارات -->
+      <div class="flex justify-between items-center text-xs">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">قفل الإستشارات</span>
+          <span class="text-[10px] text-gray-400 block">غير متاح إرسال طلبات إستشارة لك</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="settings.lockConsultations" (change)="onToggleChange()" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-700"></div>
+        </label>
+      </div>
+
+      <!-- سياسة الخصوصية للأطباء -->
+      <div class="flex justify-between items-center text-xs pt-1">
+        <div class="text-right space-y-0.5">
+          <span class="font-bold text-gray-800 block">سياسة الخصوصية للأطباء</span>
+          <span class="text-[10px] text-gray-400 block">اقرأ سياسة الخصوصية الخاصة بالأطباء كاملة</span>
+        </div>
+        <button class="text-gray-400 hover:text-gray-600 font-bold flex items-center gap-1">
+          عرض <span class="text-[10px]">‹</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. بلوك إدارة الحساب / منطقة الخطر -->
+  <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-5">
+    <!-- تسجيل الخروج -->
+    <div class="flex justify-between items-center text-xs">
+      <div class="text-right space-y-0.5">
+        <span class="font-bold text-gray-800 block">تسجيل الخروج</span>
+        <span class="text-[10px] text-gray-400 block">ستحتاج إلى تسجيل الدخول مرة أخرى</span>
+      </div>
+      <button (click)="onLogout()" class="bg-red-50 hover:bg-red-100 text-red-500 font-bold px-4 py-2 rounded-xl transition-all">
+        🏃‍♂️ خروج
+      </button>
+    </div>
+
+    <!-- حذف الحساب -->
+    <div class="flex justify-between items-center text-xs pt-2 border-t border-gray-50">
+      <div class="text-right space-y-0.5">
+        <span class="font-bold text-gray-800 block">حذف الحساب</span>
+        <span class="text-[10px] text-gray-400 block">حذف نهائي لجميع بياناتك من المنصة</span>
+      </div>
+      <button (click)="onDeleteAccount()" class="bg-red-50/60 hover:bg-red-100 text-red-400 font-bold px-4 py-2 rounded-xl transition-all">
+        حذف الحساب
+      </button>
+    </div>
+  </div>
+
+</div>

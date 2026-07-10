@@ -1,3 +1,85 @@
 import { Routes } from '@angular/router';
+// مسارات المريض والصفحات العامة
+import { Home } from './components/home/home';
+import { Booking } from './components/booking/booking';
+import { Doctors } from './components/doctors/doctors';
+import { DoctorProfile } from './components/doctor-profile/doctor-profile';
+import { PatientProfile } from './components/patient-profile/patient-profile';
+import { ConsultRequest } from './components/consult-request/consult-request';
+import { DoctorChat } from './components/doctor-chat/doctor-chat';
+import { LoginComponent } from './features/auth/login/login.component';
+// Doctor dashboard components
+import { DoctorDash } from './DoctorDashboard/doctor-dash/doctor-dash';
+import { DocMain } from './DoctorDashboard/doc-main/doc-main';
+import { DocSlots } from './DoctorDashboard/doc-slots/doc-slots';
+import { DocPatients } from './DoctorDashboard/doc-patients/doc-patients';
+import { DocConsultations } from './DoctorDashboard/doc-consulations/doc-consulations';
+import { DocAnalytics } from './DoctorDashboard/doc-analytics/doc-analytics';
+import { DocPayments } from './DoctorDashboard/doc-payments/doc-payments';
+import { DocProfile } from './DoctorDashboard/doc-profile/doc-profile';
+import { DocSettings } from './DoctorDashboard/doc-settings/doc-settings';
+import { authGuard } from './core/services/auth.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  // مسارات المريض والصفحات العامة
+  { path: '', component: Home },
+  // { path: 'doctors', component: Doctors , canActivate: [authGuard] },
+  { path: 'doctors', component: Doctors  },
+  { path: 'doctor/:id', component: DoctorProfile },
+  { path: 'booking', component: Booking },
+  { path: 'profile', component: PatientProfile },
+  { path: 'consult', component: ConsultRequest },
+  { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
+
+  // مسار لوحة تحكم الطبيب بمساراتها الفرعية
+  {
+    path: 'doctor-dashboard',
+    component: DoctorDash,
+    children: [
+      { path: '', redirectTo: 'main', pathMatch: 'full' },
+      { path: 'main', component: DocMain },
+      { path: 'docSlots', component: DocSlots },
+      { path: 'patients', component: DocPatients },
+      { path: 'consultations', component: DocConsultations  },
+      { path: 'analytics', component: DocAnalytics },
+      { path: 'finance', component: DocPayments },
+      { path: 'profile', component: DocProfile },
+      { path: 'settings', component: DocSettings },
+    
+     
+    ]
+  },
+
+  // Admin routes (lazy-loaded)
+  {
+    path: 'admin/dashboard',
+    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.AdminDashboardComponent),
+  },
+  {
+    path: 'admin/patients',
+    loadComponent: () => import('./components/features/patients-management/patients-management.component').then(m => m.PatientsManagementComponent),
+  },
+  {
+    path: 'admin/doctors',
+    loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
+  } ,
+   {path: 'auth/login',
+  component: LoginComponent},
+  {
+    path: '',
+    redirectTo: 'auth/register',
+    pathMatch: 'full'
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () =>
+      import('./features/auth/register/register.component')
+        .then(m => m.RegisterComponent)
+  },
+  {
+    path: 'auth/confirm-email-notice',
+    loadComponent: () =>
+      import('./features/auth/confirm-email-notice/confirm-email-notice.component')
+        .then(m => m.ConfirmEmailNoticeComponent)
+  }
+];

@@ -1,0 +1,93 @@
+<div class="space-y-6   container  mx-auto  w-[90%]" dir="rtl">
+
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-3xl font-bold text-[#53098D]">المرضى</h2>
+      <p class="text-sm text-purple-600 font-medium mt-1">
+        {{ filteredPatients().length }} مريض مسجل
+      </p>
+    </div>
+  </div>
+
+  <div class="relative w-full max-w-md">
+    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-search"></i></span>
+    <input type="text"
+           [(ngModel)]="searchQuery"
+           placeholder="ابحث باسم المريض..."
+           class="w-full bg-white border border-gray-200/80 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-purple-500 shadow-sm transition-all">
+  </div>
+
+  <!-- ⚠️ أعمدة رقم الهاتف/السن/النوع بتعرض "—" لحد ما الـ Backend يضيف الحقول دي فعليًا -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-right border-collapse">
+
+        <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-400 text-xs font-bold">
+          <tr>
+            <th class="p-5">المريض</th>
+            <th class="p-5">رقم الهاتف</th>
+            <th class="p-5">عدد المواعيد</th>
+            <th class="p-5">آخر موعد</th>
+            <th class="p-5">الحالة</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-50 text-sm">
+          @for (patient of filteredPatients(); track patient.id) {
+            <tr class="hover:bg-gray-50/40 transition-colors">
+
+              <td class="p-5">
+                <div class="flex items-center space-x-reverse space-x-3">
+                  <div class="w-6 h-6 rounded-full mx-3 bg-purple-50 text-[#53098D] flex items-center justify-center font-bold text-base border border-purple-100 shadow-sm">
+                    {{ patient.name[0] }}
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-gray-800">{{ patient.name }}</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ patient.gender }} · {{ patient.age > 0 ? patient.age + ' سنة' : '—' }}</p>
+                  </div>
+                </div>
+              </td>
+
+              <td class="p-5 font-mono text-gray-600 font-medium">
+                {{ patient.phone }}
+              </td>
+
+              <td class="p-5 font-mono text-gray-500 text-center">
+                {{ patient.appointmentsCount }}
+              </td>
+
+              <td class="p-5 font-mono text-gray-500">
+                {{ patient.lastAppointment | date:'dd/MM/yyyy' }}
+              </td>
+
+              <td class="p-5">
+                <span class="text-[11px] font-bold px-3 py-1.5 rounded-xl inline-block"
+                      [ngClass]="{
+                        'bg-green-50 text-green-600': patient.lastStatus === 'Completed',
+                        'bg-amber-50 text-amber-600': patient.lastStatus === 'Pending',
+                        'bg-red-50 text-red-600': patient.lastStatus === 'Cancelled',
+                        'bg-purple-50 text-purple-600': patient.lastStatus === 'Confirmed'
+                      }">
+                  {{
+                    patient.lastStatus === 'Completed' ? 'حضر' :
+                    patient.lastStatus === 'Pending' ? 'بانتظار الحضور' :
+                    patient.lastStatus === 'Cancelled' ? 'لم يحضر' : 'قادم'
+                  }}
+                </span>
+              </td>
+
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="text-center py-16 text-gray-400 italic">
+                لا يوجد مرضى يطابقون بحثكِ الحالي.
+              </td>
+            </tr>
+          }
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+
+</div>

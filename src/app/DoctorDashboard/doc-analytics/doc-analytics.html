@@ -1,0 +1,106 @@
+<div class="space-y-8 container mx-auto w-[90%]" dir="rtl" *ngIf="appointmentService.analyticsDataComputed() as data">
+
+  <div>
+    <h2 class="text-3xl font-bold text-[#1E1B4B]">التحليلات</h2>
+    <p class="text-sm text-gray-400 mt-1">تحليلات مفصلة لأداء عيادتك وتقييمات المرضى بناءً على البيانات الفعلية</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">متوسط التقييم</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.averageRating }}</span>
+        <span class="text-[10px] text-gray-400 block">من إجمالي تقييمات المرضى</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-sm">⭐</div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">إجمالي المرضى</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalPatients }}</span>
+        <span class="text-[10px] text-gray-400 block">مريض فريد مسجل بالعيادة</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center text-sm">👥</div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">إجمالي الحجوزات</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalAppointments }}</span>
+        <span class="text-[10px] text-gray-400 block">حجوزات مسجلة بالنظام</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center text-sm">📅</div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">إجمالي الاستشارات</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalConsultations }}</span>
+        <span class="text-[10px] text-gray-400 block">محادثة واستشارة مفتوحة</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-green-50 text-green-500 flex items-center justify-center text-sm">💬</div>
+    </div>
+
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2 space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="font-bold text-gray-800 text-base">الأرباح الشهرية الحالية</h3>
+          <p class="text-xs text-gray-400 mt-0.5">مقارنة الدخل الحالي المسجل بالمحفظة الإلكترونية</p>
+        </div>
+      </div>
+      
+      <div class="space-y-4 pt-2">
+        @for (earning of data.monthlyEarnings; track earning.month) {
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs font-medium">
+              <span class="text-gray-600">{{ earning.month }}</span>
+              <span class="text-gray-800 font-bold">{{ earning.amount }} ج.م</span>
+            </div>
+            <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+              <div class="bg-[#53098D] h-full rounded-full transition-all duration-500" 
+                   [style.width.%]="earning.amount > 0 ? 100 : 5"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1 space-y-4">
+      <h3 class="font-bold text-[#53098D] text-sm">تحليلات الأداء العام</h3>
+      
+      <div class="grid grid-cols-1 gap-3">
+        <div class="bg-[#ECE7F0] p-3 rounded-xl flex justify-between items-center">
+          <div class="space-y-0.5">
+            <span class="text-[10px] text-gray-400 block">أكثر الأيام نشاطاً</span>
+            <span class="text-sm font-bold text-[#53098D]">{{ data.mostActiveDay }}</span>
+          </div>
+          <span class="text-lg"><i class="fas fa-calendar-day"></i></span>
+        </div>
+
+        <div class="bg-[#ECE7F0] p-3 rounded-xl flex justify-between items-center">
+          <div class="space-y-0.5">
+            <span class="text-[10px] text-gray-400 block">التوقيت الأكثر تكراراً</span>
+            <span class="text-sm font-bold text-[#53098D]">{{ data.mostActiveTime }}</span>
+          </div>
+          <span class="text-lg"><i class="fas fa-clock"></i></span>
+        </div>
+
+        <div class="bg-[#ECE7F0] p-3 rounded-xl flex justify-between items-center">
+          <div class="space-y-0.5">
+            <span class="text-[10px] text-gray-400 block">حالة الاتصال والـ Sync</span>
+            <span class="text-xs font-bold text-green-600 block">تحديث فوري نشط ●</span>
+          </div>
+          <span class="text-lg"><i class="fas fa-sync"></i></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
