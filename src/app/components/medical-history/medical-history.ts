@@ -1,15 +1,18 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { MedicalFileService } from '../../core/services/medicalFile.service';
+import { HttpEventType } from '@angular/common/http';
 type FileCategory = 'report' | 'prescription' | 'radiology' | 'lab';
 
 interface MedicalFileItem {
+  id: number;
   name: string;
   date: string;
   type: 'PDF' | 'JPEG' | 'PNG';
   size: string;
   category: FileCategory;
+  fileUrl: string;
 }
 
 interface CategoryInfo {
@@ -40,8 +43,84 @@ interface CategorySelectOption {
   templateUrl: './medical-history.html',
   styleUrl: './medical-history.css'
 })
-export class MedicalHistory {
-  constructor(private cdr: ChangeDetectorRef) {}
+export class MedicalHistory implements OnInit {
+ constructor(
+  private cdr: ChangeDetectorRef,
+  private medicalService: MedicalFileService
+) {}
+
+
+ngOnInit(): void {
+  this.loadFiles();
+  this.loadSummary();
+}
+
+
+
+loadFiles() {
+
+  this.medicalService.getFiles().subscribe({
+
+    next: (res) => {
+
+      this.files = res.map(file => ({
+
+        id: file.id,
+
+        name: file.fileName,
+
+        date: file.uploadedAtUtc.split('T')[0],
+
+        type: this.getFileType(file.fileType),
+
+        size: this.formatSize(file.fileSizeInBytes),
+
+        category: this.mapCategory(file.category),
+
+        fileUrl: 'https://mawed.runasp.net' + file.fileUrl
+
+      }));
+this.cdr.detectChanges();
+    }
+
+  });
+
+}
+loadSummary() {
+
+  this.medicalService.getSummary().subscribe({
+
+    next: res => {
+
+      this.summary = res;
+      this.cdr.detectChanges();
+
+    }
+
+  });
+
+}
+mapCategory(category: number): FileCategory {
+
+  switch (category) {
+
+    case 0:
+      return 'lab';
+
+    case 1:
+      return 'radiology';
+
+    case 2:
+      return 'prescription';
+
+    case 3:
+      return 'report';
+
+    default:
+      return 'lab';
+  }
+
+}
 
   view: 'list' | 'upload' = 'list';
 
@@ -62,23 +141,48 @@ export class MedicalHistory {
   uploadItems: UploadItem[] = [];
   isDragging = false;
 
-  files: MedicalFileItem[] = [
-    { name: 'تحليل الدم الشامل - يونيو 2025', date: '2025-06-01', type: 'PDF', size: '1.2 MB', category: 'lab' },
-    { name: 'أشعة صدر - مايو 2025', date: '2025-05-14', type: 'JPEG', size: '3.8 MB', category: 'radiology' },
-    { name: 'وصفة د. أحمد السعيد', date: '2025-04-20', type: 'PDF', size: '0.4 MB', category: 'prescription' },
-    { name: 'تقرير طبي شامل', date: '2025-03-10', type: 'PDF', size: '2.1 MB', category: 'report' }
-  ];
+files: MedicalFileItem[] = [];
+
+summary = {
+  labResultCount: 0,
+  scanCount: 0,
+  prescriptionCount: 0,
+  medicalReportCount: 0,
+  totalCount: 0
+};
 
   // عدد الملفات لكل تصنيف بيتحسب أوتوماتيك من طول القائمة أعلاه
-  get categories(): CategoryInfo[] {
-    const countOf = (key: FileCategory) => this.files.filter(f => f.category === key).length;
-    return [
-      { key: 'lab', label: 'التحاليل الطبية', count: countOf('lab') },
-      { key: 'radiology', label: 'الأشعة', count: countOf('radiology') },
-      { key: 'prescription', label: 'الوصفات الطبية', count: countOf('prescription') },
-      { key: 'report', label: 'التقارير الطبية', count: countOf('report') }
-    ];
-  }
+get categories(): CategoryInfo[] {
+
+  return [
+
+    {
+      key: 'lab',
+      label: 'التحاليل الطبية',
+      count: this.summary.labResultCount
+    },
+
+    {
+      key: 'radiology',
+      label: 'الأشعة',
+      count: this.summary.scanCount
+    },
+
+    {
+      key: 'prescription',
+      label: 'الوصفات الطبية',
+      count: this.summary.prescriptionCount
+    },
+
+    {
+      key: 'report',
+      label: 'التقارير الطبية',
+      count: this.summary.medicalReportCount
+    }
+
+  ];
+
+}
 
   goToUpload() {
     this.view = 'upload';
@@ -148,37 +252,13 @@ export class MedicalHistory {
       // ===== محاكاة رفع الملف (لحد ما نربط الـ API الحقيقي) =====
       // TODO: لما نربط الباك اند، هنستبدل الـ setInterval ده بمتابعة
       // upload progress حقيقي من الـ HttpClient (reportProgress: true)
-      if (!error) {
-        this.simulateUploadProgress(item);
-      }
+     if (!error) {
+  item.status = 'done';
+  item.progress = 100;
+}
     });
   }
 
-  private simulateUploadProgress(item: UploadItem) {
-    const stepMs = 90;
-    const increment = 8 + Math.random() * 10; // سرعة عشوائية بسيطة لكل ملف
-
-    const interval = setInterval(() => {
-      const stillExists = this.uploadItems.some(i => i.id === item.id);
-      if (!stillExists) {
-        clearInterval(interval);
-        return;
-      }
-
-      item.progress = Math.min(100, item.progress + increment);
-
-      if (item.progress >= 100) {
-        item.progress = 100;
-        item.status = 'done';
-        clearInterval(interval);
-      }
-
-      // ===== مهم: بنجبر الشاشة تعمل render تاني يدويًا =====
-      // في المشاريع اللي شغالة Zoneless، تعديل item.progress جوه
-      // setInterval لوحده مش كافي إن Angular يحدّث الشاشة تلقائي
-      this.cdr.detectChanges();
-    }, stepMs);
-  }
 
   removeUploadItem(id: string) {
     this.uploadItems = this.uploadItems.filter(i => i.id !== id);
@@ -217,42 +297,118 @@ export class MedicalHistory {
     return this.uploadItems.length > 0 && this.uploadItems.every(i => i.status === 'done' && !i.error && i.category !== '');
   }
 
-  uploadFiles() {
-    if (!this.canSubmitUpload) return;
+uploadFiles() {
+  if (!this.canSubmitUpload) return;
 
-    // ===== TODO مهم لما الـ API يخلص =====
-    // دلوقتي بنضيف كل ملف يدويًا للـ array المحلي عشان نشوف الشكل شغال.
-    // لما نربط مع الباك اند، هنشيل الكود ده ونستبدله بـ:
-    //   1) استدعاء POST /api/MedicalFile لكل عنصر في uploadItems برفعه فعليًا
-    //      (باستخدام FormData يحتوي على الملف + الـ category المختار له)
-    //   2) لو الرد نجح، هنضيف الملف اللي رجع من الـ Response (فيه id وurl حقيقي)
-    //      بدل الملف الوهمي اللي عملناه هنا يدويًا
-    const newFiles: MedicalFileItem[] = this.uploadItems.map(item => ({
-      name: item.file.name,
-      date: new Date().toISOString().split('T')[0],
-      type: this.getFileType(item.file.name),
-      size: this.formatSize(item.file.size),
-      category: item.category as FileCategory
-    }));
+  let completed = 0;
 
-    this.files = [...newFiles, ...this.files];
-    console.log('تم رفع الملفات:', newFiles);
-    this.goBack();
+  this.uploadItems.forEach(item => {
+    const formData = new FormData();
+    formData.append('File', item.file);
+    
+    if (item.category === '') return;
+    
+    formData.append('Category', this.getApiCategory(item.category).toString());
+
+    this.medicalService.upload(formData).subscribe({
+      next: event => {
+        if (event.type === HttpEventType.UploadProgress) {
+          item.progress = Math.round(100 * event.loaded / (event.total ?? item.file.size));
+        }
+
+        if (event.type === HttpEventType.Response) {
+          completed++;
+
+          // عند اكتمال رفع جميع الملفات بنجاح
+          if (completed === this.uploadItems.length) {
+            this.loadFiles();
+            this.loadSummary();
+            this.goBack();
+            
+            // ===== السطر السحري لتحديث الشاشة فوراً وإظهار الملفات الجديدة =====
+            this.cdr.detectChanges(); 
+          }
+        }
+      },
+      error: () => {
+        item.status = 'error';
+        item.error = 'فشل رفع الملف';
+        this.cdr.detectChanges(); // لتحديث حالة الخطأ على الواجهة أيضاً
+      }
+    });
+  });
+}
+getApiCategory(category: FileCategory): number {
+
+  switch (category) {
+
+    case 'lab':
+      return 0;
+
+    case 'radiology':
+      return 1;
+
+    case 'prescription':
+      return 2;
+
+    case 'report':
+      return 3;
+
+    default:
+      return 0;
   }
 
-  private getFileType(fileName: string): 'PDF' | 'JPEG' | 'PNG' {
-    const ext = fileName.split('.').pop()?.toLowerCase();
-    if (ext === 'png') return 'PNG';
-    if (ext === 'jpg' || ext === 'jpeg') return 'JPEG';
-    return 'PDF';
-  }
+}
+
+private getFileType(
+  ext: string
+): 'PDF' | 'JPEG' | 'PNG' {
+
+  ext = ext.toLowerCase();
+
+  if (ext.includes('png'))
+    return 'PNG';
+
+  if (
+    ext.includes('jpg') ||
+    ext.includes('jpeg')
+  )
+    return 'JPEG';
+
+  return 'PDF';
+
+}
 
   // بتحذف الملف من الليستة (Front-end بس دلوقتي)
   // TODO: لما الـ API يخلص، هنضيف هنا استدعاء DELETE /api/MedicalFile/{id}
   // ولو نجح الطلب، ساعتها بس نمسحه من الـ array
-  deleteFile(file: MedicalFileItem) {
-    const confirmed = confirm(`متأكد إنك عايز تحذف "${file.name}"؟`);
-    if (!confirmed) return;
-    this.files = this.files.filter(f => f !== file);
-  }
+deleteFile(file: MedicalFileItem) {
+  if (!confirm('متأكد من حذف الملف؟')) return;
+
+  this.medicalService.delete(file.id).subscribe({
+    next: () => {
+      // لو الباك اند رجع استجابة عادية
+      this.files = this.files.filter(x => x.id !== file.id);
+      this.loadSummary();
+      this.cdr.detectChanges(); 
+    },
+    error: (err) => {
+      // لو دخل هنا بسبب إن الرد فاضي (Parsing Error) بس الداتا اتحذفت فعلاً
+      // هنتأكد لو الخطأ بسبب الـ parsing والـ status بوجة عام نجاح (200 أو 204)
+      if (err.status === 200 || err.status === 204 || err.statusText === 'OK') {
+        this.files = this.files.filter(x => x.id !== file.id);
+        this.loadSummary();
+        this.cdr.detectChanges();
+      } else {
+        // لو فعلاً سيرفر واقع أو مشكلة حقيقية
+        alert('حدث خطأ أثناء حذف الملف');
+      }
+    }
+  });
+}
+viewFile(file: MedicalFileItem) {
+
+  window.open(file.fileUrl, '_blank');
+
+}
 }

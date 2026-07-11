@@ -1,0 +1,150 @@
+<div class="appts-wrap" dir="rtl">
+  <div class="appts-card">
+    <div class="policy-banner">
+      تنبيه: يمكن تعديل أو إلغاء الموعد قبل موعده بـ 24 ساعة على الأقل
+    </div>
+
+    @if (loading()) {
+      <div class="state-msg">جارِ تحميل المواعيد...</div>
+    } @else if (errorMsg()) {
+      <div class="state-msg state-msg--error">{{ errorMsg() }}</div>
+    } @else if (appointments().length === 0) {
+      <div class="state-msg">لا يوجد مواعيد حالياً</div>
+    } @else {
+      <!-- المواعيد القادمة -->
+      <div class="section">
+        <button type="button" class="section-header" (click)="toggleUpcoming()">
+          <span class="chevron" [class.chevron--open]="expandedUpcoming()">‹</span>
+          <span class="section-title">المواعيد القادمة</span>
+          <span class="section-count">{{ upcoming().length }}</span>
+        </button>
+
+        @if (expandedUpcoming()) {
+          @if (upcoming().length === 0) {
+            <div class="state-msg state-msg--small">لايوجد مواعيد قادمة</div>
+          } @else {
+            <ul class="appt-list">
+              @for (appt of upcoming(); track appt.id) {
+                <li class="appt-card">
+                  <span class="appt-tag" [ngClass]="statusClass(appt.status)">
+                    {{ statusLabel(appt.status) }}
+                  </span>
+
+                  <div class="appt-row">
+                    <div class="appt-avatar">
+                      <img
+                        [src]="appt.doctorImage || 'assets/images/doctor-placeholder.png'"
+                        [alt]="appt.doctorName || 'الطبيب'"
+                      />
+                    </div>
+
+                    <div class="appt-info">
+                      <span class="appt-doctor">{{ appt.doctorName || 'الطبيب' }}</span>
+                      @if (appt.doctorSpecialty) {
+                        <span class="appt-specialty">{{ appt.doctorSpecialty }}</span>
+                      }
+                      <div class="appt-meta">
+                        @if (appt.slotStart) {
+                          <span class="meta-item" dir="ltr">{{ formatDate(appt.slotStart) }}</span>
+                          <span class="meta-item" dir="ltr">
+                            {{ formatTimeRange(appt.slotStart, appt.slotEnd) }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="appt-actions">
+                    <button
+                      type="button"
+                      class="action-btn action-btn--outline"
+                      (click)="openReschedule(appt)"
+                    >
+                      تعديل
+                    </button>
+                    <button
+                      type="button"
+                      class="action-btn action-btn--icon-danger"
+                      (click)="openCancel(appt)"
+                      aria-label="إلغاء الموعد"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18" />
+                        <path d="M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </div>
+
+      <!-- المواعيد السابقة -->
+      <div class="section">
+        <button type="button" class="section-header" (click)="togglePast()">
+          <span class="chevron" [class.chevron--open]="expandedPast()">‹</span>
+          <span class="section-title">المواعيد السابقة</span>
+          <span class="section-count">{{ past().length }}</span>
+        </button>
+
+        @if (expandedPast()) {
+          @if (past().length === 0) {
+            <div class="state-msg state-msg--small">لا يوجد مواعيد سابقة</div>
+          } @else {
+            <ul class="appt-list">
+              @for (appt of past(); track appt.id) {
+                <li class="appt-card">
+                  <span class="appt-tag" [ngClass]="statusClass(appt.status)">
+                    {{ statusLabel(appt.status) }}
+                  </span>
+
+                  <div class="appt-row">
+                    <div class="appt-avatar">
+                      <img
+                        [src]="appt.doctorImage || 'assets/images/doctor-placeholder.png'"
+                        [alt]="appt.doctorName || 'الطبيب'"
+                      />
+                    </div>
+
+                    <div class="appt-info">
+                      <span class="appt-doctor">{{ appt.doctorName || 'الطبيب' }}</span>
+                      @if (appt.doctorSpecialty) {
+                        <span class="appt-specialty">{{ appt.doctorSpecialty }}</span>
+                      }
+                      <div class="appt-meta">
+                        @if (appt.slotStart) {
+                          <span class="meta-item" dir="ltr">{{ formatDate(appt.slotStart) }}</span>
+                          <span class="meta-item" dir="ltr">
+                            {{ formatTimeRange(appt.slotStart, appt.slotEnd) }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>
+
+@if (appointmentToReschedule()) {
+  <app-reschedule-modal
+    [appointment]="appointmentToReschedule()!"
+    (closed)="closeReschedule()"
+    (rescheduled)="onRescheduled($event)"
+  ></app-reschedule-modal>
+}
+
+@if (appointmentToCancel()) {
+  <app-cancel-modal
+    [appointment]="appointmentToCancel()!"
+    (closed)="closeCancel()"
+    (cancelled)="onCancelled($event)"
+  ></app-cancel-modal>
+}
