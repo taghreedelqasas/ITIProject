@@ -2,7 +2,7 @@
    التنسيقات العامة والسكشن الرئيسي
    ========================================= */
 .ai-services-section {
-  background: #18093d; /* البنفسجي الغامق جداً للخلفية */
+  background-image:linear-gradient(135deg ,#18093d,#8976b6);/* البنفسجي الغامق جداً للخلفية */
   color: #ffffff;
   padding: 80px 20px;
   direction: rtl;
