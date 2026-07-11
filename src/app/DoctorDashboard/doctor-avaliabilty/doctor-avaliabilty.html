@@ -1,0 +1,310 @@
+<div class="p-6">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+
+    <div>
+      <h2 class="text-3xl font-bold text-[#4A148C]">
+        المواعيد المتاحة
+      </h2>
+
+      <p class="text-gray-500 mt-2">
+        إدارة المواعيد الخاصة بالطبيب
+      </p>
+    </div>
+
+    <button
+      (click)="openCreate()"
+      class="bg-[#4A148C] hover:bg-[#5B1AA6] text-white px-5 py-3 rounded-xl transition">
+
+      <i class="fa-solid fa-plus ml-2"></i>
+      إضافة موعد
+
+    </button>
+
+  </div>
+
+  <!-- Loading -->
+
+  @if(service.loading()){
+
+  <div class="flex justify-center items-center h-64">
+
+    <i class="fa-solid fa-spinner fa-spin text-4xl text-[#4A148C]"></i>
+
+  </div>
+
+  }
+
+  @else {
+
+  <!-- Empty -->
+
+  @if(groupedSlots().length===0){
+
+  <div class="bg-white rounded-2xl shadow p-10 text-center">
+
+    <i class="fa-regular fa-calendar-xmark text-6xl text-gray-300 mb-4"></i>
+
+    <p class="text-gray-500">
+
+      لا توجد مواعيد متاحة
+
+    </p>
+
+  </div>
+
+  }
+
+  @else {
+
+  @for(group of groupedSlots();track group.date){
+
+  <div class="bg-white rounded-2xl shadow mb-6 overflow-hidden">
+
+    <!-- Date -->
+
+    <div class="bg-[#F4EEFC] px-6 py-4">
+
+      <h3 class="font-bold text-lg text-[#4A148C]">
+
+        {{formatDateHeader(group.date)}}
+
+      </h3>
+
+    </div>
+
+    <!-- Slots -->
+
+    <div class="divide-y">
+
+      @for(slot of group.slots;track trackBySlot($index,slot)){
+
+      <div
+        class="flex justify-between items-center p-5 hover:bg-gray-50 transition">
+
+        <div>
+
+          <h4 class="font-semibold">
+
+            {{formatTime(slot.startTime)}}
+            -
+            {{formatTime(slot.endTime)}}
+
+          </h4>
+
+          @if(slot.isBooked){
+
+          <span
+            class="text-red-600 text-sm">
+
+            محجوز
+
+          </span>
+
+          }
+
+          @else{
+
+          <span
+            class="text-green-600 text-sm">
+
+            متاح
+
+          </span>
+
+          }
+
+        </div>
+
+        <div class="flex gap-3">
+
+          <button
+
+            (click)="edit(slot)"
+
+            class="w-10 h-10 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700">
+
+            <i class="fa-solid fa-pen"></i>
+
+          </button>
+
+          <button
+
+            (click)="delete(slot)"
+
+            class="w-10 h-10 rounded-lg bg-red-100 hover:bg-red-200 text-red-700">
+
+            <i class="fa-solid fa-trash"></i>
+
+          </button>
+
+        </div>
+
+      </div>
+
+      }
+
+    </div>
+
+  </div>
+
+  }
+
+  }
+
+  }
+
+</div>
+
+<!-- Modal -->
+
+@if(showModal()){
+
+<div
+class="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+
+<div
+class="bg-white rounded-3xl w-[500px] p-8 shadow-2xl">
+
+<div class="flex justify-between items-center mb-6">
+
+<h2 class="text-2xl font-bold text-[#4A148C]">
+
+{{editMode() ? 'تعديل الموعد' : 'إضافة موعد جديد'}}
+
+</h2>
+
+<button
+
+(click)="closeModal()"
+
+class="text-gray-500 hover:text-black">
+
+<i class="fa-solid fa-xmark text-xl"></i>
+
+</button>
+
+</div>
+
+<form
+[formGroup]="form">
+
+<div class="space-y-5">
+
+<div>
+
+<label class="block mb-2 font-semibold">
+
+بداية الموعد
+
+</label>
+
+<input
+
+type="datetime-local"
+
+formControlName="startTime"
+
+class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#4A148C]">
+
+@if(form.controls.startTime.touched &&
+form.controls.startTime.invalid){
+
+<p class="text-red-600 text-sm mt-1">
+
+هذا الحقل مطلوب
+
+</p>
+
+}
+
+</div>
+
+<div>
+
+<label class="block mb-2 font-semibold">
+
+نهاية الموعد
+
+</label>
+
+<input
+
+type="datetime-local"
+
+formControlName="endTime"
+
+class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#4A148C]">
+
+@if(form.controls.endTime.touched &&
+form.controls.endTime.invalid){
+
+<p class="text-red-600 text-sm mt-1">
+
+هذا الحقل مطلوب
+
+</p>
+
+}
+
+</div>
+@if(errorMessage()){
+
+<div
+class="bg-red-50 border border-red-300 text-red-700 rounded-xl p-3">
+
+  {{ errorMessage() }}
+
+</div>
+
+}
+<div class="flex justify-end gap-3 pt-4">
+
+<button
+
+type="button"
+
+(click)="closeModal()"
+
+class="px-5 py-2 rounded-xl border hover:bg-gray-100">
+
+إلغاء
+
+</button>
+
+<button
+
+type="button"
+
+(click)="save()"
+
+[disabled]="saving()"
+
+class="bg-[#4A148C] text-white rounded-xl px-6 py-2 hover:bg-[#5B1AA6] disabled:opacity-50">
+
+@if(editMode()){
+
+حفظ التعديل
+
+}
+
+@else{
+
+إضافة الموعد
+
+}
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+}

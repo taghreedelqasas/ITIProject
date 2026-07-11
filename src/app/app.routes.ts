@@ -10,7 +10,6 @@ import { LoginComponent } from './features/auth/login/login.component';
 // Doctor dashboard components
 import { DoctorDash } from './DoctorDashboard/doctor-dash/doctor-dash';
 import { DocMain } from './DoctorDashboard/doc-main/doc-main';
-import { DocSlots } from './DoctorDashboard/doc-slots/doc-slots';
 import { DocPatients } from './DoctorDashboard/doc-patients/doc-patients';
 import { DocConsultations } from './DoctorDashboard/doc-consulations/doc-consulations';
 import { DocAnalytics } from './DoctorDashboard/doc-analytics/doc-analytics';
@@ -21,6 +20,8 @@ import { authGuard } from './core/services/auth.guard';
 import { NavbarPatient } from './components/navbar-patient/navbar-patient';
 import { UserProfileComponent } from './components/features/profile/profile';
 import { MedicalHistory } from './components/medical-history/medical-history';
+import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilty/doctor-avaliabilty';
+import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
 
 
 export const routes: Routes = [
@@ -35,6 +36,8 @@ export const routes: Routes = [
     {path:'' ,redirectTo:'patientProfile' ,pathMatch: 'full'},
     {path:'patientProfile' , component:UserProfileComponent} ,
     {path:'medicalHistory' , component:MedicalHistory} ,
+    {path:'appointment' , component:AppointmentsListComponent} ,
+    {path:'PatientSetting' , component:DocSettings} ,
    
   ]
 
@@ -49,7 +52,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
-      { path: 'docSlots', component: DocSlots },
+      { path: 'docSlots', component:DoctorAvailabilityComponent },
       { path: 'patients', component: DocPatients },
       { path: 'consultations', component: DocConsultations  },
       { path: 'analytics', component: DocAnalytics },

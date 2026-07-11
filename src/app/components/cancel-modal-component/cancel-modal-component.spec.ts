@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DocSlots } from './doc-slots';
+import { CancelModalComponent } from './cancel-modal-component';
 
-describe('DocSlots', () => {
-  let component: DocSlots;
-  let fixture: ComponentFixture<DocSlots>;
+describe('CancelModalComponent', () => {
+  let component: CancelModalComponent;
+  let fixture: ComponentFixture<CancelModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DocSlots],
+      imports: [CancelModalComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DocSlots);
+    fixture = TestBed.createComponent(CancelModalComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

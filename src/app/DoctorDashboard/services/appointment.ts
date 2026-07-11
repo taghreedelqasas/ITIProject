@@ -2,10 +2,25 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-  ServiceResult, DoctorReadDto, DoctorUpdateDto, UserProfile, UpdateProfileDto,
-  AppointmentApi, AvailableSlotApi, ReviewApi,
-  WalletResponse, WalletTransactionApi, WithdrawRequestPayload, PaymentInitiateResponse,
- MessageApi, ConversationApi , AnalyticsStats, DoctorSettings, PatientDerived
+  ServiceResult,
+  DoctorReadDto,
+  DoctorUpdateDto,
+  UserProfile,
+  UpdateProfileDto,
+  AppointmentApi,
+  AvailableSlotApi,
+  CreateDoctorAvailabilityDto,
+  UpdateDoctorAvailabilityDto,
+  ReviewApi,
+  WalletResponse,
+  WalletTransactionApi,
+  WithdrawRequestPayload,
+  PaymentInitiateResponse,
+  MessageApi,
+  ConversationApi,
+  AnalyticsStats,
+  DoctorSettings,
+  PatientDerived
 } from '../services/dashboard';
 
 const BASE = 'https://mawed.runasp.net';
@@ -84,10 +99,46 @@ updateUserProfile(payload: UpdateProfileDto) {
 
   getAvailableSlots(doctorId: number): void {
     this.http.get<ServiceResult<AvailableSlotApi[]>>(`${BASE}/api/DoctorAvailability/doctor/${doctorId}/available`).subscribe({
-      next: (res) => this.availableSlots.set(res.data),
-      error: (err) => console.error('Error fetching available slots:', err)
+next: (res) => {
+  this.availableSlots.set(res.data ?? []);
+},      error: (err) => console.error('Error fetching available slots:', err)
     });
   }
+
+  getDoctorAvailability(doctorId: number) {
+  return this.http.get<ServiceResult<AvailableSlotApi[]>>(
+    `${BASE}/api/DoctorAvailability/doctor/${doctorId}`
+  );
+}
+
+createAvailability(body: CreateDoctorAvailabilityDto) {
+  return this.http.post(
+    `${BASE}/api/DoctorAvailability`,
+    body
+  );
+}
+
+updateAvailability(
+  id: number,
+  body: UpdateDoctorAvailabilityDto
+) {
+  return this.http.put(
+    `${BASE}/api/DoctorAvailability/${id}`,
+    body
+  );
+}
+
+deleteAvailability(id: number) {
+  return this.http.delete(
+    `${BASE}/api/DoctorAvailability/${id}`
+  );
+}
+
+getAvailabilityById(id: number) {
+  return this.http.get<ServiceResult<AvailableSlotApi>>(
+    `${BASE}/api/DoctorAvailability/${id}`
+  );
+}
 
   confirmAppointment(id: number) {
     return this.http.patch<ServiceResult<null>>(`${BASE}/api/Appointments/${id}/confirm`, {});
