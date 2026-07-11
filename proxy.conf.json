@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://mawed.runasp.net",
+    "secure": true,
+    "changeOrigin": true
+  }
+}
