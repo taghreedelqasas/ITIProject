@@ -1,7 +1,7 @@
 .management-page {
   padding: 20px;
   direction: rtl;
-  font-family: system-ui, sans-serif;
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
   background-color: #f8f9fa;
   min-height: 100vh;
 }

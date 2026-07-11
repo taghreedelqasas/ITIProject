@@ -1,17 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
 @layer vendor;
 
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css" layer(vendor);
 
 @import "tailwindcss";
 
+:root {
+  --primary: #6ceaea;
+  --purple: #53098d;
+  --hero-blue: #e9fcfc;
+  --hero-purple: #ece7f0;
+  --text-gray: #5c676b;
+  --btn-blue: #23e0e0;
+}
 
-:root{
-     --primary:#6CEAEA ; 
-     --purple:#53098D ; 
-     --hero-blue:#E9FCFC ; 
-     --hero-purple:#ECE7F0 ; 
-     --text-gray:#5C676B ; 
-     --btn-blue:#23E0E0 ; 
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
 }

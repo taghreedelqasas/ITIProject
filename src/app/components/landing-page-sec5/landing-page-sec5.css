@@ -1,0 +1,383 @@
+/* =========================================
+   التنسيقات العامة والسكشن الرئيسي
+   ========================================= */
+.ai-services-section {
+  background: #18093d; /* البنفسجي الغامق جداً للخلفية */
+  color: #ffffff;
+  padding: 80px 20px;
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* الهيدر والعناوين العلوية */
+.ai-services-section .section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.ai-services-section .section-header .badge {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-services-section .section-header h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.ai-services-section .section-header p {
+  color: #c9c0e5;
+  font-size: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* حاوية السكاشن (يمين ويسار) */
+.ai-services-section .section-container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* =========================================
+   تنسيقات الكروت الثلاثة (الناحية اليمنى)
+   ========================================= */
+.ai-services-section .features-side {
+  flex: 1;
+  min-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ai-services-section .feature-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.ai-services-section .feature-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ai-services-section .feature-card .feature-text {
+  flex: 1;
+}
+
+.ai-services-section .feature-card .feature-text h3 {
+  font-size: 19px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ai-services-section .feature-card .feature-text p {
+  font-size: 14px;
+  color: #d1c8f1;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ai-services-section .feature-card .feature-icon-wrapper {
+  background: #ffffff;
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.font-icon-teal {
+  color: #19ebd9; /* اللون التيل/الفيروزي للأيقونات */
+}
+
+/* =========================================
+   تنسيقات المساعد الطبي الذكي (الشات - الناحية اليسرى)
+   ========================================= */
+.ai-services-section .chat-mockup {
+  flex: 1;
+  min-width: 380px;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chat-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-header .chat-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.chat-header .live-badge {
+  background: #1c618c;
+  color: #79d7ff;
+  font-size: 11px;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chat-body .msg {
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.chat-body .user-msg {
+  background: rgba(0, 0, 0, 0.2);
+  color: #e0d9f6;
+  align-self: flex-start;
+  width: 90%;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-body .ai-msg {
+  background: #19ebd9;
+  color: #120534;
+  font-weight: 600;
+  align-self: flex-end;
+  border-bottom-left-radius: 4px;
+}
+
+/* تابات الكلمات الاسترشادية */
+.tags-container {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -4px 0;
+}
+
+.tag-pill {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag-dot { font-size: 8px; }
+.tag-dot.yellow { color: #ffeb3b; }
+.tag-dot.green { color: #00e676; }
+.tag-dot.blue { color: #00b0ff; }
+
+/* صندوق ترشيح الأطباء */
+.recommendations-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.rec-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ff5252;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.doc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.doc-row:last-child { margin-bottom: 0; }
+
+.doc-match-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #19ebd9;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.doc-meta {
+  flex: 1;
+  margin-right: 12px;
+  text-align: right;
+}
+
+.doc-meta h4 {
+  font-size: 14px;
+  color: #ffffff;
+  margin: 0 0 2px 0;
+  font-weight: 600;
+}
+
+.doc-meta p {
+  font-size: 11px;
+  color: #bfaee3;
+  margin: 0;
+}
+
+.doc-pic {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.pic-purple { background: #7e57c2; }
+.pic-cyan { background: #26c6da; }
+
+/* أزرار الأكشن السفلية */
+.chat-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.chat-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: 'Cairo', sans-serif;
+  transition: opacity 0.2s ease;
+}
+
+.chat-actions button:hover { opacity: 0.9; }
+.chat-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+.chat-actions .btn-primary {
+  background: #19ebd9;
+  color: #120534;
+}
+
+/* =========================================
+   السكشن المنفصل بالخلفية المتدرجة للبانر
+   ========================================= */
+.banner-wrapper-section {
+  width: 100%;
+  /* خلفية متدرجة ناعمة تفصل السكاشن طبق الأصل من الفيجما */
+  background: linear-gradient(180deg, #e4e2eb 0%, #d4e3e6 100%); 
+  padding: 60px 20px; /* مسافة مريحة من فوق وتحت للسكشن عشان ميركبش على حاجة */
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* البانر المتقطع نفسه */
+.banner-wrapper-section .question-banner-dashed {
+  background-color: rgba(255, 255, 255, 0.2); /* شفافية خفيفة عشان يندمج مع الجريدينت اللي وراه */
+  border: 1px dashed #a29bb8; /* تحديد متقطع بلون بنفسجي رمادي هادئ */
+  border-radius: 16px;
+  padding: 16px 32px;
+  width: 100%;
+  max-width: 950px; /* العرض المتناسق في وسط الشاشة */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  direction: rtl;
+  box-sizing: border-box;
+  font-family: 'Almarai', 'Cairo', sans-serif;
+}
+
+/* النص: هل لديك سؤال طبي؟ */
+.banner-wrapper-section .banner-title {
+  color: #2c1a53; /* لون الخط البنفسجي الداكن */
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* الزرار: تحدث مع طبيب الآن */
+.banner-wrapper-section .btn-chat-teal {
+  background: #19ebd9; /* اللون الفيروزي الصريح المضيء */
+  color: #2c1a53; /* لون الكتابة الداكن */
+  border: none;
+  padding: 12px 32px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.banner-wrapper-section .btn-chat-teal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(25, 235, 217, 0.4);
+}
+
+/* التجاوب التام مع الشاشات الصغيرة */
+@media (max-width: 768px) {
+  .banner-wrapper-section {
+    padding: 40px 15px;
+  }
+  .banner-wrapper-section .question-banner-dashed {
+    flex-direction: column-reverse;
+    gap: 20px;
+    text-align: center;
+    padding: 24px 16px;
+  }
+}
+
