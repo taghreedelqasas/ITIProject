@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-// مسارات المريض والصفحات العامة
 import { Home } from './components/home/home';
+import { NabdAi } from './components/nabd-ai/nabd-ai';
 import { Booking } from './components/booking/booking';
 import { Doctors } from './components/doctors/doctors';
 import { DoctorProfile } from './components/doctor-profile/doctor-profile';
@@ -23,10 +23,9 @@ import { MedicalHistory } from './components/medical-history/medical-history';
 import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilty/doctor-avaliabilty';
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
 
-
 export const routes: Routes = [
-  // مسارات المريض والصفحات العامة
   { path: '', component: Home },
+  { path: 'nabd-ai', component: NabdAi },
   // { path: 'doctors', component: Doctors , canActivate: [authGuard] },
   { path: 'doctors', component: Doctors  },
   { path: 'doctor/:id', component: DoctorProfile },
@@ -40,7 +39,6 @@ export const routes: Routes = [
     {path:'PatientSetting' , component:DocSettings} ,
    
   ]
-
   },
   { path: 'consult', component: ConsultRequest },
   { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
@@ -59,8 +57,6 @@ export const routes: Routes = [
       { path: 'finance', component: DocPayments },
       { path: 'profile', component: DocProfile },
       { path: 'settings', component: DocSettings },
-    
-     
     ]
   },
 
@@ -77,8 +73,10 @@ export const routes: Routes = [
     path: 'admin/doctors',
     loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
   } ,
-   {path: 'auth/login',
-  component: LoginComponent},
+  {
+    path: 'auth/login',
+    component: LoginComponent
+  },
   {
     path: '',
     redirectTo: 'auth/register',
@@ -86,14 +84,10 @@ export const routes: Routes = [
   },
   {
     path: 'auth/register',
-    loadComponent: () =>
-      import('./features/auth/register/register.component')
-        .then(m => m.RegisterComponent)
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
   },
   {
     path: 'auth/confirm-email-notice',
-    loadComponent: () =>
-      import('./features/auth/confirm-email-notice/confirm-email-notice.component')
-        .then(m => m.ConfirmEmailNoticeComponent)
+    loadComponent: () => import('./features/auth/confirm-email-notice/confirm-email-notice.component').then(m => m.ConfirmEmailNoticeComponent)
   }
 ];
