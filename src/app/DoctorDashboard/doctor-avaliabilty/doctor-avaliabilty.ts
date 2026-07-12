@@ -12,6 +12,7 @@ import {
   CreateDoctorAvailabilityDto,
   UpdateDoctorAvailabilityDto
 } from '../../core/models/availability.model';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-doctor-availability',
@@ -24,12 +25,15 @@ import {
   styleUrls: ['./doctor-avaliabilty.css']
 })
 export class DoctorAvailabilityComponent implements OnInit {
-errorMessage = signal('');
+
+  private authService = inject(AuthService);
+
+  errorMessage = signal('');
   private fb = inject(FormBuilder);
 
   service = inject(DoctorAvailabilityService);
 
-  doctorId = 3;
+  doctorId = this.authService.getDoctorId()!;
 
   showModal = signal(false);
 

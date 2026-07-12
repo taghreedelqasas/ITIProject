@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../../../DoctorDashboard/services/appointment';
-import { UpdateProfileDto } from '../../../DoctorDashboard/services/dashboard';
+import { UpdateProfileDto, Gender } from '../../../DoctorDashboard/services/dashboard';
 
 @Component({
   selector: 'app-user-profile',
@@ -17,12 +17,18 @@ export class UserProfileComponent implements OnInit {
 
   isEditing = false;
 
-  userData = {
+  userData: {
+    fullName: string;
+    email: string;
+    phone: string;
+    birthDate: string;
+    gender: Gender;
+  } = {
     fullName: '',
     email: '',
     phone: '',
     birthDate: '',
-    gender: 'Female'
+    gender: Gender.Male // = 1
   };
 
   ngOnInit(): void {
@@ -32,16 +38,14 @@ export class UserProfileComponent implements OnInit {
   getProfile() {
     this.patientServices.getUserProfile().subscribe({
       next: (res: any) => {
-
         this.patientServices.userProfile.set(res);
-          console.log(typeof res.gender);
-          console.log(this.userData.gender);
         this.userData = {
           fullName: res.fullName,
           email: res.email,
           phone: res.phoneNumber,
           birthDate: res.birthDate?.split('T')[0],
-          gender: res.gender
+          // الباك إند بيرجع الـ enum كرقم (1 أو 2)، لو رجع string لأي سبب بنحولها بأمان
+          gender: typeof res.gender === 'number' ? res.gender : Gender.Male
         };
       },
       error: (err) => console.log(err)
@@ -50,29 +54,25 @@ export class UserProfileComponent implements OnInit {
 
   toggleEdit() {
     this.isEditing = true;
-    console.log(this.isEditing);
   }
 
   saveData() {
-
     const names = this.userData.fullName.trim().split(' ');
 
- const body: UpdateProfileDto = {
-  firstName: names[0] ?? undefined,
-  lastName: names.slice(1).join(' ') || undefined,
-  phoneNumber: this.userData.phone,
-  birthDate: this.userData.birthDate,
-  gender: this.userData.gender
-};
+    const body: UpdateProfileDto = {
+      firstName: names[0] ?? undefined,
+      lastName: names.slice(1).join(' ') || undefined,
+      phoneNumber: this.userData.phone,
+      birthDate: this.userData.birthDate,
+      gender: this.userData.gender // رقم فعلي (1 أو 2)، مطابق للـ enum بتاع الباك إند
+    };
 
-this.patientServices.updateUserProfile(body).subscribe({
-  next: (res) => {
-    console.log(res);
-    this.isEditing = false;
-    this.getProfile();
-  },
-  error: (err) => console.log(err)
-});
+    this.patientServices.updateUserProfile(body).subscribe({
+      next: (res) => {
+        this.isEditing = false;
+        this.getProfile();
+      },
+      error: (err) => console.log(err)
+    });
   }
-
 }

@@ -60,6 +60,8 @@ getUserProfile() {
 }
 
 
+
+
 updateUserProfile(payload: UpdateProfileDto) {
   return this.http.patch(`${BASE}/api/UserProfile`, payload, { responseType: 'text' as 'json' });
 }
@@ -69,6 +71,8 @@ updateUserProfile(payload: UpdateProfileDto) {
     formData.append('file', file);
     return this.http.post<ServiceResult<null>>(`${BASE}/api/UserProfile/picture`, formData);
   }
+
+  
 
   // ============================================================
   // 2) Appointments — حقيقي

@@ -41,15 +41,11 @@
               <input type="text" [(ngModel)]="user.phoneNumber" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
             </div>
 
-            
-<select
-  [ngModel]="user.gender"
-  (ngModelChange)="onGenderChange($event, user)"
-  class="w-full border border-gray-200 rounded-xl py-2.5 px-4 text-right focus:outline-none focus:border-[#00E5FF] bg-white">
-  <option [ngValue]="null" value="" disabled>اختر النوع</option>
-  <option [ngValue]="0" value="0">ذكر</option>
-  <option [ngValue]="1" value="1">أنثى</option>
-</select>
+       <div class="space-y-1.5">
+              <label class="font-bold text-gray-600 block">النوع</label>
+              <input type="text" [value]="getGenderLabel(user.gender)" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-right text-gray-400">
+            </div>     
+
             <div class="space-y-1.5">
               <label class="font-bold text-gray-600 block">البريد الإلكتروني</label>
               <input type="email" [value]="user.email" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-left text-gray-400">

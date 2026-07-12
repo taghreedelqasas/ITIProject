@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../services/appointment';
-import { Gender } from '../services/dashboard';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-doc-profile',
@@ -13,9 +13,17 @@ import { Gender } from '../services/dashboard';
 })
 export class DocProfile implements OnInit {
   protected appointmentService = inject(AppointmentService);
-
+  doctorId!: number;
   firstName = '';
   lastName = '';
+
+  constructor(private authService: AuthService) {
+    const id = this.authService.getDoctorId();
+    if (id === null) {
+      console.error('DoctorId غير موجود — تأكد إن المستخدم مسجل دخول كـ Doctor');
+    }
+    this.doctorId = id ?? 0;
+  }
 
   ngOnInit(): void {
     // 1. جلب بيانات الحساب الشخصي أولاً
@@ -32,10 +40,9 @@ export class DocProfile implements OnInit {
 
           
         }
-        // 2. هنا السحر: نستخدم الـ id الخاص بالمستخدم لجلب بيانات الطبيب فوراً 
-        // (تأكد أن الـ userRes.id هو نفسه الـ id المطلوب للـ Doctor في الـ API عندك)
-    
-           this.appointmentService.getDoctorById(2);
+        // 2. هنا السحر: نستخدم الـ doctorId الحقيقي (جاي من التوكن بعد اللوجين)
+        // لجلب بيانات الطبيب فوراً
+        this.appointmentService.getDoctorById(this.doctorId);
        
       },
       error: (err) => {
@@ -57,21 +64,18 @@ const body = {
   firstName: this.firstName,
   lastName: this.lastName,
   phoneNumber: user.phoneNumber,
-  birthDate: user.birthDate,
-  gender: user.gender
+  birthDate: user.birthDate
 };
 
 console.log(body)
       this.appointmentService.updateUserProfile({
         firstName: this.firstName,
         phoneNumber: user.phoneNumber ?? undefined,
-        birthDate: user.birthDate ?? undefined,
-       gender: user.gender ?? undefined
+        birthDate: user.birthDate ?? undefined
       }).subscribe({
         next: () => {
           this.appointmentService.updateDoctorProfile({
-            // هحتاج بعدين اعدل ال id هنا يبقي dynamic
-            id: 2,     
+            id: this.doctorId,     
             licenseNumber: doc.licenseNumber,
             consultationFee: doc.consultationFee,
             address: doc.address
@@ -93,9 +97,10 @@ console.log(body)
   onUpdateWorkingHours(): void {
     alert('سيتم ربط تعديل أوقات العمل لاحقاً فور توفرها بالـ Backend.');
   }
-  onGenderChange(value: any, user: any): void {
-  // دفاع ضد أي قيمة نصية توصل بسبب الـ SSR hydration timing
-  const numericValue = typeof value === 'number' ? value : Number(value);
-  user.gender = Number.isNaN(numericValue) ? null : numericValue;
+
+  getGenderLabel(gender: any): string {
+  if (gender === 'Male' || gender === 1) return 'ذكر';
+  if (gender === 'Female' || gender === 2) return 'أنثى';
+  return '—';
 }
 }
