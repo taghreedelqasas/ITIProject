@@ -27,6 +27,7 @@ export class NabdAi {
   messages = signal<ChatMessage[]>([]);
   selectedFile = signal<File | null>(null);
   selectedFilePreviewUrl = signal<string | null>(null);
+  isLoading = signal(false);
 
   suggestedQuestions = [
     'أعاني من صداع مستمر منذ يومين مع زغللة في العين',
@@ -65,6 +66,8 @@ export class NabdAi {
   }
 
   sendMessage(text?: string) {
+    if (this.isLoading()) return; // prevent double-send while a request is in flight
+
     const messageText = (text ?? this.inputText()).trim();
     const file = this.selectedFile();
 
@@ -85,6 +88,7 @@ export class NabdAi {
     this.inputText.set('');
     this.selectedFile.set(null);
     this.selectedFilePreviewUrl.set(null);
+    this.isLoading.set(true);
 
     if (file) {
       const isImage = file.type.startsWith('image/');
@@ -95,24 +99,38 @@ export class NabdAi {
       request$.subscribe({
         next: (res) => {
           this.messages.update(msgs => [...msgs, { role: 'ai', text: res.explanation }]);
+          this.isLoading.set(false);
         },
-        error: (err) => this.handleChatError(err)
+        error: (err) => {
+          this.handleChatError(err);
+          this.isLoading.set(false);
+        }
       });
     } else {
       this.chatService.sendMessage(messageText).subscribe({
         next: (res) => {
           this.messages.update(msgs => [...msgs, { role: 'ai', text: res.reply }]);
+          this.isLoading.set(false);
         },
-        error: (err) => this.handleChatError(err)
+        error: (err) => {
+          this.handleChatError(err);
+          this.isLoading.set(false);
+        }
       });
     }
   }
 
   private handleChatError(err: any) {
     console.error('Chat API error:', err);
+
+    let errorText = 'حدث خطأ أثناء الاتصال بالمساعد الذكي. حاول مرة أخرى.';
+    if (err?.status === 429) {
+      errorText = 'الخدمة مشغولة حالياً، برجاء الانتظار قليلاً ثم المحاولة مرة أخرى.';
+    }
+
     this.messages.update(msgs => [...msgs, {
       role: 'ai',
-      text: 'حدث خطأ أثناء الاتصال بالمساعد الذكي. حاول مرة أخرى.'
+      text: errorText
     }]);
   }
 
