@@ -28,18 +28,19 @@ export const routes: Routes = [
   // مسارات المريض والصفحات العامة
   { path: '', component: Home },
   // { path: 'doctors', component: Doctors , canActivate: [authGuard] },
-  { path: 'doctors', component: Doctors  },
+  { path: 'doctors', component: Doctors },
   { path: 'doctor/:id', component: DoctorProfile },
   { path: 'booking', component: Booking },
-  { path: 'profile', component: NavbarPatient ,
-  children :[
-    {path:'' ,redirectTo:'patientProfile' ,pathMatch: 'full'},
-    {path:'patientProfile' , component:UserProfileComponent} ,
-    {path:'medicalHistory' , component:MedicalHistory} ,
-    {path:'appointment' , component:AppointmentsListComponent} ,
-    {path:'PatientSetting' , component:DocSettings} ,
-   
-  ]
+  {
+    path: 'profile', component: NavbarPatient,
+    children: [
+      { path: '', redirectTo: 'patientProfile', pathMatch: 'full' },
+      { path: 'patientProfile', component: UserProfileComponent },
+      { path: 'medicalHistory', component: MedicalHistory },
+      { path: 'appointment', component: AppointmentsListComponent },
+      { path: 'PatientSetting', component: DocSettings },
+
+    ]
 
   },
   { path: 'consult', component: ConsultRequest },
@@ -52,15 +53,15 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
-      { path: 'docSlots', component:DoctorAvailabilityComponent },
+      { path: 'docSlots', component: DoctorAvailabilityComponent },
       { path: 'patients', component: DocPatients },
-      { path: 'consultations', component: DocConsultations  },
+      { path: 'consultations', component: DocConsultations },
       { path: 'analytics', component: DocAnalytics },
       { path: 'finance', component: DocPayments },
       { path: 'profile', component: DocProfile },
       { path: 'settings', component: DocSettings },
-    
-     
+
+
     ]
   },
 
@@ -76,9 +77,11 @@ export const routes: Routes = [
   {
     path: 'admin/doctors',
     loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
-  } ,
-   {path: 'auth/login',
-  component: LoginComponent},
+  },
+  {
+    path: 'auth/login',
+    component: LoginComponent
+  },
   {
     path: '',
     redirectTo: 'auth/register',
