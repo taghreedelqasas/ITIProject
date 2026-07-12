@@ -1,12 +1,19 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptors
+} from '@angular/common/http';
+
 import { routes } from './app.routes';
-import { authInterceptorFn } from './interceptors/auth-interceptor';
+import { authInterceptor } from './core/auth.interceptor'; // عدلي المسار حسب مكان الملف
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptorFn]))
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    )
   ]
 };
