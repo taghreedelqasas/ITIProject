@@ -87,15 +87,10 @@
     الجنس
   </label>
 
-  <select >
-    name="gender"
-    [(ngModel)]="userData.gender"
-     [disabled]="!isEditing" 
+  <select name="gender" [(ngModel)]="userData.gender" [disabled]="!isEditing"
     class="w-full border border-gray-300 rounded-xl p-3 bg-white text-sm font-semibold text-gray-800 focus:outline-none appearance-none">
-
-    <option  selected  [ngValue]="1">ذكر</option>
-    <option [ngValue]="0">أنثى</option>
-
+    <option value="Male">ذكر</option>
+    <option value="Female">أنثى</option>
   </select>
 </div>
 

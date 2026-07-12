@@ -21,7 +21,7 @@ import {
   AnalyticsStats,
   DoctorSettings,
   PatientDerived
-} from '../services/dashboard';
+} from './dashboard';
 
 const BASE = 'https://mawed.runasp.net';
 

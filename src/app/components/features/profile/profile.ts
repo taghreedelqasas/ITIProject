@@ -22,7 +22,7 @@ export class UserProfileComponent implements OnInit {
     email: '',
     phone: '',
     birthDate: '',
-    gender: 1
+    gender: 'Female'
   };
 
   ngOnInit(): void {

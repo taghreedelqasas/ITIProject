@@ -21,7 +21,7 @@
 
         @if (expandedUpcoming()) {
           @if (upcoming().length === 0) {
-            <div class="state-msg state-msg--small">لايوجد مواعيد قادمة</div>
+            <div class="state-msg state-msg--small">مفيش مواعيد قادمة</div>
           } @else {
             <ul class="appt-list">
               @for (appt of upcoming(); track appt.id) {
@@ -91,7 +91,7 @@
 
         @if (expandedPast()) {
           @if (past().length === 0) {
-            <div class="state-msg state-msg--small">لا يوجد مواعيد سابقة</div>
+            <div class="state-msg state-msg--small">مفيش مواعيد سابقة</div>
           } @else {
             <ul class="appt-list">
               @for (appt of past(); track appt.id) {
@@ -123,6 +123,18 @@
                       </div>
                     </div>
                   </div>
+
+                  @if (canBeReviewed(appt)) {
+                    <div class="appt-actions">
+                      <button
+                        type="button"
+                        class="action-btn action-btn--outline"
+                        (click)="openRate(appt)"
+                      >
+                        {{ existingReviewFor(appt) ? 'تعديل تقييمك' : 'قيم الزيارة' }}
+                      </button>
+                    </div>
+                  }
                 </li>
               }
             </ul>
@@ -147,4 +159,14 @@
     (closed)="closeCancel()"
     (cancelled)="onCancelled($event)"
   ></app-cancel-modal>
+}
+
+@if (appointmentToRate()) {
+  <app-rate-review-modal
+    [appointment]="appointmentToRate()!"
+    [existingReview]="existingReviewFor(appointmentToRate()!)"
+    (closed)="closeRate()"
+    (saved)="onReviewSaved($event)"
+    (deleted)="onReviewDeleted($event)"
+  ></app-rate-review-modal>
 }

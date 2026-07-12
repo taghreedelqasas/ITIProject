@@ -6,12 +6,12 @@ import {
   Validators
 } from '@angular/forms';
 
-import { DoctorAvailabilityService } from '../../DoctorDashboard/services/doctor-availability.service';
+import { DoctorAvailabilityService } from '../services/doctor-availability.service';
 import {
   DoctorAvailability,
   CreateDoctorAvailabilityDto,
   UpdateDoctorAvailabilityDto
-} from '../../core/models/doctor-availability';
+} from '../../core/models/availability.model';
 
 @Component({
   selector: 'app-doctor-availability',

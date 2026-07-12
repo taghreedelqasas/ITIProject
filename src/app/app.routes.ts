@@ -22,6 +22,8 @@ import { UserProfileComponent } from './components/features/profile/profile';
 import { MedicalHistory } from './components/medical-history/medical-history';
 import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilty/doctor-avaliabilty';
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
+import { DoctorReviewCardComponent } from './components/doctor-review-card-component/doctor-review-card-component';
+import { RatingsPageComponent } from './components/ratings-page-component/ratings-page-component';
 
 
 export const routes: Routes = [
@@ -38,7 +40,8 @@ export const routes: Routes = [
     {path:'medicalHistory' , component:MedicalHistory} ,
     {path:'appointment' , component:AppointmentsListComponent} ,
     {path:'PatientSetting' , component:DocSettings} ,
-   
+    {path:'docReview', component:RatingsPageComponent}  , 
+      
   ]
 
   },
