@@ -1,6 +1,10 @@
 export interface BookAppointmentDto {
   doctorAvailabilityId: number;
   notes?: string | null;
+  patientFullName?: string | null;
+  patientPhone?: string | null;
+  patientGender?: string | null;
+  patientAge?: number | null;
 }
 
 export interface RescheduleAppointmentDto {

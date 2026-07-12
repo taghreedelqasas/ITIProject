@@ -1,0 +1,30 @@
+<div class="fixed inset-0 z-50 bg-white">
+  <!-- Top bar -->
+  <div class="absolute top-0 inset-x-0 z-10 flex items-center justify-between px-4 py-3 bg-gradient-to-l from-purple-900 via-purple-800 to-fuchsia-900 shadow-lg">
+    <h2 class="text-white font-bold text-lg">الدفع</h2>
+    <button
+      (click)="onClose()"
+      class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+      aria-label="إغلاق"
+    >
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Loading spinner -->
+  @if (isIframeLoading()) {
+    <div class="absolute inset-0 flex items-center justify-center pt-14">
+      <div class="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+    </div>
+  }
+
+  <!-- Iframe -->
+  <iframe
+    [src]="safeUrl()"
+    class="w-full h-full border-0 pt-14"
+    (load)="onIframeLoad()"
+    allow="payment"
+  ></iframe>
+</div>
