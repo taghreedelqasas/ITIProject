@@ -1,10 +1,10 @@
-<h2 class="text-xl font-extrabold text-[#3a1560] mb-6">بيانات المريض</h2>
+<h2 class="text-xl font-extrabold text-[#1a1033] mb-6">بيانات المريض</h2>
 
 <form class="mb-8" (ngSubmit)="onSubmit()">
 
   <!-- الأسم بالكامل -->
   <div class="mb-6">
-    <label class="block text-sm font-bold text-slate-700 mb-2">
+    <label class="block text-sm font-bold text-[#373d3f] mb-2 font-['Tajawal']">
       الأسم بالكامل<span class="text-red-500">*</span>
     </label>
     <input
@@ -13,37 +13,37 @@
       [ngModel]="state.patient().fullName"
       (ngModelChange)="state.updatePatientField('fullName', $event)"
       placeholder="أدخل اسمك بالكامل"
-      class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+      class="w-full rounded-[6px] border border-[#abb5b9] bg-white/50 px-4 h-[44px] text-sm text-slate-700 placeholder-[#9ba7ab] focus:outline-none focus:ring-1 focus:ring-cyan-400 focus:border-[#23e0e0] font-['Tajawal']"
     />
   </div>
 
   <!-- رقم الهاتف -->
   <div class="mb-6">
-    <label class="block text-sm font-bold text-slate-700 mb-2">
+    <label class="block text-sm font-bold text-[#373d3f] mb-2 font-['Tajawal']">
       رقم الهاتف<span class="text-red-500">*</span>
     </label>
-    <div class="flex items-center rounded-xl border border-slate-200 focus-within:ring-2 focus-within:ring-cyan-400 relative">
+    <div class="flex items-center rounded-[6px] border border-[#abb5b9] bg-white/50 h-[48px] relative focus-within:ring-1 focus-within:ring-cyan-400" dir="ltr">
       <!-- Country selector -->
       <button
         type="button"
         (click)="state.toggleCountryMenu()"
-        class="flex items-center gap-1 px-4 py-3 border-l border-slate-200 shrink-0"
+        class="flex items-center gap-1 px-4 py-3 border-r border-[#abb5b9] shrink-0 h-full cursor-pointer"
       >
         <span class="text-lg leading-none">{{ state.selectedCountry().flag }}</span>
-        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-[#82609d]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       <!-- Country dropdown -->
       @if (state.isCountryMenuOpen()) {
-        <ul class="absolute top-full right-0 mt-1 w-40 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-10">
+        <ul class="absolute top-full left-0 mt-1 w-40 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-10" dir="rtl">
           @for (country of countries; track country.code) {
             <li>
               <button
                 type="button"
                 (click)="state.selectCountry(country)"
-                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-purple-50"
+                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-[#ece7f0]"
               >
                 <span class="text-lg leading-none">{{ country.flag }}</span>
                 <span>{{ country.name }}</span>
@@ -54,7 +54,7 @@
         </ul>
       }
 
-      <span class="px-2 text-sm text-slate-500 shrink-0">{{ state.selectedCountry().code }}</span>
+      <span class="px-2 text-sm text-slate-500 shrink-0 font-['Tajawal']">{{ state.selectedCountry().code }}</span>
 
       <input
         type="tel"
@@ -62,20 +62,21 @@
         [ngModel]="state.patient().phone"
         (ngModelChange)="state.updatePatientField('phone', $event)"
         placeholder="1XX XXX XXXX"
-        class="w-full px-2 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none rounded-l-xl"
+        class="w-full px-2 py-3 text-sm text-slate-700 placeholder-[#9ba7ab] focus:outline-none bg-transparent h-full font-['Tajawal']"
       />
     </div>
   </div>
 
-  <!-- العمر والجنس -->
+  <!-- العمر والجنس (side by side, order: Gender right, Age left in RTL layout) -->
   <div class="grid grid-cols-2 gap-4 mb-6">
+    <!-- Gender (right side in RTL) -->
     <div>
-      <label class="block text-sm font-bold text-slate-700 mb-2">الجنس</label>
+      <label class="block text-sm font-bold text-[#373d3f] mb-2 font-['Tajawal']">الجنس</label>
       <select
         name="gender"
         [ngModel]="state.patient().gender"
         (ngModelChange)="state.updatePatientField('gender', $event)"
-        class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+        class="w-full rounded-[6px] border border-[#abb5b9] bg-white/50 px-4 h-[44px] text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 focus:border-[#23e0e0] font-['Tajawal']"
         [class]="state.patient().gender ? 'text-slate-700' : 'text-slate-400'"
       >
         <option value="" disabled selected>ذكر / أنثى</option>
@@ -83,8 +84,10 @@
         <option value="female">أنثى</option>
       </select>
     </div>
+    
+    <!-- Age (left side in RTL) -->
     <div>
-      <label class="block text-sm font-bold text-slate-700 mb-2">العمر</label>
+      <label class="block text-sm font-bold text-[#373d3f] mb-2 font-['Tajawal']">العمر</label>
       <input
         type="number"
         name="age"
@@ -92,22 +95,21 @@
         (ngModelChange)="state.updatePatientField('age', $event)"
         placeholder="مثال : 30"
         min="0"
-        class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+        class="w-full rounded-[6px] border border-[#abb5b9] bg-white/50 px-4 h-[44px] text-sm text-slate-700 placeholder-[#9ba7ab] focus:outline-none focus:ring-1 focus:ring-cyan-400 focus:border-[#23e0e0] font-['Tajawal']"
       />
     </div>
   </div>
 
   <!-- ملاحظات للطبيب -->
   <div class="mb-8">
-    <label class="block text-sm font-bold text-slate-700 mb-2">ملاحظات للطبيب</label>
+    <label class="block text-sm font-bold text-[#373d3f] mb-2 font-['Tajawal']">ملاحظات للطبيب</label>
     <div class="relative">
       <textarea
         name="notes"
         [ngModel]="state.patient().notes"
         (ngModelChange)="state.updatePatientField('notes', $event)"
-        rows="4"
         placeholder="اذكر أعراضك أو أي أمراض مزمنة مثل(السكر, الضغط, ........)."
-        class="w-full rounded-xl border border-slate-200 px-4 py-3 pl-10 text-sm text-slate-700 placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+        class="w-full rounded-[6px] border border-[#abb5b9] bg-white/50 px-4 py-3 pl-10 text-sm text-slate-700 placeholder-[#9ba7ab] resize-none focus:outline-none focus:ring-1 focus:ring-cyan-400 focus:border-[#23e0e0] h-[156px] font-['Tajawal']"
       ></textarea>
       <svg class="w-5 h-5 text-slate-300 absolute top-3 left-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h1M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2h-4l-2-2H9a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -115,24 +117,27 @@
     </div>
   </div>
 
-  <!-- Action buttons -->
-  <div class="flex flex-row-reverse gap-4">
-    <button
-      type="submit"
-      [disabled]="!state.isPatientFormValid()"
-      class="flex-1 font-extrabold text-lg py-4 rounded-full shadow-md transition-colors"
-      [class]="state.isPatientFormValid()
-        ? 'bg-cyan-400 hover:bg-cyan-500 text-[#3a1560] cursor-pointer'
-        : 'bg-cyan-100 text-white cursor-not-allowed'"
-    >
-      التالي
-    </button>
+  <!-- Action buttons (RTL: Back on the right, Next on the left) -->
+  <div class="flex gap-4 w-full">
+    <!-- Back button (renders on the right in RTL) -->
     <button
       type="button"
       (click)="onBack()"
-      class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+      class="flex-1 font-extrabold text-[20px] h-[48px] flex items-center justify-center rounded-[40px] border-2 border-[#6ceaea] text-[#44116d] hover:bg-slate-50 transition-all font-['Tajawal'] cursor-pointer"
     >
       رجوع
+    </button>
+
+    <!-- Next button (renders on the left in RTL) -->
+    <button
+      type="submit"
+      [disabled]="!state.isPatientFormValid()"
+      class="flex-1 font-extrabold text-[20px] h-[48px] flex items-center justify-center rounded-[40px] shadow-sm transition-all font-['Tajawal']"
+      [ngClass]="state.isPatientFormValid()
+        ? 'bg-[#23e0e0] text-[#1a1033] cursor-pointer'
+        : 'bg-[#bbf5f5] text-[#a992bc] cursor-not-allowed'"
+    >
+      التالي
     </button>
   </div>
 </form>

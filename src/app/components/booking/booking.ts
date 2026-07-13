@@ -3,6 +3,7 @@ import { RouterOutlet, Router, ActivatedRoute, NavigationEnd, RouterLink } from 
 import { BookingStateService } from './booking-state.service';
 import { filter } from 'rxjs/operators';
 import { PaymentOverlay } from './payment-overlay/payment-overlay';
+import { CommonModule } from '@angular/common';
 
 interface BookingStep {
   num: number;
@@ -11,7 +12,7 @@ interface BookingStep {
 
 @Component({
   selector: 'app-booking',
-  imports: [RouterOutlet, RouterLink, PaymentOverlay],
+  imports: [RouterOutlet, RouterLink, PaymentOverlay, CommonModule],
   templateUrl: './booking.html',
   styleUrl: './booking.css',
 })
@@ -24,9 +25,9 @@ export class Booking implements OnInit {
   pageSubtitle = 'إحجز موعدك بكل سهولة مع موعد';
 
   steps: BookingStep[] = [
-    { num: 3, label: 'التأكيد' },
-    { num: 2, label: 'بيانات المريض' },
     { num: 1, label: 'التاريخ والوقت' },
+    { num: 2, label: 'بيانات المريض' },
+    { num: 3, label: 'التأكيد' },
   ];
 
   currentStep = 1;

@@ -2,9 +2,9 @@
 
   <!-- Header -->
   @if (currentStep !== 4) {
-    <header class="bg-gradient-to-l from-purple-900 via-purple-800 to-fuchsia-900 py-12 px-6 text-center">
-      <h1 class="text-white text-3xl md:text-4xl font-extrabold mb-3">{{ pageTitle }}</h1>
-      <p class="text-purple-200 text-lg">{{ pageSubtitle }}</p>
+    <header class="bg-[#53098d] py-16 px-6 text-center">
+      <h1 class="text-white text-3xl md:text-5xl font-extrabold mb-3 font-['Tajawal']">{{ pageTitle }}</h1>
+      <p class="text-[#ece7f0] text-lg font-['Tajawal']">{{ pageSubtitle }}</p>
     </header>
   }
 
@@ -21,26 +21,25 @@
 
     @if (currentStep !== 4) {
       <!-- Steps indicator -->
-      <div class="flex flex-row-reverse items-center justify-center gap-3 md:gap-6 mt-10 mb-10">
+      <div class="flex flex-row items-center justify-center gap-3 md:gap-6 mt-10 mb-10" dir="rtl">
         @for (step of steps; track step.num; let last = $last) {
           <div class="flex flex-col items-center gap-2">
             <div
-              class="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm"
-              [class]="step.num === currentStep
-                ? 'bg-cyan-400 text-white'
-                : 'bg-cyan-50 text-[#3a1560]'"
+              class="w-[36px] h-[36px] rounded-full flex items-center justify-center font-bold text-[16px] font-['Tajawal']"
+              [ngClass]="step.num <= currentStep
+                ? 'bg-[#23e0e0] text-[#fcfcfc]'
+                : 'bg-[#e9fcfc] text-[#20cccc]'"
             >
               {{ step.num }}
             </div>
             <span
-              class="text-xs md:text-sm whitespace-nowrap"
-              [class]="step.num === currentStep ? 'text-[#3a1560] font-bold' : 'text-slate-400'"
+              class="text-[12px] font-bold font-['Tajawal'] whitespace-nowrap text-[#20cccc]"
             >
               {{ step.label }}
             </span>
           </div>
           @if (!last) {
-            <div class="h-px w-8 md:w-16 bg-slate-200 mb-6"></div>
+            <div class="h-[2px] w-8 md:w-16 bg-[#bbf5f5] mb-6"></div>
           }
         }
       </div>
@@ -65,38 +64,49 @@
 
       <!-- Doctor card: Loaded with data -->
       @if (state.doctorLoaded() && state.doctor().name) {
-        <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mb-10 text-right" dir="rtl">
+        <div class="bg-white border border-[#f0ebfa] rounded-[16px] p-[17px] pb-[17px] pt-[25px] flex items-center justify-between gap-[16px] mb-10 text-right shadow-sm" dir="rtl">
+          <!-- Right side: Info and image (first in markup for RTL right alignment) -->
+          <div class="flex items-center gap-[16px] flex-1 justify-start">
+            
+            <!-- Image -->
+            <img [src]="state.doctorImage()" [alt]="state.doctor().name" class="w-[56px] h-[56px] rounded-[14px] object-cover" />
 
-          <div class="flex items-center gap-4">
-            <img [src]="state.doctorImage()" [alt]="state.doctor().name" class="w-16 h-16 rounded-xl object-cover" />
-
-            <div>
-              <h3 class="font-bold text-[#3a1560] text-lg">{{ state.doctor().name }}</h3>
-              <p class="text-slate-500 text-sm mt-0.5">{{ state.doctor().specialty }}</p>
-
-              <div class="flex items-center gap-1 text-sm text-slate-500 mt-1">
-                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <!-- Info -->
+            <div class="flex flex-col items-start justify-center gap-[4px]">
+              <h3 class="font-bold text-[#1a1033] text-[16px] text-right">{{ state.doctor().name }}</h3>
+              <div class="flex items-center gap-1 text-[12px] text-[#a992bc] mt-0.5">
+                <span>{{ state.doctor().specialty }}</span>
+                <span class="mx-1 text-[#9b8cbf] leading-none">·</span>
+                <span>طب العظام</span>
+              </div>
+              <div class="flex items-center gap-[4px] mt-[4.5px] text-[12px] text-[#a992bc]">
+                <!-- rating details (first in markup for RTL right alignment) -->
+                <svg class="w-[16px] h-[16px] text-[#E8B006]" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
                 </svg>
-                <span class="font-bold text-[#3a1560]">{{ state.doctor().rating }}</span>
-                <span>({{ state.doctor().reviewsCount }})</span>
+                <span class="text-[#1c1c1c] font-bold">{{ state.doctor().rating || '4.8' }}</span>
+                <span>({{ state.doctor().reviewsCount || '100' }})</span>
 
-                <span class="mx-1 text-slate-300">|</span>
+                <!-- Divider -->
+                <span class="mx-1 text-[#c5b5d2]">|</span>
 
-                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <!-- location details (second in markup for RTL left alignment) -->
+                <svg class="w-[14px] h-[14px] text-[#82609d]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span>{{ state.doctor().location }}</span>
               </div>
             </div>
+            
+            
           </div>
 
-          <div class="text-center">
-            <p class="text-2xl font-extrabold text-[#3a1560]">{{ state.doctor().price }}</p>
-            <p class="text-slate-400 text-sm mt-0.5">جنية</p>
+          <!-- Left side: Price (second in markup for RTL left alignment) -->
+          <div class="flex flex-col items-start justify-center">
+            <span class="text-[#44116d] text-[16px] font-extrabold leading-none">{{ state.doctor().price || '300' }}</span>
+            <span class="text-[#82609d] text-[12px] mt-1">جنية</span>
           </div>
-
         </div>
       }
 

@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookingStateService } from '../booking-state.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-step-date-time',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './step-date-time.html',
 })
 export class StepDateTime {

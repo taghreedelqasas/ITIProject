@@ -1,0 +1,10 @@
+.consultation-gradient-btn {
+  border: 2px solid transparent;
+  background-image: linear-gradient(#fcfcfc, #fcfcfc), linear-gradient(223deg, #6CEAEA 14.93%, #53098D 82.77%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  color: #44116d;
+}
+.consultation-gradient-btn:hover {
+  opacity: 0.9;
+}

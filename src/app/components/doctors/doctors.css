@@ -1,0 +1,10 @@
+.chat-gradient-btn {
+  background: linear-gradient(#f3f4f5, #f3f4f5) padding-box,
+              linear-gradient(223deg, #6ceaea 14.93%, #53098d 82.77%) border-box;
+  border: 2px solid transparent;
+  border-radius: 40px;
+}
+.chat-gradient-btn:hover {
+  background: linear-gradient(#e9fcfc, #e9fcfc) padding-box,
+              linear-gradient(223deg, #6ceaea 14.93%, #53098d 82.77%) border-box;
+}
