@@ -5,13 +5,117 @@
 
     <div>
       <h2 class="text-3xl font-bold text-[#4A148C]">
-        المواعيد المتاحة
+        المواعيد 
       </h2>
 
       <p class="text-gray-500 mt-2">
         إدارة المواعيد الخاصة بالطبيب
       </p>
+
+
+    <div class="grid md:grid-cols-2 gap-5">
+
+  @for (app of todayAppointments(); track app.id) {
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+
+      <!-- Status -->
+      <div class="flex justify-between items-start">
+
+        <span
+          class="text-[11px] px-3 py-1 rounded-full font-medium"
+          [ngClass]="{
+            'bg-red-100 text-red-600': app.status=='Cancelled',
+            'bg-green-100 text-green-600': app.status=='Confirmed',
+            'bg-yellow-100 text-yellow-600': app.status=='Pending',
+            'bg-purple-100 text-purple-600': app.status=='Completed'
+          }">
+
+          {{
+            app.status=='Confirmed' ? 'تم الحجز'
+            : app.status=='Pending' ? 'بانتظار الحضور'
+            : app.status=='Cancelled' ? 'ملغي'
+            : 'قادم'
+          }}
+
+        </span>
+
+        <div class="flex items-center gap-3">
+
+          <div>
+            <h3 class="font-bold text-gray-800 text-sm">
+              {{app.patientName}}
+            </h3>
+
+            <p class="text-xs text-[#8C6AAE]">
+              كشف عام
+            </p>
+
+            <div class="flex items-center gap-1 mt-2 text-xs text-[#7A579D]">
+
+              <i class="pi pi-calendar text-[11px]"></i>
+
+              <span>اليوم</span>
+
+              <span>{{app.slotStart | date:'shortTime'}}</span>
+
+            </div>
+
+          </div>
+
+          <div
+            class="w-10 h-10 rounded-full bg-[#F4ECFF] text-[#53098D]
+            flex items-center justify-center font-bold">
+
+            {{app.patientName.charAt(0)}}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Buttons -->
+
+      <div class="flex justify-between mt-5 gap-3">
+
+        <button
+  class="flex-1 h-10 rounded-full text-white text-sm font-semibold transition"
+  [disabled]="app.status === 'Completed'"
+  [ngClass]="{
+    'bg-cyan-400 hover:bg-cyan-500': app.status !== 'Completed',
+    'bg-green-500 cursor-not-allowed': app.status === 'Completed'
+  }"
+  (click)="markAsCompleted(app)"
+>
+  {{ app.status === 'Completed' ? 'تم الحضور' : 'تسجيل الحضور' }}
+</button>
+
+        <!-- <button
+          class="flex-1 h-10 rounded-full border border-[#53098D] text-[#53098D] text-sm font-semibold hover:bg-[#53098D] hover:text-white transition">
+
+          عرض التفاصيل
+
+        </button> -->
+
+      </div>
+
     </div>
+
+  } @empty {
+
+        <div class="text-center py-12 text-gray-400 text-sm">
+          لا توجد مواعيد مسجلة اليوم.
+        </div>
+      
+
+    }
+
+
+</div>
+    </div>
+
+    
 
     <button
       (click)="openCreate()"

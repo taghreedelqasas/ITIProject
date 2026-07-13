@@ -1,11 +1,11 @@
-<div class="space-y-8  container  mx-auto  w-[90%]" dir="rtl">
+<div class="space-y-8  container  mx-auto  w-[88%]" dir="rtl">
 
   <div class="flex justify-between items-center">
     <div>
       <h2 class="text-xl font-bold text-[#1E1B4B] flex items-center gap-2">
           {{ dashService.userProfile()?.fullName }} 👋 مرحبا
       </h2>
-      <p class="text-sm text-gray-400 mt-1">إدارة مواعيدك ومرضاك ومتابعة أداء عيادتك من مكان واحد.</p>
+      <p class="text-sm text-[#8275A0] mt-1">إدارة مواعيدك ومرضاك ومتابعة أداء عيادتك من مكان واحد.</p>
     </div>
     @if (dashService.loading()) {
       <div class="flex items-center gap-2 text-purple-600 text-sm animate-pulse">
@@ -18,86 +18,163 @@
 
     <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
       <div class="flex justify-between items-start">
-        <span class="bg-purple-50 p-3 w-10 h-10   rounded-full  flex justify-center  items-center text-[#53098D]  text-xl"><i class="fa-solid fa-calendar-days"></i></span>
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 18C0 8.05888 8.05888 0 18 0H26C35.9411 0 44 8.05888 44 18V26C44 35.9411 35.9411 44 26 44H18C8.05888 44 0 35.9411 0 26V18Z" fill="#ECE7F0"/>
+<path d="M29 16H15C13.8954 16 13 16.8954 13 18V29C13 30.1046 13.8954 31 15 31H29C30.1046 31 31 30.1046 31 29V18C31 16.8954 30.1046 16 29 16Z" stroke="#44116D"/>
+<path d="M13 20C13 18.114 13 17.172 13.586 16.586C14.172 16 15.114 16 17 16H27C28.886 16 29.828 16 30.414 16.586C31 17.172 31 18.114 31 20H13Z" fill="#44116D"/>
+<path d="M17 13V16M27 13V16" stroke="#44116D" stroke-linecap="round"/>
+<path d="M20.5 22H17.5C17.2239 22 17 22.2239 17 22.5V23.5C17 23.7761 17.2239 24 17.5 24H20.5C20.7761 24 21 23.7761 21 23.5V22.5C21 22.2239 20.7761 22 20.5 22Z" fill="#44116D"/>
+<path d="M20.5 26H17.5C17.2239 26 17 26.2239 17 26.5V27.5C17 27.7761 17.2239 28 17.5 28H20.5C20.7761 28 21 27.7761 21 27.5V26.5C21 26.2239 20.7761 26 20.5 26Z" fill="#44116D"/>
+<path d="M26.5 22H23.5C23.2239 22 23 22.2239 23 22.5V23.5C23 23.7761 23.2239 24 23.5 24H26.5C26.7761 24 27 23.7761 27 23.5V22.5C27 22.2239 26.7761 22 26.5 22Z" fill="#44116D"/>
+<path d="M26.5 26H23.5C23.2239 26 23 26.2239 23 26.5V27.5C23 27.7761 23.2239 28 23.5 28H26.5C26.7761 28 27 27.7761 27 27.5V26.5C27 26.2239 26.7761 26 26.5 26Z" fill="#44116D"/>
+</svg>
+<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.66663 4.66406H11.3333V11.3307" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.66663 11.3307L11.3333 4.66406" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+
       </div>
       <div class="mt-4"  >
+                <h3 class="text-sm text-[#53098D]">اجمالي المواعيد  </h3>
+
                 <p class="text-lg  font-bold text-gray-800 mt-1"> {{ dashService.appointments().length }}</p>
-        <h3 class="text-sm text-[#53098D]">مواعيد اليوم</h3>
       </div>
     </div>
 
     <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
       <div class="flex justify-between items-start">
-        <span class="bg-cyan-50 p-3   text-[#6CEAEA] w-10 h-10   rounded-full  flex justify-center  items-center    text-xl"><i class="fa-solid fa-user "></i></span>
-        <span class="text-xs text-[#53098D]">إجمالي</span>
+ <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 18C0 8.05888 8.05888 0 18 0H26C35.9411 0 44 8.05888 44 18V26C44 35.9411 35.9411 44 26 44H18C8.05888 44 0 35.9411 0 26V18Z" fill="#E9FCFC"/>
+<path d="M22 22C20.9 22 19.9583 21.6083 19.175 20.825C18.3917 20.0417 18 19.1 18 18C18 16.9 18.3917 15.9583 19.175 15.175C19.9583 14.3917 20.9 14 22 14C23.1 14 24.0417 14.3917 24.825 15.175C25.6083 15.9583 26 16.9 26 18C26 19.1 25.6083 20.0417 24.825 20.825C24.0417 21.6083 23.1 22 22 22ZM14 30V27.2C14 26.6333 14.1458 26.1125 14.4375 25.6375C14.7292 25.1625 15.1167 24.8 15.6 24.55C16.6333 24.0333 17.6833 23.6458 18.75 23.3875C19.8167 23.1292 20.9 23 22 23C23.1 23 24.1833 23.1292 25.25 23.3875C26.3167 23.6458 27.3667 24.0333 28.4 24.55C28.8833 24.8 29.2708 25.1625 29.5625 25.6375C29.8542 26.1125 30 26.6333 30 27.2V30H14ZM16 28H28V27.2C28 27.0167 27.9542 26.85 27.8625 26.7C27.7708 26.55 27.65 26.4333 27.5 26.35C26.6 25.9 25.6917 25.5625 24.775 25.3375C23.8583 25.1125 22.9333 25 22 25C21.0667 25 20.1417 25.1125 19.225 25.3375C18.3083 25.5625 17.4 25.9 16.5 26.35C16.35 26.4333 16.2292 26.55 16.1375 26.7C16.0458 26.85 16 27.0167 16 27.2V28ZM22 20C22.55 20 23.0208 19.8042 23.4125 19.4125C23.8042 19.0208 24 18.55 24 18C24 17.45 23.8042 16.9792 23.4125 16.5875C23.0208 16.1958 22.55 16 22 16C21.45 16 20.9792 16.1958 20.5875 16.5875C20.1958 16.9792 20 17.45 20 18C20 18.55 20.1958 19.0208 20.5875 19.4125C20.9792 19.8042 21.45 20 22 20Z" fill="#23E0E0"/>
+</svg>
+
+<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.66663 4.66406H11.3333V11.3307" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.66663 11.3307L11.3333 4.66406" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
       </div>
       <div class="mt-4">
+                <h3 class="text-sm text-[#53098D]">إجمالي المرضى</h3>
+
                 <p class="text-lg  font-bold text-gray-800 mt-1">{{ dashService.uniquePatients().length }}</p>
-        <h3 class="text-sm text-[#53098D]">إجمالي المرضى</h3>
       </div>
     </div>
 
     <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
       <div class="flex justify-between items-start">
-        <span class="bg-amber-50 p-3   text-[#FFC107]  w-10 h-10   rounded-full  flex justify-center  items-center   text-xl"><i class="fa-star  fa-solid"></i></span>
-        <span class="text-xs text-[#53098D]">من {{ dashService.totalReviewsCount() }} تقييم</span>
+<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 18C0 8.05888 8.05888 0 18 0H26C35.9411 0 44 8.05888 44 18V26C44 35.9411 35.9411 44 26 44H18C8.05888 44 0 35.9411 0 26V18Z" fill="#FFF9E6"/>
+<path d="M22.0035 14.5264L23.443 19.291L23.6578 20.002H28.8522C28.8618 20.0118 28.8699 20.0188 28.8746 20.0254L25.2711 22.5859L24.6813 23.0049L24.8942 23.6963L26.317 28.3164C26.3116 28.3223 26.3079 28.3265 26.3043 28.3291L22.6071 25.5068L21.9996 25.043L21.3932 25.5068L17.6959 28.3291C17.6919 28.3259 17.6866 28.3225 17.6813 28.3164L19.1061 23.6963L19.319 23.0049L18.7291 22.5859L15.1237 20.0254C15.1283 20.0188 15.1372 20.0122 15.1471 20.002H20.3424L20.5573 19.291L21.9957 14.5283C21.9969 14.5252 21.9985 14.5224 21.9996 14.5195C22.0005 14.5219 22.0026 14.5238 22.0035 14.5264Z" stroke="#FFC107" stroke-width="2"/>
+</svg>
+<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.66663 4.66406H11.3333V11.3307" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.66663 11.3307L11.3333 4.66406" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+
       </div>
       <div class="mt-4">
+                <h3 class="text-sm text-[#53098D]">متوسط التقييم</h3>
+
                 <p class="text-lg  font-bold text-gray-800 mt-1">{{ dashService.averageRating() }}</p>
 
-        <h3 class="text-sm text-[#53098D]">متوسط التقييم</h3>
       </div>
     </div>
 
     <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
       <div class="flex justify-between items-start">
-        <span class="bg-green-50 p-3 w-10 h-10   rounded-full  flex justify-center  items-center text-[#10B981]    text-xl">$</span>
-        <span class="text-xs text-[#53098D]">الشهر الحالي</span>
+<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 18C0 8.05888 8.05888 0 18 0H26C35.9411 0 44 8.05888 44 18V26C44 35.9411 35.9411 44 26 44H18C8.05888 44 0 35.9411 0 26V18Z" fill="#EDF7ED"/>
+<path d="M22 13.6641V30.3307" stroke="#367C38" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M26.1667 16.1641H19.9167C19.1431 16.1641 18.4013 16.4714 17.8543 17.0183C17.3073 17.5653 17 18.3072 17 19.0807C17 19.8543 17.3073 20.5961 17.8543 21.1431C18.4013 21.6901 19.1431 21.9974 19.9167 21.9974H24.0833C24.8569 21.9974 25.5987 22.3047 26.1457 22.8517C26.6927 23.3986 27 24.1405 27 24.9141C27 25.6876 26.6927 26.4295 26.1457 26.9765C25.5987 27.5234 24.8569 27.8307 24.0833 27.8307H17" stroke="#367C38" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.66669 4.66406H11.3334V11.3307" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.66669 11.3307L11.3334 4.66406" stroke="#69418A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
       </div>
       <div class="mt-4">
-                <p class="text-lg  font-bold text-gray-800 mt-1">{{ dashService.monthlyEarnings() | number }} <span class="text-sm font-normal text-gray-500">ج</span></p>
+                <h3 class="text-sm text-[#53098D]"> صافي الأرباح</h3>
 
-        <h3 class="text-sm text-[#53098D]">دخل الشهر</h3>
+        <span class="text-xl font-bold text-gray-800">{{ dashService .totalEarnings() | number }} ج.م</span>
+
       </div>
     </div>
 
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" dir="ltr">
+<div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1" dir="rtl">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-5">
+    <h3 class="font-bold text-lg text-gray-800">جدول اليوم</h3>
+    <a href="#" class="text-xs text-[#53098D] font-medium hover:underline">
+      عرض الكل
+    </a>
+  </div>
 
-    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-gray-800 text-lg">جدول اليوم</h3>
-        <a href="#" class="text-xs text-purple-600 font-medium hover:underline">عرض الكل</a>
-      </div>
+  <!-- Appointments -->
+  <div class="space-y-1 max-h-[280px] overflow-y-hidden   pr-1">
 
-      <div class="space-y-3 max-h-[350px] overflow-y-auto pl-1">
-        @for (app of dashService.appointments(); track app.id) {
-          <div class="flex items-center justify-between p-3 bg-gray-50/50 hover:bg-gray-50  transition-all">
-            <div class="flex items-center space-x-reverse space-x-3">
-              <span class="w-2.5 h-2.5 rounded-full"
-                    [ngClass]="{
-                      'bg-green-500': app.status === 'Confirmed',
-                      'bg-amber-500': app.status === 'Pending',
-                      'bg-red-500': app.status === 'Cancelled',
-                      'bg-blue-500': app.status === 'Completed'
-                    }">
-              </span>
-              <div>
-                <h4 class="text-sm font-bold text-gray-700">{{ app.patientName }}</h4>
-                <p class="text-xs text-gray-400">{{ app.doctorSpecialty || 'كشف عام' }}</p>
-              </div>
-            </div>
-            <span class="text-xs font-mono font-medium text-gray-500">{{ app.slotStart | date:'shortTime' }}</span>
+    @for (app of todayAppointments(); track app.id; let last = $last) {
+
+      <div class="flex items-start gap-2 pb-5 relative">
+  <div class="relative flex flex-col items-center self-stretch">
+            @if (!last) {
+              <div class=""></div>
+            }
+            <span
+              class="relative z-10  top-2  w-3 h-3 rounded-full border-2 border-white shadow"
+              [ngClass]="{
+                'bg-green-500': app.status === 'Confirmed',
+                'bg-yellow-400': app.status === 'Pending',
+                'bg-red-500': app.status === 'Cancelled',
+                'bg-blue-500': app.status === 'Completed'
+              }">
+            </span>
           </div>
-        } @empty {
-          @if (!dashService.loading()) {
-            <div class="text-center py-12 text-gray-400 text-sm">لا توجد مواعيد مسجلة اليوم.</div>
-          }
-        }
-      </div>
-    </div>
+        <!-- Avatar -->
+        <div
+          class="w-8 h-8 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xs shrink-0">
+          {{ app.patientName.charAt(0) | uppercase }}
+        </div>
 
+        <!-- Details -->
+        <div class="">
+          <h4 class="text-sm font-semibold text-gray-800   pe-3 border-l border-[#53098D]">
+            {{ app.patientName }}
+          </h4>
+          <p class="text-xs text-[#53098D]">
+             كشف اول
+          </p>
+        </div>
+
+        <!-- Time + Timeline dot -->
+        <div class="flex items-center  shrink-0 pt-1">
+          <span class="text-[10px] text-[#53098D] font-medium">
+            {{ app.slotStart | date:'shortTime' }}
+          </span>
+
+        
+        </div>
+
+      </div>
+
+    } @empty {
+
+      @if (!dashService.loading()) {
+        <div class="text-center py-12 text-gray-400 text-sm">
+          لا توجد مواعيد مسجلة اليوم.
+        </div>
+      }
+
+    }
+
+  </div>
+</div>
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2 flex flex-col justify-between">
       <div class="flex justify-between items-center mb-4">
         <div >
@@ -163,7 +240,7 @@
 
   </div>
 
- <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+ <!-- <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
   <div class="flex justify-between items-center mb-6">
     <h3 class="font-bold text-gray-800 text-lg">آخر المحادثات</h3>
     <a routerLink="/doctor-dashboard/messages" class="text-xs text-purple-600 font-medium hover:underline">عرض الكل</a>
@@ -195,5 +272,5 @@
       <div class="text-center py-12 text-gray-400 text-sm">لا توجد محادثات بعد.</div>
     }
   </div>
-</div>
+</div> -->
 </div>

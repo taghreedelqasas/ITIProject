@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../services/appointment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-doc-payments',
@@ -27,15 +28,31 @@ export class DocPayments implements OnInit {
     const wallet = this.appointmentService.wallet();
 
     if (!amount || amount <= 0) {
-      alert('من فضلكِ أدخلي مبلغاً صحيحاً للسحب.');
+     Swal.fire({
+  icon: 'warning',
+  title: 'تنبيه',
+  text: 'من فضلكِ أدخلي مبلغاً صحيحاً للسحب.',
+  confirmButtonColor: '#53098D'
+});
       return;
     }
     if (!wallet || amount > wallet.balance) {
-      alert('المبلغ المطلوب أكبر من الرصيد المتاح للسحب!');
+      Swal.fire({
+  icon: 'error',
+  title: 'الرصيد غير كافٍ',
+  text: 'المبلغ المطلوب أكبر من الرصيد المتاح.',
+  confirmButtonColor: '#53098D'
+});
       return;
     }
     if (!this.accountNumber().trim()) {
-      alert('من فضلكِ أدخلي رقم الحساب أو المحفظة.');
+     Swal.fire({
+    icon: 'warning',
+    title: 'تنبيه',
+    text: 'من فضلكِ أدخلي رقم الحساب أو المحفظة.',
+    confirmButtonText: 'حسنًا',
+    confirmButtonColor: '#53098D'
+  });
       return;
     }
 
@@ -45,8 +62,14 @@ export class DocPayments implements OnInit {
       accountNumber: this.accountNumber()
     }).subscribe({
       next: () => {
-        alert(`تم إرسال طلب سحب بمبلغ ${amount} ج.م بنجاح، وقيد المعالجة الآن! ✨`);
-        this.withdrawAmount.set(null);
+Swal.fire({
+  icon: 'success',
+  title: 'تم إرسال الطلب',
+  text: `تم إرسال طلب سحب بمبلغ ${amount} ج.م بنجاح.`,
+  timer: 2500,
+  showConfirmButton: false
+});   
+   this.withdrawAmount.set(null);
         this.accountNumber.set('');
         this.appointmentService.getWallet();
       },
