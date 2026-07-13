@@ -1,6 +1,7 @@
 
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import {
   ServiceResult,
   DoctorReadDto,
@@ -15,7 +16,6 @@ import {
   WalletResponse,
   WalletTransactionApi,
   WithdrawRequestPayload,
-  PaymentInitiateResponse,
   MessageApi,
   ConversationApi,
   AnalyticsStats,
@@ -23,7 +23,7 @@ import {
   PatientDerived
 } from '../services/dashboard';
 
-const BASE = 'https://mawed.runasp.net';
+const BASE = environment.apiBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
@@ -205,7 +205,7 @@ getAvailabilityById(id: number) {
   reviews = signal<ReviewApi[]>([]);
 
  getMyReviews(): void {
-  this.http.get<ServiceResult<ReviewApi[]>>(`https://mawed.runasp.net/api/Reviews/my`).subscribe({
+  this.http.get<ServiceResult<ReviewApi[]>>(`${BASE}/api/Reviews/my`).subscribe({
     next: (res) => this.reviews.set(res.data ?? []),
     error: (err) => {
       console.error('Error fetching reviews:', err);
@@ -227,7 +227,7 @@ getAvailabilityById(id: number) {
   walletTransactions = signal<WalletTransactionApi[]>([]);
 
 getWallet(): void {
-  this.http.get<ServiceResult<WalletResponse>>(`https://mawed.runasp.net/api/wallet`).subscribe({
+  this.http.get<ServiceResult<WalletResponse>>(`${BASE}/api/wallet`).subscribe({
     next: (res) => this.wallet.set(res.data ?? null),
     error: (err) => {
       console.error('Error fetching wallet:', err);
@@ -249,11 +249,8 @@ getWallet(): void {
     return this.http.post<ServiceResult<null>>(`${BASE}/api/wallet/withdraw`, payload);
   }
 
-  initiatePayment(appointmentId: number) {
-    return this.http.post<ServiceResult<PaymentInitiateResponse>>(
-      `${BASE}/api/payments/initiate/${appointmentId}`, {}
-    );
-  }
+  // Payment initiation is handled by the patient booking flow (core/services/payment.service.ts)
+  // The POST /api/payments/initiate endpoint requires Patient role and should not be called from doctor dashboard
 
   // دخل الشهر — محسوب من بيانات حقيقية (حركات Credit في الشهر الحالي)
   monthlyEarnings = computed(() => {

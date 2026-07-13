@@ -307,9 +307,7 @@ export class BookingStateService {
       .subscribe({
         next: (appointment) => {
           const res = appointment as any;
-          this.confirmedAppointmentId.set(
-            res?.data?.appointmentId ?? res?.data?.id ?? res?.appointmentId ?? res?.id ?? null
-          );
+          this.confirmedAppointmentId.set(res?.data?.id ?? res?.id ?? null);
 
           if (!this.confirmedAppointmentId()) {
             this.isLoading.set(false);
@@ -337,11 +335,9 @@ export class BookingStateService {
     this.paymentService.initiate(this.confirmedAppointmentId()!).subscribe({
       next: (paymentRes) => {
         this.isLoading.set(false);
-        const pRes = paymentRes as any;
-        const inner = pRes?.data || pRes;
-        const redirectUrl = inner?.iframeUrl || inner?.paymentUrl || pRes?.iframeUrl || pRes?.paymentUrl;
+        const redirectUrl = paymentRes?.data?.iframeUrl;
         if (redirectUrl) {
-          this.paymentOverlayUrl.set(redirectUrl as string);
+          this.paymentOverlayUrl.set(redirectUrl);
         } else {
           this.paymentError.set('تم الحجز بنجاح لكن تعذر تحميل صفحة الدفع. يمكنك الدفع لاحقاً من ملفك الشخصي.');
         }
@@ -379,5 +375,8 @@ export class BookingStateService {
     this.selectedCountry.set(COUNTRIES[0]);
     this.selectedSlotId.set(null);
     this.selectedTime.set('');
+    this.paymentOverlayUrl.set(null);
+    this.paymentError.set('');
+    this.confirmedAppointmentId.set(null);
   }
 }

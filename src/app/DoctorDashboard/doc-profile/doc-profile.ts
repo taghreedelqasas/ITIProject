@@ -35,7 +35,10 @@ export class DocProfile implements OnInit {
         // 2. هنا السحر: نستخدم الـ id الخاص بالمستخدم لجلب بيانات الطبيب فوراً 
         // (تأكد أن الـ userRes.id هو نفسه الـ id المطلوب للـ Doctor في الـ API عندك)
     
-           this.appointmentService.getDoctorById(2);
+           const doctorId = (res as any).doctorId ?? (res as any).id;
+           if (doctorId) {
+             this.appointmentService.getDoctorById(doctorId);
+           }
        
       },
       error: (err) => {
@@ -70,8 +73,7 @@ console.log(body)
       }).subscribe({
         next: () => {
           this.appointmentService.updateDoctorProfile({
-            // هحتاج بعدين اعدل ال id هنا يبقي dynamic
-            id: 2,     
+            id: doc.id,
             licenseNumber: doc.licenseNumber,
             consultationFee: doc.consultationFee,
             address: doc.address
