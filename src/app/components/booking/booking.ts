@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterOutlet, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, ActivatedRoute, NavigationEnd, RouterLink } from '@angular/router';
 import { BookingStateService } from './booking-state.service';
 import { filter } from 'rxjs/operators';
 import { PaymentOverlay } from './payment-overlay/payment-overlay';
@@ -11,7 +11,7 @@ interface BookingStep {
 
 @Component({
   selector: 'app-booking',
-  imports: [RouterOutlet, PaymentOverlay],
+  imports: [RouterOutlet, RouterLink, PaymentOverlay],
   templateUrl: './booking.html',
   styleUrl: './booking.css',
 })

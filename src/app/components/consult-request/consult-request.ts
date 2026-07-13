@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConversationService } from '../../core/services/conversation.service';
+import { DoctorService } from '../../core/services/doctor.service';
+import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
 
 interface Country {
   code: string; // كود الدولة الدولي مثل +20
@@ -24,25 +26,29 @@ interface ConsultRequestData {
   templateUrl: './consult-request.html',
   styleUrl: './consult-request.css',
 })
-export class ConsultRequest {
+export class ConsultRequest implements OnInit {
   pageTitle = 'طلب إستشارة';
   pageSubtitle = 'تابع مع طبيبك بكل سهولة مع موعد';
 
   doctorId: number | null = null;
   isLoading = false;
+  isLoadingDoctor = false;
   errorMessage = '';
+  doctorError = '';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    private conversationService: ConversationService
+    private conversationService: ConversationService,
+    private doctorService: DoctorService
   ) {
     const params = this.route.snapshot.queryParamMap;
 
     const doctorIdParam = params.get('doctorId');
     this.doctorId = doctorIdParam ? Number(doctorIdParam) : null;
 
+    // Apply query-param overrides if provided (e.g. from booking success page)
     const doctorName = params.get('doctorName');
     if (doctorName) {
       this.doctor.name = doctorName;
@@ -58,13 +64,19 @@ export class ConsultRequest {
     }
   }
 
+  ngOnInit(): void {
+    if (this.doctorId) {
+      this.loadDoctor(this.doctorId);
+    }
+  }
+
   // ================== بيانات الطبيب ==================
   doctor = {
-    name: 'د. سارة إبراهيم',
-    specialty: 'طب العظام - إستشارية جراحة العظام',
-    location: 'المنصورة، حي الجامعة',
-    rating: 4.8,
-    reviewsCount: 100,
+    name: '',
+    specialty: '',
+    location: '',
+    rating: 0,
+    reviewsCount: 0,
   };
 
   doctorImage = 'doctor_photo.png';
@@ -97,6 +109,28 @@ export class ConsultRequest {
   selectCountry(country: Country): void {
     this.selectedCountry = country;
     this.isCountryMenuOpen = false;
+  }
+
+  private loadDoctor(id: number): void {
+    this.isLoadingDoctor = true;
+    this.doctorError = '';
+    this.doctorService.getById(id).subscribe({
+      next: (d: ApiDoctor) => {
+        const name =
+          d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || this.doctor.name;
+        this.doctor.name = name.startsWith('د.') ? name : `د. ${name}`;
+        this.doctor.specialty = (d.specialty || d.departmentName || this.doctor.specialty) as string;
+        this.doctor.location = (d.address as string) || this.doctor.location;
+        this.doctor.rating = d.rating ?? this.doctor.rating;
+        this.doctor.reviewsCount = d.reviewsCount ?? this.doctor.reviewsCount;
+        if (d.imageProfile) this.doctorImage = d.imageProfile as string;
+        this.isLoadingDoctor = false;
+      },
+      error: () => {
+        this.isLoadingDoctor = false;
+        this.doctorError = 'تعذر تحميل بيانات الطبيب.';
+      },
+    });
   }
 
   get isFormValid(): boolean {

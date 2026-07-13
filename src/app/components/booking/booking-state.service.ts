@@ -56,16 +56,17 @@ export class BookingStateService {
   preselectedSlotId: number | null = null;
 
   isLoading = signal(false);
+  doctorLoaded = signal(false);
   errorMessage = signal('');
 
   doctor = signal({
-    name: 'د. سارة إبراهيم',
-    specialty: 'طب العظام - إستشارية جراحة العظام',
-    location: 'المنصورة، حي الجامعة',
-    rating: 4.8,
-    reviewsCount: 100,
-    price: 300,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sara&backgroundColor=ffd5dc',
+    name: '',
+    specialty: '',
+    location: '',
+    rating: 0,
+    reviewsCount: 0,
+    price: 0,
+    avatar: '',
   });
 
   doctorImage = signal(FALLBACK_IMAGE);
@@ -178,6 +179,11 @@ export class BookingStateService {
     if (this.doctorId) {
       this.loadDoctor(this.doctorId);
       this.loadAvailability(this.doctorId);
+    } else if (!rebookDoctorName) {
+      this.doctorLoaded.set(true);
+      this.errorMessage.set('لم يتم اختيار طبيب. الرجاء العودة واختيار طبيب أولاً.');
+    } else {
+      this.doctorLoaded.set(true);
     }
   }
 
@@ -193,10 +199,15 @@ export class BookingStateService {
           location: (d.address as string) || doc.location,
           price: d.consultationFee ?? doc.price,
           rating: d.rating ?? doc.rating,
+          reviewsCount: d.reviewsCount ?? doc.reviewsCount,
         }));
         if (d.imageProfile) this.doctorImage.set(d.imageProfile as string);
+        this.doctorLoaded.set(true);
       },
-      error: () => {},
+      error: () => {
+        this.doctorLoaded.set(true);
+        this.errorMessage.set('تعذر تحميل بيانات الطبيب.');
+      },
     });
   }
 
@@ -365,6 +376,7 @@ export class BookingStateService {
   }
 
   resetForNewBooking(): void {
+    this.doctorLoaded.set(false);
     this.patient.set({
       fullName: '',
       phone: '',

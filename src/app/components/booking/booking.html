@@ -45,40 +45,70 @@
         }
       </div>
 
-      <!-- Doctor card -->
-      <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mb-10 text-right" dir="rtl">
-
-        <div class="flex items-center gap-4">
-          <img [src]="state.doctorImage()" [alt]="state.doctor().name" class="w-16 h-16 rounded-xl object-cover" />
-
-          <div>
-            <h3 class="font-bold text-[#3a1560] text-lg">{{ state.doctor().name }}</h3>
-            <p class="text-slate-500 text-sm mt-0.5">{{ state.doctor().specialty }}</p>
-
-            <div class="flex items-center gap-1 text-sm text-slate-500 mt-1">
-              <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
-              </svg>
-              <span class="font-bold text-[#3a1560]">{{ state.doctor().rating }}</span>
-              <span>({{ state.doctor().reviewsCount }})</span>
-
-              <span class="mx-1 text-slate-300">|</span>
-
-              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>{{ state.doctor().location }}</span>
+      <!-- Doctor card: Loading skeleton -->
+      @if (!state.doctorLoaded()) {
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mb-10 text-right animate-pulse" dir="rtl">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-xl bg-slate-200"></div>
+            <div>
+              <div class="h-5 w-40 bg-slate-200 rounded mb-2"></div>
+              <div class="h-3 w-56 bg-slate-200 rounded mb-2"></div>
+              <div class="h-3 w-48 bg-slate-100 rounded"></div>
             </div>
           </div>
+          <div class="text-center">
+            <div class="h-8 w-16 bg-slate-200 rounded mx-auto mb-1"></div>
+            <div class="h-3 w-10 bg-slate-100 rounded mx-auto"></div>
+          </div>
         </div>
+      }
 
-        <div class="text-center">
-          <p class="text-2xl font-extrabold text-[#3a1560]">{{ state.doctor().price }}</p>
-          <p class="text-slate-400 text-sm mt-0.5">جنية</p>
+      <!-- Doctor card: Loaded with data -->
+      @if (state.doctorLoaded() && state.doctor().name) {
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mb-10 text-right" dir="rtl">
+
+          <div class="flex items-center gap-4">
+            <img [src]="state.doctorImage()" [alt]="state.doctor().name" class="w-16 h-16 rounded-xl object-cover" />
+
+            <div>
+              <h3 class="font-bold text-[#3a1560] text-lg">{{ state.doctor().name }}</h3>
+              <p class="text-slate-500 text-sm mt-0.5">{{ state.doctor().specialty }}</p>
+
+              <div class="flex items-center gap-1 text-sm text-slate-500 mt-1">
+                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                </svg>
+                <span class="font-bold text-[#3a1560]">{{ state.doctor().rating }}</span>
+                <span>({{ state.doctor().reviewsCount }})</span>
+
+                <span class="mx-1 text-slate-300">|</span>
+
+                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{{ state.doctor().location }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <p class="text-2xl font-extrabold text-[#3a1560]">{{ state.doctor().price }}</p>
+            <p class="text-slate-400 text-sm mt-0.5">جنية</p>
+          </div>
+
         </div>
+      }
 
-      </div>
+      <!-- Doctor card: Loaded but no data -->
+      @if (state.doctorLoaded() && !state.doctor().name) {
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-center mb-10 text-right" dir="rtl">
+          <div class="text-center">
+            <p class="text-slate-400 font-semibold">لم يتم اختيار طبيب بعد</p>
+            <a routerLink="/doctors" class="text-cyan-500 text-sm font-bold mt-1 inline-block hover:underline">اختيار طبيب</a>
+          </div>
+        </div>
+      }
     }
 
     <router-outlet />
