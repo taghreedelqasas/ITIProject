@@ -7,11 +7,13 @@ import { environment } from '../../../environments/environment';
 
 import { LoginPayload, RegisterPayload, AuthResponse } from '../models/auth.models';
 
+
 const TOKEN_KEY = 'token';
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
+    private readonly base = 'https://mawed.runasp.net/api/Auth';
   constructor(private http: HttpClient, private router: Router) {}
 
   getAccessToken(): string | null {
@@ -22,21 +24,42 @@ export class AuthService {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
-  login(data: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/login`, data).pipe(
-      tap((res: AuthResponse) => this.setAccessToken(res.token))
+  login(payload: LoginPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.base}/login`, payload).pipe(
+      tap(res => {
+        if (res.isAuthenticated) {
+          localStorage.setItem('token',     res.token);
+          localStorage.setItem('userEmail', res.email);
+          localStorage.setItem('userRoles', JSON.stringify(res.roles));
+          localStorage.setItem('userId',    res.userId);
+        }
+      })
     );
   }
 
-  register(data: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/register`, data).pipe(
-      tap((res: AuthResponse) => this.setAccessToken(res.token))
+   register(payload: RegisterPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.base}/register`, payload);
+  }
+
+
+  logout(): Observable<any> {
+    return this.http.post(`${this.base}/logout`, {}).pipe(
+      tap(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userRoles');
+        localStorage.removeItem('userId');
+      })
     );
   }
 
-  logout(): void {
-   localStorage.removeItem(TOKEN_KEY);
-    this.router.navigate(['/login']);
+  forgotPassword(email: string, clientBaseUrl: string): Observable<any> {
+   // const clientBaseUrl = 'https://localhost:4200';
+    return this.http.post(`${this.base}/forgot-password`, { email, clientBaseUrl });
+  }
+
+   resetPassword(userId: string, token: string, newPassword: string, confirmPassword: string): Observable<any> {
+    return this.http.post(`${this.base}/reset-password`, { userId, token, newPassword, confirmPassword });
   }
 
   isLoggedIn(): boolean {
@@ -70,4 +93,24 @@ export class AuthService {
       return null;
     }
   }
+
+   confirmEmail(userId: string, token: string): Observable<AuthResponse> {
+  return this.http.get<AuthResponse>(`${this.base}/confirm-email?userId=${userId}&token=${token}`).pipe(
+    tap(res => {
+      if (res.isAuthenticated) {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', res.email);
+        localStorage.setItem('userRoles', JSON.stringify(res.roles));
+        localStorage.setItem('userId', res.userId);
+      }
+    })
+  );
+}
+
+  resendConfirmationEmail(email: string, clientBaseUrl: string = 'https://mawed.runasp.net/api'): Observable<any> {
+    return this.http.post(`${this.base}/resend-confirmation-email`, { email, clientBaseUrl });
+  }
+
+ 
+  
 }

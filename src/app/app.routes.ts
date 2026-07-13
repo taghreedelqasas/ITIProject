@@ -23,6 +23,7 @@ import { UserProfileComponent } from './components/features/profile/profile';
 import { MedicalHistory } from './components/medical-history/medical-history';
 
 
+
 export const routes: Routes = [
   // مسارات المريض والصفحات العامة
   { path: '', component: Home },
@@ -76,21 +77,33 @@ export const routes: Routes = [
   } ,
    {path: 'auth/login',
   component: LoginComponent},
-  {
-    path: '',
-    redirectTo: 'auth/register',
-    pathMatch: 'full'
-  },
+  
+    
   {
     path: 'auth/register',
     loadComponent: () =>
       import('./features/auth/register/register.component')
         .then(m => m.RegisterComponent)
   },
-  {
-    path: 'auth/confirm-email-notice',
-    loadComponent: () =>
-      import('./features/auth/confirm-email-notice/confirm-email-notice.component')
-        .then(m => m.ConfirmEmailNoticeComponent)
-  }
+  
+ {
+  path: 'auth/confirm-email-notice',
+  loadComponent: () =>
+    import('./features/auth/confirm-email-notice/confirm-email-notice.component')
+      .then(m => m.ConfirmEmailNoticeComponent)
+},
+ 
+ {
+  path: 'auth/doctor-info',
+  loadComponent: () =>
+    import('./features/auth/doctor-info/doctor-info.component')
+      .then(m => m.DoctorInfoComponent)
+}  
+   
+    
+ 
+ 
+  
+  
+ 
 ];
