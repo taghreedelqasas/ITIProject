@@ -8,6 +8,7 @@ import { environment } from '../../../environments/environment';
 import { LoginPayload, RegisterPayload, AuthResponse } from '../models/auth.models';
 
 const TOKEN_KEY = 'token';
+const DOCTOR_ID_KEY = 'doctorId';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,9 +23,25 @@ export class AuthService {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
+  getDoctorId(): number | null {
+    const id = localStorage.getItem(DOCTOR_ID_KEY);
+    return id ? Number(id) : null;
+  }
+
+  setDoctorId(doctorId: number | null | undefined): void {
+    if (doctorId === null || doctorId === undefined) {
+      localStorage.removeItem(DOCTOR_ID_KEY);
+    } else {
+      localStorage.setItem(DOCTOR_ID_KEY, doctorId.toString());
+    }
+  }
+
   login(data: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/login`, data).pipe(
-      tap((res: AuthResponse) => this.setAccessToken(res.token))
+      tap((res: AuthResponse) => {
+        this.setAccessToken(res.token);
+        this.setDoctorId(res.doctorId);
+      })
     );
   }
 
@@ -36,6 +53,7 @@ export class AuthService {
 
   logout(): void {
    localStorage.removeItem(TOKEN_KEY);
+   localStorage.removeItem(DOCTOR_ID_KEY);
     this.router.navigate(['/login']);
   }
 

@@ -1,0 +1,55 @@
+<div class="ratings-wrap" dir="rtl">
+  <h2 class="page-title">التقييمات</h2>
+
+  <!--
+    ⚠️ كارت تقييم المنصة ده UI بس لحد دلوقتي.
+    مفيش API لتقييم المنصة نفسها في الـ ReviewsController اللي عندي (هو خاص بتقييم الأطباء فقط).
+    لما يتوفر endpoint خاص بيه (مثلاً POST /api/platform-reviews) وصليه هنا.
+  -->
+  <div class="review-card platform-card">
+    <div class="review-header">
+      <span class="review-title">قيم منصة موعد</span>
+    </div>
+    <span class="section-label">تجربتك الإجمالية مع منصة موعد</span>
+
+    <div class="stars-row stars-row--disabled">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <span class="star-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"
+            />
+          </svg>
+        </span>
+      }
+    </div>
+
+    <textarea
+      class="comment-box"
+      rows="2"
+      placeholder="ماذا أحببت في منصة موعد؟"
+      disabled
+    ></textarea>
+
+    <button type="button" class="submit-btn" disabled>
+      التقييم غير متاح حاليًا
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="state-msg">جارِ تحميل التقييمات...</div>
+  } @else if (errorMsg()) {
+    <div class="state-msg state-msg--error">{{ errorMsg() }}</div>
+  } @else if (reviewableAppointments().length === 0) {
+    <div class="state-msg">لسه معندكيش مواعيد مكتملة تقدري تقيّمي فيها الطبيب</div>
+  } @else {
+    @for (appt of reviewableAppointments(); track appt.doctorId) {
+      <app-doctor-review-card
+        [appointment]="appt"
+        [existingReview]="existingReviewFor(appt)"
+        (saved)="onReviewSaved($event)"
+        (deleted)="onReviewDeleted($event)"
+      ></app-doctor-review-card>
+    }
+  }
+</div>
