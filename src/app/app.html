@@ -8,8 +8,8 @@
 }-->
 
 
-<app-navbar *ngIf="!(router.url.includes('/confirm-email') || router.url.includes('/login') || router.url.includes('/register') || router.url.includes('/doctor-info'))"></app-navbar>
+<app-navbar *ngIf="!(router.url.includes('/confirm-email') || router.url.includes('/login') || router.url.includes('/register') || router.url.includes('/doctor-info') || router.url.includes('/forgot-password') || router.url.includes('/reset-password'))"></app-navbar>
 
 <router-outlet></router-outlet>
 
-<app-footer *ngIf="!(router.url.includes('/confirm-email') || router.url.includes('/login') || router.url.includes('/register')|| router.url.includes('/doctor-info'))"></app-footer>
+<app-footer *ngIf="!(router.url.includes('/confirm-email') || router.url.includes('/login') || router.url.includes('/register')|| router.url.includes('/doctor-info') || router.url.includes('/forgot-password')|| router.url.includes('/reset-password'))"></app-footer>

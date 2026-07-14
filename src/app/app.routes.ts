@@ -32,6 +32,7 @@ import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilt
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
 import { DoctorReviewCardComponent } from './components/doctor-review-card-component/doctor-review-card-component';
 import { RatingsPageComponent } from './components/ratings-page-component/ratings-page-component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
   // If the path is empty, we default to Home. 
@@ -126,5 +127,20 @@ export const routes: Routes = [
   { 
     path: 'api/auth/confirm-email', 
     component: ConfirmEmailComponent
+  },
+  {
+    path: 'auth/forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component')
+        .then(m => m.ForgotPasswordComponent)
+  },
+  { path: 'auth/reset-password', 
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component')
+        .then(m => m.ResetPasswordComponent)
+  },
+   {
+    path: 'api/auth/reset-password',
+    component: ResetPasswordComponent
   }
 ];
