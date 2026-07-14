@@ -94,6 +94,13 @@ export class AuthService {
     }
   }
 
+  getToken(): string | null        { return localStorage.getItem('token'); }
+  
+  
+  isAdmin(): boolean               { return this.getUserRoles().includes('Admin');   }
+  isDoctor(): boolean              { return this.getUserRoles().includes('Doctor');  }
+  isPatient(): boolean             { return this.getUserRoles().includes('Patient'); }
+
    confirmEmail(userId: string, token: string): Observable<AuthResponse> {
   return this.http.get<AuthResponse>(`${this.base}/confirm-email?userId=${userId}&token=${token}`).pipe(
     tap(res => {

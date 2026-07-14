@@ -21,6 +21,8 @@ import { authGuard } from './core/services/auth.guard';
 import { NavbarPatient } from './components/navbar-patient/navbar-patient';
 import { UserProfileComponent } from './components/features/profile/profile';
 import { MedicalHistory } from './components/medical-history/medical-history';
+import { ConfirmEmailComponent } from './features/auth/confirm-email/confirm-email.component';
+
 
 
 
@@ -98,9 +100,20 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./features/auth/doctor-info/doctor-info.component')
       .then(m => m.DoctorInfoComponent)
-}  
-   
+},
+{ 
+    path: 'confirm-email', 
+    component: ConfirmEmailComponent 
     
+  },
+  
+  { 
+    path: 'api/auth/confirm-email', 
+    component: ConfirmEmailComponent
+     
+  }
+   
+  
  
  
   

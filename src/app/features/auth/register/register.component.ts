@@ -74,7 +74,7 @@ export class RegisterComponent implements OnInit {
       password,
       confirmPassword,
       role:          this.selectedRole,
-      clientBaseUrl: 'https://mawed.runasp.net/api'
+      clientBaseUrl: window.location.origin
     };
 
     // ---- Doctor: مفيش API call هنا، بس خزّني البيانات وانقلي لصفحة المعلومات المهنية ----

@@ -2,12 +2,19 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
+
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './shared/footer/footer';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Footer],
+  imports: [
+    CommonModule, 
+    RouterOutlet,
+    Navbar,
+    Footer
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -15,7 +22,7 @@ export class App {
   protected readonly title = signal('Maw3ed');
   showChrome = true;
 
-  constructor(private router: Router) {
+  constructor(public router: Router) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
