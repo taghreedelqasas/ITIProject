@@ -1,4 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
@@ -9,19 +9,101 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #6ceaea;
-  --purple: #53098d;
-  --hero-blue: #e9fcfc;
-  --hero-purple: #ece7f0;
-  --text-gray: #5c676b;
-  --btn-blue: #23e0e0;
+  --primary: #6CEAEA;
+  /* تم اعتماد اللون البنفسجي الأكثر استخداماً ليتوافق مع أزرار SweetAlert وتصاميم نسرين */
+  --purple: #53098D; 
+  --hero-blue: #E9FCFC;
+  --hero-purple: #ECE7F0;
+  --text-gray: #5C676B;
+  --btn-blue: #23E0E0;
 }
 
+/* توحيد وتنسيق الخطوط (الدمج الذكي): 
+   اعتمدنا خط 'Cairo' كخط أساسي للتطبيق مع إتاحة 'Tajawal' كخيار بديل ممتاز وجاهز للاستخدام */
 html,
 body,
 button,
 input,
 textarea,
 select {
-  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  font-family: 'Cairo', 'Tajawal', 'Segoe UI', sans-serif;
+}
+
+/* ⚠️ كود SweetAlert العالمي للمشروع */
+
+/* النافذة الرئيسية */
+.swal-custom-popup {
+  direction: rtl !important;
+  font-family: inherit !important;
+  border-radius: 20px !important; /* حواف دائرية واضحة */
+  padding: 30px 20px !important;
+}
+
+/* العنوان (تسجيل الخروج) */
+.swal-custom-title {
+  color: #E84242 !important;
+  font-size: 36px !important;
+  font-weight: bold !important;
+  margin-top: 10px !important;
+}
+
+/* نص الوصف */
+.swal-custom-text {
+  color: #5A5A5A !important;
+  font-size: 20px !important;
+  font-weight: normal !important;
+  margin-top: 15px !important;
+  margin-bottom: 30px !important;
+}
+
+/* حاوية الأزرار لتباعد سليم */
+.swal-custom-actions {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 20px !important; /* تباعد بين الزرين */
+  margin-top: 10px !important;
+}
+
+/* زر تسجيل الخروج (الأحمر) */
+.swal-custom-confirm {
+  background-color: #E84242 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 30px !important; /* حواف دائرية كاملة */
+  padding: 6px 45px !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.swal-custom-confirm:hover {
+  background-color: #d13737 !important;
+}
+
+/* زر إلغاء بالإطار المتدرج الجديد */
+.swal-custom-cancel {
+  /* الخدعة هنا: طبقة خلفية بيضاء فوق طبقة التدرج اللوني */
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+              linear-gradient(135deg, #6CEAEA, #53098D) border-box !important;
+  
+  /* يجب أن يكون الإطار شفافاً (transparent) ليظهر التدرج من تحته */
+  border: 3px solid transparent !important; 
+  
+  color: #53098D !important;
+  border-radius: 30px !important; /* يحافظ على انحناء الحواف تماماً */
+  padding: 6px 45px !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+  min-width: 160px;
+}
+
+/* تأثير عند تمرير الماوس فوق الزر */
+.swal-custom-cancel:hover {
+  background: linear-gradient(#f5f0fa, #f5f0fa) padding-box,
+              linear-gradient(135deg, #6CEAEA, #53098D) border-box !important;
 }

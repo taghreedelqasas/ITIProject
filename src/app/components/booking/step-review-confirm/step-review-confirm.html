@@ -1,0 +1,75 @@
+<h2 class="text-xl font-extrabold text-[#3a1560] mb-4">مراجعة وتأكيد</h2>
+
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-2 mb-8">
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">التاريخ</span>
+    <span class="text-slate-700">{{ state.selectedDateLabel() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الوقت</span>
+    <span class="text-slate-700">{{ state.selectedTime() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الاسم</span>
+    <span class="text-slate-700">{{ state.patient().fullName || '-' }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الهاتف</span>
+    <span class="text-slate-700" dir="ltr">{{ state.fullPhoneNumber() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الجنس</span>
+    <span class="text-slate-700">{{ state.genderLabel() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4">
+    <span class="font-bold text-[#3a1560]">التكلفة</span>
+    <span class="text-slate-700">{{ state.doctor().price }} جنية</span>
+  </div>
+</div>
+
+<!-- Action buttons -->
+@if (state.paymentError()) {
+  <div class="bg-amber-50 border border-amber-200 text-amber-700 font-semibold text-center rounded-xl py-3 px-4 mb-4">
+    {{ state.paymentError() }}
+  </div>
+  <div class="flex flex-row-reverse gap-4">
+    <button
+      type="button"
+      (click)="onSkipPayment()"
+      class="flex-1 bg-cyan-400 hover:bg-cyan-500 transition-colors text-[#3a1560] font-extrabold text-lg py-4 rounded-full shadow-md"
+    >
+      المتابعة بدون دفع
+    </button>
+    <button
+      type="button"
+      (click)="onRetryPayment()"
+      class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+    >
+      إعادة المحاولة
+    </button>
+  </div>
+} @else {
+  <div class="flex flex-row-reverse gap-4">
+    <button
+      type="button"
+      (click)="onConfirm()"
+      [disabled]="state.isLoading()"
+      class="flex-1 bg-cyan-400 hover:bg-cyan-500 disabled:opacity-50 transition-colors text-[#3a1560] font-extrabold text-lg py-4 rounded-full shadow-md"
+    >
+      {{ state.isLoading() ? 'جاري تأكيد الحجز...' : 'تأكيد الحجز والدفع' }}
+    </button>
+    <button
+      type="button"
+      (click)="onBack()"
+      class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+    >
+      رجوع
+    </button>
+  </div>
+}

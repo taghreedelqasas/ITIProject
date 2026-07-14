@@ -1,0 +1,237 @@
+/* عدّلي القيم دي لو مش نفس الدرجة بالظبط اللي في التصميم عندك */
+:host {
+  --appt-primary: #6d3fe0; /* بنفسجي */
+  --appt-primary-light: #efe9fd;
+  --appt-accent: #17b6a7; /* تركواز */
+  --appt-accent-light: #e3f8f6;
+  --appt-danger: #ef4444;
+  --appt-danger-light: #fdecec;
+  --appt-warning: #f5a524;
+  --appt-warning-light: #fef3e0;
+  --appt-muted-bg: #f1eef5;
+  --appt-text: #2b2440;
+  --appt-text-muted: #8b86a0;
+  --appt-border: #eee9f9;
+
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+}
+
+.appts-wrap {
+  padding: 16px;
+}
+
+.appts-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(109, 63, 224, 0.08);
+}
+
+.policy-banner {
+  background: var(--appt-warning-light);
+  color: #8a5a12;
+  font-size: 12px;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.state-msg {
+  text-align: center;
+  color: var(--appt-text-muted);
+  padding: 32px 0;
+  font-size: 14px;
+}
+
+.state-msg--small {
+  padding: 16px 0;
+  font-size: 13px;
+}
+
+.state-msg--error {
+  color: var(--appt-danger);
+}
+
+.section {
+  margin-bottom: 12px;
+}
+
+.section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--appt-text);
+}
+
+.section-count {
+  font-size: 12px;
+  color: var(--appt-primary);
+  background: var(--appt-primary-light);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.chevron {
+  font-size: 14px;
+  color: var(--appt-text-muted);
+  transform: rotate(-90deg);
+  transition: transform 0.15s ease;
+}
+
+.chevron--open {
+  transform: rotate(0deg);
+}
+
+.appt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.appt-card {
+  position: relative;
+  border: 1px solid var(--appt-border);
+  border-radius: 14px;
+  padding: 14px 14px 14px 18px;
+  overflow: visible;
+}
+
+.appt-tag {
+  position: absolute;
+  top: 12px;
+  left: -1px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px 3px 8px;
+  border-radius: 0 999px 999px 0;
+}
+
+.status--pending {
+  background: var(--appt-warning-light);
+  color: var(--appt-warning);
+}
+
+.status--confirmed {
+  background: var(--appt-accent-light);
+  color: var(--appt-accent);
+}
+
+.status--completed {
+  background: var(--appt-accent-light);
+  color: var(--appt-accent);
+}
+
+.status--cancelled {
+  background: var(--appt-muted-bg);
+  color: var(--appt-text-muted);
+}
+
+.appt-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.appt-avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--appt-primary-light);
+}
+
+.appt-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.appt-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.appt-doctor {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--appt-text);
+}
+
+.appt-specialty {
+  font-size: 11px;
+  color: var(--appt-text-muted);
+}
+
+.appt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.meta-item {
+  font-size: 11px;
+  color: var(--appt-text-muted);
+  unicode-bidi: isolate;
+}
+
+.appt-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.action-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.action-btn--outline {
+  padding: 6px 18px;
+  background: #fff;
+  border: 1px solid var(--appt-accent);
+  color: var(--appt-accent);
+}
+
+.action-btn--outline:hover {
+  background: var(--appt-accent-light);
+}
+
+.action-btn--icon-danger {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--appt-danger-light);
+  color: var(--appt-danger);
+  border-radius: 8px;
+  padding: 0;
+}
+
+.action-btn--icon-danger svg {
+  width: 14px;
+  height: 14px;
+}

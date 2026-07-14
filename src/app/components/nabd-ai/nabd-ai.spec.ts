@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DocSlots } from './doc-slots';
+import { NabdAi } from './nabd-ai';
 
-describe('DocSlots', () => {
-  let component: DocSlots;
-  let fixture: ComponentFixture<DocSlots>;
+describe('NabdAi', () => {
+  let component: NabdAi;
+  let fixture: ComponentFixture<NabdAi>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DocSlots],
+      imports: [NabdAi],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DocSlots);
+    fixture = TestBed.createComponent(NabdAi);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

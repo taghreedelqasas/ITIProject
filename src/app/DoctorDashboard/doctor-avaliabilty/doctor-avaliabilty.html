@@ -1,0 +1,453 @@
+<div class="p-6 conatiner w-[90%] mx-auto">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+
+    <div>
+      <h2 class="text-3xl font-bold text-[#4A148C]">
+        المواعيد
+      </h2>
+
+      <p class="text-gray-500 mt-2">
+        إدارة ومتابعة جميع مواعيدك
+      </p>
+    </div>
+
+    <!-- <button
+      (click)="openCreate()"
+      class="bg-[#4A148C] hover:bg-[#5B1AA6] text-white px-5 py-3 rounded-xl transition flex items-center gap-2">
+
+      <i class="fa-solid fa-plus"></i>
+      إضافة موعد جديد
+
+    </button> -->
+
+  </div>
+
+  <!-- Filters -->
+  <div class="flex items-center gap-3 mb-6 flex-wrap">
+
+    <button
+      (click)="setStatusFilter(null)"
+      class="px-5 py-2 rounded-full text-sm font-semibold transition  cursor-pointer"
+      [ngClass]="activeStatusFilter() === null
+        ? 'bg-[#4A148C] text-white'
+        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'">
+      الكل
+    </button>
+
+    <button
+      (click)="setStatusFilter('Pending')"
+      class="px-5 py-2 rounded-full text-sm font-semibold transition  cursor-pointer"
+      [ngClass]="activeStatusFilter() === 'Pending'
+        ? 'bg-[#4A148C] text-white'
+        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'">
+      في الانتظار
+    </button>
+
+    <button
+      (click)="setStatusFilter('Confirmed')"
+      class="px-5 py-2 rounded-full text-sm font-semibold transition  cursor-pointer"
+      [ngClass]="activeStatusFilter() === 'Confirmed'
+        ? 'bg-[#4A148C] text-white'
+        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'">
+      قادم
+    </button>
+
+    <button
+      (click)="setStatusFilter('Cancelled')"
+      class="px-5 py-2 rounded-full text-sm font-semibold transition cursor-pointer"
+      [ngClass]="activeStatusFilter() === 'Cancelled'
+        ? 'bg-[#4A148C] text-white'
+        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'">
+      لم يحضر
+    </button>
+
+    <button
+      (click)="setStatusFilter('Completed')"
+      class="px-5 py-2 rounded-full text-sm font-semibold transition  cursor-pointer"
+      [ngClass]="activeStatusFilter() === 'Completed'
+        ? 'bg-[#4A148C] text-white'
+        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'">
+      حضر
+    </button>
+
+  </div>
+
+  <!-- Today's appointments -->
+  <div class="grid md:grid-cols-3 gap-5 mb-10">
+
+    @for (app of filteredAppointments(); track app.id) {
+
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+
+        <!-- Status -->
+        <div class="flex justify-between items-start">
+
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-full bg-[#F4ECFF] text-[#53098D]
+              flex items-center justify-center font-bold">
+
+              {{app.patientName.charAt(0)}}
+
+            </div>
+
+            <div>
+              <h3 class="font-bold text-gray-800 text-sm">
+                {{app.patientName}}
+              </h3>
+
+              <p class="text-xs text-[#8C6AAE]">
+                كشف عام
+              </p>
+
+              <div class="flex items-center gap-1 mt-2 text-xs text-[#7A579D]">
+
+                <i class="pi pi-calendar text-[11px]"></i>
+
+                <span>اليوم</span>
+
+                <span>{{app.slotStart | date:'shortTime'}}</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <span
+            class="text-[11px] px-3 py-1 rounded-full font-medium whitespace-nowrap"
+            [ngClass]="{
+              'bg-red-100 text-red-600': app.status=='Cancelled',
+              'bg-green-100 text-green-600': app.status=='Confirmed',
+              'bg-yellow-100 text-yellow-600': app.status=='Pending',
+              'bg-purple-100 text-purple-600': app.status=='Completed'
+            }">
+
+            {{
+              app.status=='Confirmed' ? 'تم الحجز'
+              : app.status=='Pending' ? 'بانتظار الحضور'
+              : app.status=='Cancelled' ? 'ملغي'
+              : 'قادم'
+            }}
+
+          </span>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-between mt-5 gap-3">
+
+          <button
+            class="w-full h-10 rounded-full text-white text-sm font-semibold transition"
+            [disabled]="app.status === 'Completed'"
+            [ngClass]="{
+              'bg-cyan-400 hover:bg-cyan-500': app.status !== 'Completed',
+              'bg-green-500 cursor-not-allowed': app.status === 'Completed'
+            }"
+            (click)="markAsCompleted(app)">
+
+            {{
+              app.status === 'Completed' ? 'تم الحضور'
+              : app.status === 'Pending' ? 'تأكيد الموعد'
+              : 'تسجيل الحضور'
+            }}
+
+          </button>
+
+        </div>
+
+      </div>
+
+    } @empty {
+
+      <div class="col-span-3 text-center py-12 text-gray-400 text-sm">
+        لا توجد مواعيد مسجلة اليوم.
+      </div>
+
+    }
+
+  </div>
+
+  <!-- Loading -->
+  @if(service.loading()){
+
+    <div class="flex justify-center items-center h-64">
+      <i class="fa-solid fa-spinner fa-spin text-4xl text-[#4A148C]"></i>
+    </div>
+
+  } @else {
+
+    <!-- Available slots header -->
+    <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
+
+      <div>
+        <h3 class="text-xl font-bold text-[#4A148C]">
+          المواعيد المتاحة
+        </h3>
+
+        <p class="text-gray-500 text-sm mt-1">
+          الأوقات المتاحة لعرضها علي المرضى
+        </p>
+      </div>
+
+      <div class="flex gap-3">
+
+        <!-- <button
+          class="flex items-center gap-2 border border-[#4A148C] text-[#4A148C] px-4 py-2 rounded-xl hover:bg-[#F4ECFF] transition text-sm font-semibold">
+
+          <i class="fa-solid fa-plus"></i>
+          إضافة يوم
+
+        </button> -->
+
+        <button
+          (click)="openCreate()"
+          class="flex items-center cursor-pointer  gap-2 bg-[#53098D] text-white px-4 py-2 rounded-full  hover:bg-[#5B1AA6] transition text-sm font-semibold">
+
+          <i class="fa-solid fa-plus"></i>
+          إضافة وقت
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Empty -->
+    @if(groupedSlots().length===0){
+
+      <div class="bg-white rounded-2xl shadow p-10 text-center">
+        <i class="fa-regular fa-calendar-xmark text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500">
+          لا توجد مواعيد متاحة
+        </p>
+      </div>
+
+    } @else {
+
+      <div class="flex gap-4 overflow-x-auto py-10  px-4  rounded-lg   bg-white  hide-scrollbar">
+
+        @for(group of groupedSlots(); track group.date){
+
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 min-w-[150px] flex-1">
+
+            <!-- Date -->
+            <div class="px-4 py-3 border-b border-gray-100 text-center">
+              <h4 class="font-bold text-sm text-gray-700">
+                {{formatDateHeader(group.date)}}
+              </h4>
+            </div>
+
+            <!-- Slots -->
+            <div class="p-3 flex flex-col gap-2 max-h-[240px] overflow-y-auto hide-scrollbar">
+
+              @for(slot of group.slots; track trackBySlot($index, slot)){
+
+                <div
+                  (click)="edit(slot)"
+                  class="flex items-center justify-between gap-2 px-3 py-2 rounded-full text-xs font-medium cursor-pointer transition"
+                  [ngClass]="{
+                    'bg-[#F4ECFF] text-[#53098D]': !slot.isBooked,
+                    'bg-red-50 text-red-500': slot.isBooked
+                  }">
+
+                  <span>{{formatTime(slot.startTime)}}</span>
+
+                  <button
+                    (click)="$event.stopPropagation(); delete(slot)"
+                    class="text-gray-400 hover:text-red-600">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                  </button>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  }
+
+</div>
+
+<!-- Modal -->
+
+@if(showModal()){
+<div class="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
+  <div class="bg-white rounded-[32px] w-[540px] p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto hide-scrollbar">
+    
+    <button 
+      (click)="closeModal()" 
+      class="absolute top-6 left-6 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition cursor-pointer">
+      <i class="fa-solid fa-xmark text-sm"></i>
+    </button>
+
+    <div class="text-center mb-6 mt-2">
+      <div class="inline-flex p-3 bg-purple-50 text-[#53098D] rounded-full mb-3">
+        <i class="fa-regular fa-clock text-2xl"></i>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800">
+        {{editMode() ? 'تعديل فترة عمل' : 'إضافة فترة عمل'}}
+      </h2>
+      <p class="text-xs text-gray-400 mt-1">حدد اليوم والأوقات المناسبة</p>
+    </div>
+
+    <form [formGroup]="form" class="space-y-5 text-right" dir="rtl">
+      
+      <div>
+        <!-- <label class="block text-xs font-bold text-gray-700 mb-2">
+          اليوم <span class="text-red-500">*</span>
+        </label> -->
+        <!-- <div class="relative">
+          <select 
+            class="w-full border border-gray-200 rounded-2xl p-3.5 pr-4 pl-10 text-sm text-gray-600 appearance-none focus:outline-none focus:ring-2 focus:ring-[#53098D]/20 focus:border-[#53098D] bg-white">
+            <option value="" disabled selected>أختر تخصصك الرئيسي</option>
+            <option value="الأحد">الأحد</option>
+            <option value="الإثنين">الإثنين</option>
+            <option value="الثلاثاء">الثلاثاء</option>
+            <option value="الأربعاء">الأربعاء</option>
+            <option value="الخميس">الخميس</option>
+          </select>
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+        </div> -->
+      </div>
+<div class="grid grid-cols-2 gap-4">
+  <div>
+    <label class="block text-xs font-bold text-gray-700 mb-2">
+      وقت البداية <span class="text-red-500">*</span>
+    </label>
+    <input 
+      type="datetime-local" 
+      formControlName="startTime"
+      [min]="minDateTime" 
+      class="w-full border border-gray-200 rounded-2xl p-3 text-xs text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#53098D]/20 focus:border-[#53098D]">
+    @if(form.controls.startTime.touched && form.controls.startTime.invalid){
+      <p class="text-red-500 text-xs mt-1">هذا الحقل مطلوب</p>
+    }
+  </div>
+
+  <div>
+    <label class="block text-xs font-bold text-gray-700 mb-2">
+      وقت النهاية <span class="text-red-500">*</span>
+    </label>
+    <input 
+      type="datetime-local" 
+      formControlName="endTime"
+      [min]="minDateTime"
+      class="w-full border border-gray-200 rounded-2xl p-3 text-xs text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#53098D]/20 focus:border-[#53098D]">
+    @if(form.controls.endTime.touched && form.controls.endTime.invalid){
+      <p class="text-red-500 text-xs mt-1">هذا الحقل مطلوب</p>
+    }
+  </div>
+</div>
+      <div class="text-right">
+        <a href="javascript:void(0)" class="text-[#53098D] text-xs font-bold underline hover:text-[#410670]">
+          إضافة مدة موعد أخرى
+        </a>
+      </div>
+
+      <!-- <div>
+        <label class="block text-xs font-bold text-gray-700 mb-3">
+          مدة الموعد <span class="text-red-500">*</span>
+        </label>
+        <div class="flex justify-between items-center gap-2">
+          <button type="button" class="flex-1 flex flex-col items-center justify-center border border-gray-150 rounded-2xl py-2 px-1 text-gray-400 hover:border-[#53098D] transition">
+            <i class="fa-regular fa-clock text-xs mb-1"></i>
+            <span class="text-[11px] font-bold">15</span>
+            <span class="text-[9px]">دقيقة</span>
+          </button>
+          
+          <button type="button" class="flex-1 flex flex-col items-center justify-center border border-gray-150 rounded-2xl py-2 px-1 text-gray-400 hover:border-[#53098D] transition">
+            <i class="fa-regular fa-clock text-xs mb-1"></i>
+            <span class="text-[11px] font-bold">20</span>
+            <span class="text-[9px]">دقيقة</span>
+          </button>
+
+          <button type="button" class="flex-1 flex flex-col items-center justify-center bg-[#53098D] text-white rounded-2xl py-2 px-1 shadow-md transition">
+            <i class="fa-regular fa-clock text-xs mb-1"></i>
+            <span class="text-[11px] font-bold">30</span>
+            <span class="text-[9px] opacity-90">دقيقة</span>
+          </button>
+
+          <button type="button" class="flex-1 flex flex-col items-center justify-center border border-gray-150 rounded-2xl py-2 px-1 text-gray-400 hover:border-[#53098D] transition">
+            <i class="fa-regular fa-clock text-xs mb-1"></i>
+            <span class="text-[11px] font-bold">45</span>
+            <span class="text-[9px]">دقيقة</span>
+          </button>
+
+          <button type="button" class="flex-1 flex flex-col items-center justify-center border border-gray-150 rounded-2xl py-2 px-1 text-gray-400 hover:border-[#53098D] transition">
+            <i class="fa-regular fa-clock text-xs mb-1"></i>
+            <span class="text-[11px] font-bold">60</span>
+            <span class="text-[9px]">دقيقة</span>
+          </button>
+        </div>
+      </div> -->
+<!-- 
+      <div class="border-t border-gray-100 pt-4 mt-4">
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+            <span>وقت الراحة</span>
+            <span class="text-[10px] text-gray-400 font-normal">(اختياري)</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" value="" class="sr-only peer" checked>
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#53098D]"></div>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+          <div>
+            <label class="block text-[10px] font-bold text-gray-500 mb-1.5">
+              بداية الراحة <span class="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="--:-- ص" class="w-full text-center border border-gray-200 rounded-xl p-2.5 text-xs text-gray-500 bg-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-500 mb-1.5">
+              نهاية الراحة <span class="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="--:-- ص" class="w-full text-center border border-gray-200 rounded-xl p-2.5 text-xs text-gray-500 bg-white focus:outline-none">
+          </div>
+        </div>
+      </div> -->
+
+      @if(errorMessage()){
+        <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-xs">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="flex items-center gap-4 pt-4">
+        <button 
+          type="button" 
+          (click)="closeModal()" 
+          class="w-1/2 py-3 rounded-full text-[#53098D] text-xs font-bold border-2 border-[#53098D] hover:bg-purple-50/50 transition duration-200 cursor-pointer text-center">
+          إلغاء
+        </button>
+
+        <button 
+          type="button" 
+          (click)="save()" 
+          [disabled]="saving()" 
+          class="w-1/2 py-3 rounded-full bg-[#EAE3F7] hover:bg-[#ded1f3] text-[#53098D] text-xs font-bold transition duration-200 cursor-pointer text-center disabled:opacity-50">
+          {{ editMode() ? 'حفظ التعديل' : 'إضافة الفترة' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+}

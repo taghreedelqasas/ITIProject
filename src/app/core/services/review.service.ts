@@ -6,7 +6,7 @@ import { CreateReviewDto, Review, UpdateReviewDto } from '../models/review.model
 
 @Injectable({ providedIn: 'root' })
 export class ReviewService {
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/Reviews`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/Reviews`;
 
   constructor(private http: HttpClient) {}
 

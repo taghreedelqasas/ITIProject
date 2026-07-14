@@ -61,6 +61,7 @@ export interface UpdateProfileDto {
   gender?: Gender;
 }
 
+
 // ============================================================
 // 3) حقيقي 100% — Appointments
 // ============================================================
@@ -83,7 +84,17 @@ export interface AvailableSlotApi {
   startTime: string; // ISO date-time
   endTime: string;
 }
+export interface CreateDoctorAvailabilityDto {
+  doctorId: number;
+  startTime: string;
+  endTime: string;
+}
 
+export interface UpdateDoctorAvailabilityDto {
+  id: number;
+  startTime: string;
+  endTime: string;
+}
 // ============================================================
 // 4) على الأغلب حقيقي — Reviews (⚠️ شكل الرد غير موثّق بالكامل)
 // ============================================================

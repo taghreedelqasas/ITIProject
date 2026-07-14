@@ -111,12 +111,11 @@
           <span class="text-sm  group-hover:scale-110 transition-transform"><i class="fas fa-cog"></i></span>
           <span class="text-sm">الإعدادات</span>
         </a>
-        <a  href="/"     (click)="onLogout()"   routerLinkActive="bg-white   text-[#4A148C] font-bold shadow-md" 
-           class="flex items-center gap-3 px-4 py-2 w-full   absolute  bottom-0 rounded-xl transition-all duration-200 group hover:bg-white/10">
-          <span class="text-sm  group-hover:scale-110 transition-transform"><i class="fas fa-sign-out-alt"></i></span>
-          <span class="text-sm">تسجيل الحروج</span>
-        </a>
-
+     <a href="/" (click)="onLogout($event)" routerLinkActive="bg-white text-[#4A148C] font-bold shadow-md"
+   class="flex items-center gap-3 px-4 py-2 w-full absolute bottom-0 rounded-xl transition-all duration-200 group hover:bg-white/10">
+  <span class="text-sm group-hover:scale-110 transition-transform"><i class="fas fa-sign-out-alt"></i></span>
+  <span class="text-sm">تسجيل الخروج</span>
+</a>
 
    
       </nav>
@@ -130,31 +129,31 @@
     </div> -->
   </aside>
 
-  <div class="flex-1 flex flex-col overflow-hidden    ">
+  <div class="flex-1 flex flex-col overflow-hidden     "   >
     
-    <header class="bg-white   py-4   rounded-lg  border-b border-gray-100 h-20 flex items-center justify-between px-8 shadow-sm">
+    <header class="bg-white   py-2  rounded-lg  border-b border-gray-100 h-20 flex       justify-content-start    justify-between px-8 shadow-sm">
       
-      <div class="relative w-80 " >
+      <!-- <div class="relative w-80 " >
         <input type="text" placeholder="البحث عن..." 
                class="w-full  border border-gray-200 rounded-sm pr-10 pl-4 py-2 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-search"></i></span>
 
-      </div>
+      </div> -->
 
-      <div class="flex items-center space-x-reverse space-x-4  ">
-        
+      <div class="flex items-center   justify-start      space-x-reverse space-x-4  "  >
+<!--         
         <button class="p-2.5   mx-3   text-gray-400 hover:text-purple-700 bg-gray-50 rounded-xl hover:bg-purple-50 transition-all relative">
           <span><i class="fas fa-bell"></i></span>
           <span class="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        </button> -->
 
-        <div class="flex items-center space-x-reverse space-x-2 bg-purple-50/70 px-4 py-2 rounded-xl border border-purple-100">
+        <div class="flex items-center space-x-reverse space-x-2  bg-[#F3F4F5]   border border-gray-200   px-4 py-2 rounded-lg  ">
           <img [src]="dashService.doctor()?.imageProfile || 'https://api.dicebear.com/7.x/adventurer/svg?seed=doctor'" 
-               class="w-8 h-8 rounded-full border border-purple-300 object-cover" 
+               class="w-8 h-8 rounded-full object-cover  bg-purple-300" 
                alt="Doctor Avatar">
           <div class="text-right">
-            <span class="text-sm font-bold text-[#4A148C]">
-              د.  {{ dashService.userProfile()?.fullName }}
+            <span class="text-sm font-bold    text-[#4A148C]">
+                د. {{ dashService.userProfile()?.fullName }} 
             </span>
           </div>
         </div>

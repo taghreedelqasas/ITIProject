@@ -7,76 +7,8 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    
-    <!-- كارد البيانات المهنية والشخصية -->
-    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm lg:col-span-2 space-y-5">
-      <h3 class="font-bold text-gray-800 text-sm border-b border-gray-50 pb-2">البيانات المهنية والشخصية</h3>
-      
-      <!-- بنشيك بـ @if الجديد على الـ user والـ doc مع بعض جوه الكارد -->
-      @if (appointmentService.userProfile(); as user) {
-        @if (appointmentService.doctor(); as doc) {
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div class="space-y-1.5">
-              <label class="font-bold text-gray-600 block">الاسم الأول</label>
-              <input type="text" [(ngModel)]="firstName" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 text-right focus:outline-none focus:border-[#00E5FF]">
-            </div>
 
-            <div class="space-y-1.5">
-              <label class="font-bold text-gray-600 block">الاسم الأخير</label>
-              <input type="text" [(ngModel)]="lastName" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 text-right focus:outline-none focus:border-[#00E5FF]">
-            </div>
-
-            <div class="space-y-1.5">
-              <label class="font-bold text-gray-600 block">القسم / التخصص الرئيسي</label>
-              <input type="text" [value]="appointmentService.doctor()?.departmentName" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-right text-gray-400">
-            </div>
-
-            <div class="space-y-1.5">
-              <label class="font-bold text-gray-600 block">رقم الترخيص الطبي</label>
-              <input type="text" [(ngModel)]="doc.licenseNumber" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 font-mono focus:outline-none">
-            </div>
-          
-            <div class="space-y-1.5">
-              <label class="font-bold text-gray-600 block">رقم الهاتف</label>
-              <input type="text" [(ngModel)]="user.phoneNumber" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
-            </div>
-
-            
-<select
-  [ngModel]="user.gender"
-  (ngModelChange)="onGenderChange($event, user)"
-  class="w-full border border-gray-200 rounded-xl py-2.5 px-4 text-right focus:outline-none focus:border-[#00E5FF] bg-white">
-  <option [ngValue]="null" value="" disabled>اختر النوع</option>
-  <option [ngValue]="0" value="0">ذكر</option>
-  <option [ngValue]="1" value="1">أنثى</option>
-</select>
-            <div class="space-y-1.5">
-              <label class="font-bold text-gray-600 block">البريد الإلكتروني</label>
-              <input type="email" [value]="user.email" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-left text-gray-400">
-            </div>
-
-            <div class="space-y-1.5 md:col-span-2">
-              <label class="font-bold text-gray-600 block">رسوم الكشف (ج.م)</label>
-              <input type="number" [(ngModel)]="doc.consultationFee" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
-            </div>
-
-            <div class="space-y-1.5 md:col-span-2">
-              <label class="font-bold text-gray-600 block">عنوان العيادة</label>
-              <input type="text" [(ngModel)]="doc.address" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
-            </div>
-          </div>
-
-          <button (click)="onUpdateProfile()" class="bg-[#00E5FF] hover:bg-[#00B4D8] text-white font-bold py-2.5 px-6 rounded-xl transition-all text-xs shadow-sm mt-4">
-            حفظ التعديلات
-          </button>
-        }
-      } @else {
-        <!-- Skeleton أو Loading بسيط يظهر جوه الكارد لحد ما الداتا تيجي -->
-        <div class="text-center py-12 text-xs text-gray-400">جاري تحميل بيانات الطبيب...</div>
-      }
-    </div>
-
-    <!-- الكارد الجانبي للملف الشخصي -->
+       <!-- الكارد الجانبي للملف الشخصي -->
     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm text-center space-y-4 lg:col-span-1">
       @if (appointmentService.userProfile(); as user) {
         @if (appointmentService.doctor(); as doc) {
@@ -87,14 +19,14 @@
           <div>
             <h4 class="font-bold text-gray-800 text-base">{{appointmentService.userProfile()?.fullName}} </h4>
             <p class="text-[11px] text-purple-600 font-bold mt-0.5">{{ appointmentService.doctor()?.departmentName }}</p>
-            <span class="text-[10px] text-gray-400 block mt-1">{{ doc.address }}</span>
+            <span class="text-[10px] text-[#8275A0] block mt-1">{{ doc.address }}</span>
           </div>
 
           <span class="inline-block bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full" *ngIf="doc.isVerified">✓ حساب موثق</span>
 
           <div class="grid grid-cols-1 gap-2 pt-2 text-center text-[11px] border-t border-gray-50 text-gray-500">
-            <div><span class="text-gray-400 block text-[9px]">اسم المستخدم</span> <span class="font-mono text-gray-700 font-bold">{{ doc.userName }}</span></div>
-            <div><span class="text-gray-400 block text-[9px]">رقم الترخيص</span> <span class="font-mono text-gray-700 font-bold">{{ doc.licenseNumber }}</span></div>
+            <div><span class="text-[#8275A0] block text-[9px]">اسم المستخدم</span> <span class="font-mono text-gray-700 font-bold">{{ doc.userName }}</span></div>
+            <div><span class="text-[#8275A0] block text-[9px]">رقم الترخيص</span> <span class="font-mono text-gray-700 font-bold">{{ doc.licenseNumber }}</span></div>
           </div>
         }
       } @else {
@@ -105,9 +37,75 @@
         </div>
       }
     </div>
-  </div>
+    
+    <div  class="lg:col-span-2  space-y-5">
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+       <!-- كارد البيانات المهنية والشخصية -->
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm  space-y-5">
+      <h3 class="font-bold text-gray-800 text-sm border-b border-gray-50 pb-2">البيانات المهنية </h3>
+      
+      <!-- بنشيك بـ @if الجديد على الـ user والـ doc مع بعض جوه الكارد -->
+      @if (appointmentService.userProfile(); as user) {
+        @if (appointmentService.doctor(); as doc) {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">الاسم الأول</label>
+              <input type="text" [(ngModel)]="firstName" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 text-right focus:outline-none focus:border-[#00E5FF]">
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">الاسم الأخير</label>
+              <input type="text" [(ngModel)]="lastName" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 text-right focus:outline-none focus:border-[#00E5FF]">
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">القسم / التخصص الرئيسي</label>
+              <input type="text" [value]="appointmentService.doctor()?.departmentName" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-right text-gray-400">
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">رقم الترخيص الطبي</label>
+              <input type="text" [(ngModel)]="doc.licenseNumber" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 font-mono focus:outline-none">
+            </div>
+          
+            <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">رقم الهاتف</label>
+              <input type="text" [(ngModel)]="user.phoneNumber" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
+            </div>
+
+       <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">النوع</label>
+              <input type="text" [value]="getGenderLabel(user.gender)" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-right text-gray-400">
+            </div>     
+
+            <div class="space-y-1.5">
+              <label class="font-bold text-[#44116D] block">البريد الإلكتروني</label>
+              <input type="email" [value]="user.email" disabled class="w-full border border-gray-100 bg-gray-50 rounded-xl py-2.5 px-4 text-left text-gray-400">
+            </div>
+
+            <div class="space-y-1.5 md:col-span-2">
+              <label class="font-bold text-[#44116D] block">رسوم الكشف (ج.م)</label>
+              <input type="number" [(ngModel)]="doc.consultationFee" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
+            </div>
+
+            <div class="space-y-1.5 md:col-span-2">
+              <label class="font-bold text-[#44116D] block">عنوان العيادة</label>
+              <input type="text" [(ngModel)]="doc.address" class="w-full border border-gray-200 rounded-xl py-2.5 px-4 focus:outline-none">
+            </div>
+          </div>
+
+          <button (click)="onUpdateProfile()" class="bg-[#00E5FF] hover:bg-[#00B4D8] text-[#44116D] font-bold py-2.5 px-6 rounded-xl transition-all text-xs shadow-sm mt-4">
+            حفظ التعديلات
+          </button>
+        }
+      } @else {
+        <!-- Skeleton أو Loading بسيط يظهر جوه الكارد لحد ما الداتا تيجي -->
+        <div class="text-center py-12 text-xs text-gray-400">جاري تحميل بيانات الطبيب...</div>
+      }
+    </div>
+
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <!-- كارد المعاملات المالية الحقيقية (شغال علطول ومش معتمد على الـ User Profile) -->
     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm lg:col-span-3 space-y-4">
@@ -136,5 +134,11 @@
     </div>
 
   </div>
+    </div>
+   
+  
+ 
+  </div>
+
 
 </div>
