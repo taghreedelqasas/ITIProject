@@ -133,18 +133,17 @@ export class AuthService {
   }
 
   confirmEmail(userId: string, token: string): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(`${this.base}/confirm-email?userId=${userId}&token=${token}`).pipe(
-      tap(res => {
-        if (res.isAuthenticated) {
-          this.setAccessToken(res.token);
-          this.setDoctorId(res.doctorId);
-          localStorage.setItem('userEmail', res.email);
-          localStorage.setItem('userRoles', JSON.stringify(res.roles));
-          localStorage.setItem('userId', res.userId);
-        }
-      })
-    );
-  }
+  return this.http.get<AuthResponse>(`${this.base}/confirm-email?userId=${userId}&token=${token}`).pipe(
+    tap(res => {
+      if (res.isAuthenticated) {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', res.email);
+        localStorage.setItem('userRoles', JSON.stringify(res.roles));
+        localStorage.setItem('userId', res.userId);
+      }
+    })
+  );
+}
 
   resendConfirmationEmail(email: string, clientBaseUrl: string = 'https://mawed.runasp.net/api'): Observable<any> {
     return this.http.post(`${this.base}/resend-confirmation-email`, { email, clientBaseUrl });
