@@ -163,4 +163,15 @@ export class Doctors implements OnInit {
       queryParams: { doctorId: doctor.id },
     });
   }
+
+  onChatDoctor(doctor: Doctor): void {
+    this.router.navigate(['/chat'], {
+      queryParams: {
+        doctorId: doctor.id,
+        name: doctor.name,
+        specialty: doctor.specialty,
+        image: doctor.image,
+      },
+    });
+  }
 }
