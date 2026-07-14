@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-confirm-email-notice',
@@ -11,12 +11,23 @@ import { CommonModule } from '@angular/common';
 })
 export class ConfirmEmailNoticeComponent implements OnInit {
 
-  email = '';
+  email: string = '';
 
-  constructor(private route: ActivatedRoute, public router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.email = this.route.snapshot.queryParamMap.get('email') ?? '';
-    if (!this.email) this.router.navigate(['/auth/register']);
+    this.email = this.route.snapshot.queryParamMap.get('email') || '';
+
+    // لو دخل الصفحة من غير email (يعني refresh أو دخول مباشر)
+    if (!this.email) {
+      this.router.navigate(['/auth/register']);
+    }
+  }
+
+  goBack(): void {
+    this.router.navigate(['/auth/register']);
   }
 }

@@ -1,33 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
 @layer vendor;
 
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css" layer(vendor);
 
 @import "tailwindcss";
 
-body {
-     font-family: 'Tajawal', sans-serif;
-}
-:root{
-     --primary:#6CEAEA ; 
-     --purple:#44116D; 
-     --hero-blue:#E9FCFC ; 
-     --hero-purple:#ECE7F0 ; 
-     --text-gray:#5C676B ; 
-     --btn-blue:#23E0E0 ; 
-}
-
 :root {
-     --primary: #6CEAEA;
-     --purple: #53098D;
-     --hero-blue: #E9FCFC;
-     --hero-purple: #ECE7F0;
-     --text-gray: #5C676B;
-     --btn-blue: #23E0E0;
+  --primary: #6CEAEA;
+  /* تم اعتماد اللون البنفسجي الأكثر استخداماً ليتوافق مع أزرار SweetAlert وتصاميم نسرين */
+  --purple: #53098D; 
+  --hero-blue: #E9FCFC;
+  --hero-purple: #ECE7F0;
+  --text-gray: #5C676B;
+  --btn-blue: #23E0E0;
 }
 
-/* ⚠️ ضعي هذا الكود في ملف styles.css العالمي للمشروع وليس في ملف المكون */
+/* توحيد وتنسيق الخطوط (الدمج الذكي): 
+   اعتمدنا خط 'Cairo' كخط أساسي للتطبيق مع إتاحة 'Tajawal' كخيار بديل ممتاز وجاهز للاستخدام */
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family: 'Cairo', 'Tajawal', 'Segoe UI', sans-serif;
+}
+
+/* ⚠️ كود SweetAlert العالمي للمشروع */
 
 /* النافذة الرئيسية */
 .swal-custom-popup {
@@ -80,7 +82,6 @@ body {
   background-color: #d13737 !important;
 }
 
-/* زر إلغاء (الأبيض ذو الإطار البنفسجي) */
 /* زر إلغاء بالإطار المتدرج الجديد */
 .swal-custom-cancel {
   /* الخدعة هنا: طبقة خلفية بيضاء فوق طبقة التدرج اللوني */
@@ -106,4 +107,3 @@ body {
   background: linear-gradient(#f5f0fa, #f5f0fa) padding-box,
               linear-gradient(135deg, #6CEAEA, #53098D) border-box !important;
 }
-

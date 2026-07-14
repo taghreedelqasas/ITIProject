@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, 
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { RegistrationDataService } from '../../../core/services/registration-data.service';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
   const pw  = group.get('password')?.value;
@@ -29,7 +30,8 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private registrationData: RegistrationDataService
   ) {}
 
   ngOnInit(): void {
@@ -59,39 +61,46 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    this.apiError  = '';
-
     const { fullName, email, phone, birthDate, password, confirmPassword } = this.registerForm.value;
     const nameParts = fullName.trim().split(' ');
 
-    const payload = {
-      firstName:       nameParts[0],
-      lastName:        nameParts.slice(1).join(' ') || nameParts[0],
+    const basicInfo = {
+      firstName:     nameParts[0],
+      lastName:      nameParts.slice(1).join(' '),
       email,
-      userName:        email.split('@')[0],
-      phoneNumber:     phone,
+      userName:      email.split('@')[0],
+      phoneNumber:   phone,
       birthDate,
-      ssn: this.selectedRole === 'Doctor' ? '' : '00000000000000',
       password,
       confirmPassword,
-      role:            this.selectedRole,
-      clientBaseUrl:   'https://localhost:7150'
+      role:          this.selectedRole,
+      clientBaseUrl: window.location.origin
     };
 
-  this.authService.register(payload).subscribe({
-  next: (res) => {
-    this.isLoading = false;
-    this.router.navigate(['/auth/confirm-email-notice'], {
-      queryParams: { email }
+    // ---- Doctor: مفيش API call هنا، بس خزّني البيانات وانقلي لصفحة المعلومات المهنية ----
+    if (this.selectedRole === 'Doctor') {
+      this.registrationData.setBasicInfo(basicInfo);
+      this.router.navigate(['/auth/doctor-info']);
+      return;
+    }
+
+    // ---- Patient: نفس المنطق القديم ----
+    this.isLoading = true;
+    this.apiError  = '';
+
+    const payload = { ...basicInfo, ssn: '00000000000000' };
+
+    this.authService.register(payload).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/auth/confirm-email-notice'], { queryParams: { email } });
+      },
+      error: (err) => {
+        this.isLoading = false;
+        // السيرفر بيبعت الإيميل فعلياً حتى لو رجّع 400، فبنكمل الـ flow عادي
+        this.router.navigate(['/auth/confirm-email-notice'], { queryParams: { email } });
+        this.apiError = err?.error?.message || '';
+      }
     });
-  },
-  error: (err) => {
-    this.isLoading = false;
-    this.router.navigate(['/auth/confirm-email-notice'], {
-      queryParams: { email }
-    });
-  }
-});
   }
 }

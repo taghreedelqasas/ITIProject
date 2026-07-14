@@ -11,6 +11,7 @@ import { DoctorProfile } from './components/doctor-profile/doctor-profile';
 import { ConsultRequest } from './components/consult-request/consult-request';
 import { DoctorChat } from './components/doctor-chat/doctor-chat';
 import { LoginComponent } from './features/auth/login/login.component';
+
 // Doctor dashboard components
 import { DoctorDash } from './DoctorDashboard/doctor-dash/doctor-dash';
 import { DocMain } from './DoctorDashboard/doc-main/doc-main';
@@ -24,18 +25,24 @@ import { authGuard } from './core/services/auth.guard';
 import { NavbarPatient } from './components/navbar-patient/navbar-patient';
 import { UserProfileComponent } from './components/features/profile/profile';
 import { MedicalHistory } from './components/medical-history/medical-history';
+
+// Imports from both branches resolved
+import { ConfirmEmailComponent } from './features/auth/confirm-email/confirm-email.component';
 import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilty/doctor-avaliabilty';
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
 import { DoctorReviewCardComponent } from './components/doctor-review-card-component/doctor-review-card-component';
 import { RatingsPageComponent } from './components/ratings-page-component/ratings-page-component';
 
 export const routes: Routes = [
-  { path: '', component: Home },
+  // If the path is empty, we default to Home. 
+  // (Note: 'main' branch had a conflicting redirect to auth/register on empty path. 
+  // Keeping Home component as the default root path, but you can adjust if register is meant to be the true default.)
+  { path: '', component: Home, pathMatch: 'full' },
   { path: 'nabd-ai', component: NabdAi },
-  // { path: 'doctors', component: Doctors , canActivate: [authGuard] },
   { path: 'doctors', component: Doctors },
   { path: 'doctor/:id', component: DoctorProfile },
 
+  // Booking process wizard
   {
     path: 'booking',
     component: Booking,
@@ -47,22 +54,24 @@ export const routes: Routes = [
       { path: 'success', component: StepBookingSuccess },
     ]
   },
+
+  // Patient Profile section
   {
-    path: 'profile', component: NavbarPatient,
+    path: 'profile', 
+    component: NavbarPatient,
     children: [
       { path: '', redirectTo: 'patientProfile', pathMatch: 'full' },
       { path: 'patientProfile', component: UserProfileComponent },
       { path: 'medicalHistory', component: MedicalHistory },
       { path: 'appointment', component: AppointmentsListComponent },
       { path: 'PatientSetting', component: DocSettings },
-
     ]
-
   },
+
   { path: 'consult', component: ConsultRequest },
   { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
 
-  // مسار لوحة تحكم الطبيب بمساراتها الفرعية
+  // Doctor Dashboard sub-routes
   {
     path: 'doctor-dashboard',
     component: DoctorDash,
@@ -79,7 +88,7 @@ export const routes: Routes = [
     ]
   },
 
-  // Admin routes (lazy-loaded)
+  // Admin routes (Lazy-loaded)
   {
     path: 'admin/dashboard',
     loadComponent: () => import('./dashboard/dashboard.component').then(m => m.AdminDashboardComponent),
@@ -91,17 +100,12 @@ export const routes: Routes = [
   {
     path: 'admin/doctors',
     loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
+  },
 
-  } ,
-
+  // Authentication & Verification paths
   {
     path: 'auth/login',
     component: LoginComponent
-  },
-  {
-    path: '',
-    redirectTo: 'auth/register',
-    pathMatch: 'full'
   },
   {
     path: 'auth/register',
@@ -110,5 +114,17 @@ export const routes: Routes = [
   {
     path: 'auth/confirm-email-notice',
     loadComponent: () => import('./features/auth/confirm-email-notice/confirm-email-notice.component').then(m => m.ConfirmEmailNoticeComponent)
+  },
+  {
+    path: 'auth/doctor-info',
+    loadComponent: () => import('./features/auth/doctor-info/doctor-info.component').then(m => m.DoctorInfoComponent)
+  },
+  { 
+    path: 'confirm-email', 
+    component: ConfirmEmailComponent 
+  },
+  { 
+    path: 'api/auth/confirm-email', 
+    component: ConfirmEmailComponent
   }
 ];
