@@ -11,38 +11,62 @@
     <!-- ===================== نموذج طلب الإستشارة ===================== -->
     <ng-container *ngIf="!submitted">
 
-      <!-- Doctor card -->
-      <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mt-10 mb-8 text-right" dir="rtl">
-        <div class="flex items-center gap-4">
-          <div>
-            <h3 class="font-bold text-[#3a1560] text-lg">{{ doctor.name }}</h3>
-            <p class="text-slate-500 text-sm mt-0.5">{{ doctor.specialty }}</p>
-
-            <div class="flex items-center gap-1 text-sm text-slate-500 mt-1">
-              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>{{ doctor.location }}</span>
-
-              <span class="mx-1 text-slate-300">|</span>
-
-              <span>({{ doctor.reviewsCount }})</span>
-              <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
-              </svg>
-              <span class="font-bold text-[#3a1560]">{{ doctor.rating }}</span>
-            </div>
-          </div>
-        </div>
-
-        <img [src]="doctorImage" [alt]="doctor.name" class="w-16 h-16 rounded-xl object-cover shrink-0" />
+      <!-- Loading doctor data -->
+      <div *ngIf="isLoadingDoctor" class="flex flex-col items-center justify-center py-20">
+        <div class="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-500 font-semibold">جاري تحميل بيانات الطبيب...</p>
       </div>
 
-      <!-- بيانات المريض -->
-      <h2 class="font-extrabold text-[#3a1560] text-xl mb-5">بيانات المريض</h2>
+      <!-- Doctor data error -->
+      <div *ngIf="!isLoadingDoctor && doctorError" class="mt-10">
+        <div class="bg-red-50 text-red-600 font-semibold text-center rounded-xl py-3 px-4 mb-6">
+          {{ doctorError }}
+        </div>
+        <div class="flex justify-center">
+          <button
+            (click)="onBack()"
+            class="font-extrabold text-base py-3.5 px-8 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+          >
+            رجوع
+          </button>
+        </div>
+      </div>
 
-      <form (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+      <!-- Doctor card + form (shown when doctor data is loaded) -->
+      <ng-container *ngIf="!isLoadingDoctor && !doctorError">
+
+        <!-- Doctor card -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mt-10 mb-8 text-right" dir="rtl">
+          <div class="flex items-center gap-4">
+            <div>
+              <h3 class="font-bold text-[#3a1560] text-lg">{{ doctor.name }}</h3>
+              <p class="text-slate-500 text-sm mt-0.5">{{ doctor.specialty }}</p>
+
+              <div class="flex items-center gap-1 text-sm text-slate-500 mt-1">
+                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{{ doctor.location }}</span>
+
+                <span class="mx-1 text-slate-300">|</span>
+
+                <span>({{ doctor.reviewsCount }})</span>
+                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                </svg>
+                <span class="font-bold text-[#3a1560]">{{ doctor.rating }}</span>
+              </div>
+            </div>
+          </div>
+
+          <img [src]="doctorImage" [alt]="doctor.name" class="w-16 h-16 rounded-xl object-cover shrink-0" />
+        </div>
+
+        <!-- بيانات المريض -->
+        <h2 class="font-extrabold text-[#3a1560] text-xl mb-5">بيانات المريض</h2>
+
+        <form (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
 
         <!-- الأسم بالكامل -->
         <div>
@@ -168,6 +192,7 @@
           </button>
         </div>
       </form>
+      </ng-container>
     </ng-container>
 
     <!-- ===================== تم إرسال الطلب ===================== -->

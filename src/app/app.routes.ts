@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 // مسارات المريض والصفحات العامة
 import { Home } from './components/home/home';
 import { Booking } from './components/booking/booking';
+import { StepDateTime } from './components/booking/step-date-time/step-date-time';
+import { StepPatientData } from './components/booking/step-patient-data/step-patient-data';
+import { StepReviewConfirm } from './components/booking/step-review-confirm/step-review-confirm';
+import { StepBookingSuccess } from './components/booking/step-booking-success/step-booking-success';
 import { Doctors } from './components/doctors/doctors';
 import { DoctorProfile } from './components/doctor-profile/doctor-profile';
 import { ConsultRequest } from './components/consult-request/consult-request';
@@ -30,19 +34,29 @@ export const routes: Routes = [
   // مسارات المريض والصفحات العامة
   { path: '', component: Home },
   // { path: 'doctors', component: Doctors , canActivate: [authGuard] },
-  { path: 'doctors', component: Doctors  },
+  { path: 'doctors', component: Doctors },
   { path: 'doctor/:id', component: DoctorProfile },
-  { path: 'booking', component: Booking },
-  { path: 'profile', component: NavbarPatient ,
-  children :[
-    {path:'' ,redirectTo:'patientProfile' ,pathMatch: 'full'},
-    {path:'patientProfile' , component:UserProfileComponent} ,
-    {path:'medicalHistory' , component:MedicalHistory} ,
-    {path:'appointment' , component:AppointmentsListComponent} ,
-    {path:'PatientSetting' , component:DocSettings} ,
-    {path:'docReview', component:RatingsPageComponent}  , 
-      
-  ]
+  {
+    path: 'booking',
+    component: Booking,
+    children: [
+      { path: '', redirectTo: 'date-time', pathMatch: 'full' },
+      { path: 'date-time', component: StepDateTime },
+      { path: 'patient-data', component: StepPatientData },
+      { path: 'review', component: StepReviewConfirm },
+      { path: 'success', component: StepBookingSuccess },
+    ]
+  },
+  {
+    path: 'profile', component: NavbarPatient,
+    children: [
+      { path: '', redirectTo: 'patientProfile', pathMatch: 'full' },
+      { path: 'patientProfile', component: UserProfileComponent },
+      { path: 'medicalHistory', component: MedicalHistory },
+      { path: 'appointment', component: AppointmentsListComponent },
+      { path: 'PatientSetting', component: DocSettings },
+
+    ]
 
   },
   { path: 'consult', component: ConsultRequest },
@@ -55,15 +69,15 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
-      { path: 'docSlots', component:DoctorAvailabilityComponent },
+      { path: 'docSlots', component: DoctorAvailabilityComponent },
       { path: 'patients', component: DocPatients },
-      { path: 'consultations', component: DocConsultations  },
+      { path: 'consultations', component: DocConsultations },
       { path: 'analytics', component: DocAnalytics },
       { path: 'finance', component: DocPayments },
       { path: 'profile', component: DocProfile },
       { path: 'settings', component: DocSettings },
-    
-     
+
+
     ]
   },
 
@@ -79,9 +93,11 @@ export const routes: Routes = [
   {
     path: 'admin/doctors',
     loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
-  } ,
-   {path: 'auth/login',
-  component: LoginComponent},
+  },
+  {
+    path: 'auth/login',
+    component: LoginComponent
+  },
   {
     path: '',
     redirectTo: 'auth/register',
