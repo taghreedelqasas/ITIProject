@@ -219,17 +219,35 @@
 
       <div class="space-y-2">
         <label class="text-xs   px-2  font-bold text-gray-700 block">طريقة الاستلام</label>
-        <select [(ngModel)]="withdrawMethod" class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm text-right focus:outline-none focus:border-[#00E5FF] transition-all">
+        <select [(ngModel)]="withdrawMethod"   class="w-full border border-gray-200 rounded-2xl p-3 pr-4 pl-10 text-sm text-gray-600 appearance-none focus:outline-none   focus:border-[#00E5FF] bg-white">
           <option value="InstaPay">InstaPay</option>
           <option value="BankTransfer">تحويل بنكي</option>
         </select>
       </div>
 
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-gray-700 block">رقم الحساب / المحفظة</label>
-        <input type="text" [(ngModel)]="accountNumber" placeholder="أدخلي رقم الحساب أو المحفظة"
-               class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm text-right focus:outline-none focus:border-[#00E5FF] transition-all">
-      </div>
+     <div class="space-y-2">
+  <label class="block text-sm font-medium text-gray-700">
+    @if (withdrawMethod() === 'InstaPay') {
+      عنوان الدفع (InstaPay Address) <span class="text-red-500">*</span>
+    } @else if (withdrawMethod() === 'Wallet') {
+      رقم المحفظة الإلكترونية <span class="text-red-500">*</span>
+    } @else {
+      رقم الحساب البنكي أو الـ IBAN <span class="text-red-500">*</span>
+    }
+  </label>
+  
+  <input 
+    [type]="withdrawMethod() === 'Wallet' ? 'tel' : 'text'"
+    [ngModel]="accountNumber()" 
+    (ngModelChange)="accountNumber.set($event)"
+   [placeholder]="
+      withdrawMethod() === 'InstaPay' ? ' name@instapay أو رقم الهاتف المرتيط' :
+      withdrawMethod() === 'Wallet' ? 'مثال: 01012345678' :
+      'أدخلي رقم الحساب أو الـ IBAN بـ EG...'
+    "
+    class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#53098D]/20 focus:border-[#53098D] text-right"
+    dir="ltr">
+</div>
 
       <div class="space-y-2">
         <label class="text-xs font-bold text-gray-700 block">المبلغ المطلوب</label>

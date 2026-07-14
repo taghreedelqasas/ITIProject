@@ -15,7 +15,7 @@ export interface FileAnalysisResponse {
   providedIn: 'root'
 })
 export class Chat {
-  private baseUrl = `${environment.apiBaseUrl}/Chat`;
+  private baseUrl = `${environment.apiBaseUrl}/api/Chat`;
 
   constructor(private http: HttpClient) {}
 

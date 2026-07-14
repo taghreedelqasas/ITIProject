@@ -22,6 +22,7 @@ ngOnInit(): void {
   this.dashService.getDoctorAppointments() ; 
   this.dashService.getWallet() ;
   this.dashService.totalEarnings() ;
+  this.dashService.getWalletTransactions(); 
 }
 
 

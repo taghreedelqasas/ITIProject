@@ -111,12 +111,11 @@
           <span class="text-sm  group-hover:scale-110 transition-transform"><i class="fas fa-cog"></i></span>
           <span class="text-sm">الإعدادات</span>
         </a>
-        <a  href="/"     (click)="onLogout()"   routerLinkActive="bg-white   text-[#4A148C] font-bold shadow-md" 
-           class="flex items-center gap-3 px-4 py-2 w-full   absolute  bottom-0 rounded-xl transition-all duration-200 group hover:bg-white/10">
-          <span class="text-sm  group-hover:scale-110 transition-transform"><i class="fas fa-sign-out-alt"></i></span>
-          <span class="text-sm">تسجيل الحروج</span>
-        </a>
-
+     <a href="/" (click)="onLogout($event)" routerLinkActive="bg-white text-[#4A148C] font-bold shadow-md"
+   class="flex items-center gap-3 px-4 py-2 w-full absolute bottom-0 rounded-xl transition-all duration-200 group hover:bg-white/10">
+  <span class="text-sm group-hover:scale-110 transition-transform"><i class="fas fa-sign-out-alt"></i></span>
+  <span class="text-sm">تسجيل الخروج</span>
+</a>
 
    
       </nav>
@@ -142,11 +141,11 @@
       </div> -->
 
       <div class="flex items-center   justify-start      space-x-reverse space-x-4  "  >
-        
+<!--         
         <button class="p-2.5   mx-3   text-gray-400 hover:text-purple-700 bg-gray-50 rounded-xl hover:bg-purple-50 transition-all relative">
           <span><i class="fas fa-bell"></i></span>
           <span class="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        </button> -->
 
         <div class="flex items-center space-x-reverse space-x-2  bg-[#F3F4F5]   border border-gray-200   px-4 py-2 rounded-lg  ">
           <img [src]="dashService.doctor()?.imageProfile || 'https://api.dicebear.com/7.x/adventurer/svg?seed=doctor'" 
