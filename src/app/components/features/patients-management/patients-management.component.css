@@ -1,0 +1,100 @@
+.management-page {
+  padding: 20px;
+  direction: rtl;
+  font-family: system-ui, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+.page-header h2 {
+  color: #1a1a1a;
+  margin-bottom: 5px;
+}
+.page-header .subtitle {
+  color: #7a7a7a;
+  font-size: 14px;
+}
+.filters-bar {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+.search-input, .filter-select {
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+}
+.search-input { flex: 2; }
+.filter-select { flex: 1; color: #7a7a7a; }
+
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  padding: 20px;
+}
+.table-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+.count-badge {
+  color: #7a7a7a;
+  font-size: 12px;
+  margin-right: 10px;
+}
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+}
+.custom-table th {
+  color: #7a7a7a;
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+.custom-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.user-name { font-weight: 600; color: #333; }
+.contact-cell .email { color: #333; }
+.contact-cell .phone { color: #999; font-size: 12px; margin-top: 3px; }
+.bold-text { font-weight: bold; color: #222; }
+.date-text { color: #666; font-size: 13px; }
+
+.status-badge {
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+}
+.status-badge.active {
+  background-color: #e6f9f2;
+  color: #00cc88;
+}
+.status-badge.suspended {
+  background-color: #f0f2f5;
+  color: #90a0b7;
+}
+.actions-btn {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 16px;
+}

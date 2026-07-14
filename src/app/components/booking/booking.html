@@ -1,0 +1,615 @@
+<div dir="rtl" class="min-h-screen bg-slate-50 font-[Tajawal] pb-16  pt-10">
+
+  <!-- Header -->
+  <header *ngIf="currentStep !== 5" class="bg-gradient-to-l from-purple-900 via-purple-800 to-fuchsia-900 py-12 px-6 text-center">
+    <h1 class="text-white text-3xl md:text-4xl font-extrabold mb-3">{{ pageTitle }}</h1>
+    <p class="text-purple-200 text-lg">{{ pageSubtitle }}</p>
+  </header>
+
+  <div class="max-w-3xl mx-auto px-6">
+
+    <div *ngIf="errorMessage" class="bg-red-50 text-red-600 font-semibold text-center rounded-xl py-3 px-4 mt-6">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="isLoading" class="text-center text-slate-400 py-3">جاري التحميل...</div>
+
+    <ng-container *ngIf="currentStep !== 5">
+      <!-- Steps indicator -->
+      <div class="flex flex-row-reverse items-center justify-center gap-3 md:gap-6 mt-10 mb-10">
+    <ng-container *ngFor="let step of steps; let last = last">
+      <div class="flex flex-col items-center gap-2">
+            <div
+              class="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm"
+              [ngClass]="step.num === currentStep
+                ? 'bg-cyan-400 text-white'
+                : 'bg-cyan-50 text-[#3a1560]'"
+            >
+              {{ step.num }}
+            </div>
+            <span
+              class="text-xs md:text-sm whitespace-nowrap"
+              [ngClass]="step.num === currentStep ? 'text-[#3a1560] font-bold' : 'text-slate-400'"
+            >
+              {{ step.label }}
+            </span>
+          </div>
+          <div *ngIf="!last" class="h-px w-8 md:w-16 bg-slate-200 mb-6"></div>
+        </ng-container>
+      </div>
+
+      <!-- Doctor card -->
+      <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between mb-10 text-right" dir="rtl">
+
+    <div class="flex items-center gap-4">
+      <img [src]="doctorImage" [alt]="doctor.name" class="w-16 h-16 rounded-xl object-cover" />
+
+      <div>
+        <h3 class="font-bold text-[#3a1560] text-lg">{{ doctor.name }}</h3>
+        <p class="text-slate-500 text-sm mt-0.5">{{ doctor.specialty }}</p>
+
+        <div class="flex items-center gap-1 text-sm text-slate-500 mt-1">
+          <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+          </svg>
+          <span class="font-bold text-[#3a1560]">{{ doctor.rating }}</span>
+          <span>({{ doctor.reviewsCount }})</span>
+
+          <span class="mx-1 text-slate-300">|</span>
+
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>{{ doctor.location }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <p class="text-2xl font-extrabold text-[#3a1560]">{{ doctor.price }}</p>
+      <p class="text-slate-400 text-sm mt-0.5">جنية</p>
+    </div>
+
+  </div>
+    </ng-container>
+
+    <!-- ============ خطوة 1: التاريخ والوقت ============ -->
+    <ng-container *ngIf="currentStep === 1">
+
+      <!-- Date picker -->
+      <h2 class="text-xl font-extrabold text-[#3a1560] mb-4">اختر التاريخ</h2>
+
+      <div class="bg-purple-50 rounded-2xl p-6 mb-10">
+
+        <!-- Month nav -->
+        <div class="flex items-center justify-between mb-6">
+          <button (click)="prevMonth()" class="text-[#3a1560] hover:text-cyan-500 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span class="font-bold text-[#3a1560]">{{ monthLabel }}</span>
+          <button (click)="nextMonth()" class="text-[#3a1560] hover:text-cyan-500 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Week day labels -->
+        <div class="grid grid-cols-7 text-center text-sm text-slate-500 font-bold mb-3">
+          <span *ngFor="let day of weekDays">{{ day }}</span>
+        </div>
+
+        <!-- Day cells -->
+        <div class="grid grid-cols-7 gap-y-4 text-center">
+          <div *ngFor="let day of calendarDays" class="flex justify-center">
+            <button
+              *ngIf="day"
+              (click)="selectDate(day)"
+              class="w-10 h-10 rounded-xl flex items-center justify-center text-sm transition-colors"
+              [ngClass]="day.date === selectedDate
+                ? 'bg-purple-200 text-[#3a1560] font-bold border-2 border-cyan-400'
+                : 'text-slate-600 hover:bg-purple-100'"
+            >
+              {{ day.date }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time picker -->
+      <h2 class="text-xl font-extrabold text-[#3a1560] mb-4">إختر الوقت</h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+        <ng-container *ngFor="let row of timeSlots">
+          <button
+            *ngFor="let slot of row"
+            (click)="selectTime(slot)"
+            class="rounded-xl py-3 text-sm font-bold transition-colors border"
+            [ngClass]="slot.label === selectedTime
+              ? 'bg-purple-100 text-[#3a1560] border-2 border-cyan-400'
+              : 'bg-purple-50 text-slate-600 border-transparent hover:bg-purple-100'"
+          >
+            {{ slot.label }}
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Next button -->
+      <button
+        (click)="onNext()"
+        class="w-full bg-cyan-400 hover:bg-cyan-500 transition-colors text-[#3a1560] font-extrabold text-lg py-4 rounded-full shadow-md"
+      >
+        التالي
+      </button>
+    </ng-container>
+
+    <!-- ============ خطوة 2: بيانات المريض ============ -->
+    <ng-container *ngIf="currentStep === 2">
+
+      <h2 class="text-xl font-extrabold text-[#3a1560] mb-6">بيانات المريض</h2>
+
+      <form class="mb-8" (ngSubmit)="onSubmitPatientData()">
+
+        <!-- الأسم بالكامل -->
+        <div class="mb-6">
+          <label class="block text-sm font-bold text-slate-700 mb-2">
+            الأسم بالكامل<span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="fullName"
+            [(ngModel)]="patient.fullName"
+            placeholder="أدخل اسمك بالكامل"
+            class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+          />
+        </div>
+
+        <!-- رقم الهاتف -->
+        <div class="mb-6">
+          <label class="block text-sm font-bold text-slate-700 mb-2">
+            رقم الهاتف<span class="text-red-500">*</span>
+          </label>
+          <div class="flex items-center rounded-xl border border-slate-200 focus-within:ring-2 focus-within:ring-cyan-400 relative">
+            <!-- Country selector -->
+            <button
+              type="button"
+              (click)="toggleCountryMenu()"
+              class="flex items-center gap-1 px-4 py-3 border-l border-slate-200 shrink-0"
+            >
+              <span class="text-lg leading-none">{{ selectedCountry.flag }}</span>
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Country dropdown -->
+            <ul
+              *ngIf="isCountryMenuOpen"
+              class="absolute top-full right-0 mt-1 w-40 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-10"
+            >
+              <li *ngFor="let country of countries">
+                <button
+                  type="button"
+                  (click)="selectCountry(country)"
+                  class="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-purple-50"
+                >
+                  <span class="text-lg leading-none">{{ country.flag }}</span>
+                  <span>{{ country.name }}</span>
+                  <span class="text-slate-400 mr-auto">{{ country.code }}</span>
+                </button>
+              </li>
+            </ul>
+
+            <span class="px-2 text-sm text-slate-500 shrink-0">{{ selectedCountry.code }}</span>
+
+            <input
+              type="tel"
+              name="phone"
+              [(ngModel)]="patient.phone"
+              placeholder="1XX XXX XXXX"
+              class="w-full px-2 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none rounded-l-xl"
+            />
+          </div>
+        </div>
+
+        <!-- العمر والجنس -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">الجنس</label>
+            <select
+              name="gender"
+              [(ngModel)]="patient.gender"
+              class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              [ngClass]="patient.gender ? 'text-slate-700' : 'text-slate-400'"
+            >
+              <option value="" disabled selected>ذكر / أنثى</option>
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">العمر</label>
+            <input
+              type="number"
+              name="age"
+              [(ngModel)]="patient.age"
+              placeholder="مثال : 30"
+              min="0"
+              class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        <!-- ملاحظات للطبيب -->
+        <div class="mb-8">
+          <label class="block text-sm font-bold text-slate-700 mb-2">ملاحظات للطبيب</label>
+          <div class="relative">
+            <textarea
+              name="notes"
+              [(ngModel)]="patient.notes"
+              rows="4"
+              placeholder="اذكر أعراضك أو أي أمراض مزمنة مثل(السكر, الضغط, ........)."
+              class="w-full rounded-xl border border-slate-200 px-4 py-3 pl-10 text-sm text-slate-700 placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+            ></textarea>
+            <svg class="w-5 h-5 text-slate-300 absolute top-3 left-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h1M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2h-4l-2-2H9a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex flex-row-reverse gap-4">
+          <button
+            type="submit"
+            [disabled]="!isPatientFormValid"
+            class="flex-1 font-extrabold text-lg py-4 rounded-full shadow-md transition-colors"
+            [ngClass]="isPatientFormValid
+              ? 'bg-cyan-400 hover:bg-cyan-500 text-[#3a1560] cursor-pointer'
+              : 'bg-cyan-100 text-white cursor-not-allowed'"
+          >
+            التالي
+          </button>
+          <button
+            type="button"
+            (click)="onBackToDateTime()"
+            class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+          >
+            رجوع
+          </button>
+        </div>
+      </form>
+    </ng-container>
+
+    <!-- ============ خطوة 3: الدفع ============ -->
+    <ng-container *ngIf="currentStep === 3">
+
+      <h2 class="text-xl font-extrabold text-[#3a1560] mb-4">اختر طريقة الدفع</h2>
+
+      <!-- إجمالي المبلغ -->
+      <div class="flex items-center justify-between rounded-xl bg-gradient-to-l from-purple-50 to-cyan-50 px-6 py-5 mb-6">
+        <span class="text-slate-700 font-bold">إجمالي المبلغ</span>
+        <span class="text-lg font-extrabold text-[#3a1560]">{{ doctor.price }} جنية</span>
+      </div>
+
+      <div class="space-y-4 mb-8">
+
+        <!-- بطاقة إئتمانية -->
+        <div
+          class="rounded-2xl border-2 overflow-hidden transition-colors"
+          [ngClass]="selectedPaymentMethod === 'card' ? 'border-cyan-400' : 'border-slate-100'"
+        >
+          <button
+            type="button"
+            (click)="selectPaymentMethod('card')"
+            class="w-full flex items-center justify-between px-6 py-5 transition-colors"
+            [ngClass]="selectedPaymentMethod === 'card' ? 'bg-purple-50' : 'bg-white hover:bg-slate-50'"
+          >
+            <div class="flex items-center gap-4">
+              <div class="bg-purple-100 rounded-xl p-3">
+                <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <path stroke-linecap="round" d="M2 10h20" />
+                </svg>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-[#3a1560]">بطاقة إئتمانية</p>
+                <p class="text-slate-500 text-sm">Visa / Mastercard</p>
+              </div>
+            </div>
+            <span
+              class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0"
+              [ngClass]="selectedPaymentMethod === 'card' ? 'border-[#3a1560]' : 'border-slate-300'"
+            >
+              <span *ngIf="selectedPaymentMethod === 'card'" class="w-3 h-3 rounded-full bg-[#3a1560]"></span>
+            </span>
+          </button>
+
+          <!-- فورم بيانات البطاقة -->
+          <div *ngIf="selectedPaymentMethod === 'card'" class="bg-slate-50 border-t border-slate-100 px-6 py-6">
+
+            <div class="mb-5">
+              <label class="block text-sm font-bold text-slate-700 mb-2">رقم البطاقة</label>
+              <input
+                type="text"
+                name="cardNumber"
+                [(ngModel)]="card.number"
+                placeholder="0000 0000 0000 0000"
+                maxlength="19"
+                inputmode="numeric"
+                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              />
+            </div>
+
+            <div class="mb-5">
+              <label class="block text-sm font-bold text-slate-700 mb-2">الاسم على البطاقة</label>
+              <input
+                type="text"
+                name="cardHolderName"
+                [(ngModel)]="card.holderName"
+                placeholder="الأسم كما يظهر على البطاقة"
+                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">تاريخ الإنتهاء</label>
+                <input
+                  type="text"
+                  name="cardExpiry"
+                  [(ngModel)]="card.expiry"
+                  placeholder="MM / YY"
+                  maxlength="5"
+                  class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">CVV</label>
+                <input
+                  type="password"
+                  name="cardCvv"
+                  [(ngModel)]="card.cvv"
+                  placeholder="•••"
+                  maxlength="4"
+                  inputmode="numeric"
+                  class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <label class="flex items-center gap-2 justify-end cursor-pointer">
+              <input
+                type="checkbox"
+                name="saveCard"
+                [(ngModel)]="card.saveCard"
+                class="w-4 h-4 rounded border-slate-300 text-cyan-500 focus:ring-cyan-400"
+              />
+              <span class="text-sm text-slate-600">حفظ البطاقة للمدفوعات القادمة</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- محفظة الكترونية -->
+        <div
+          class="rounded-2xl border-2 overflow-hidden transition-colors"
+          [ngClass]="selectedPaymentMethod === 'wallet' ? 'border-cyan-400' : 'border-slate-100'"
+        >
+          <button
+            type="button"
+            (click)="selectPaymentMethod('wallet')"
+            class="w-full flex items-center justify-between px-6 py-5 transition-colors"
+            [ngClass]="selectedPaymentMethod === 'wallet' ? 'bg-purple-50' : 'bg-white hover:bg-slate-50'"
+          >
+            <div class="flex items-center gap-4">
+              <div class="bg-purple-100 rounded-xl p-3">
+                <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h13a1 1 0 011 1v3M3 7v10a2 2 0 002 2h14a2 2 0 002-2v-6a1 1 0 00-1-1h-4a2 2 0 100 4h4" />
+                </svg>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-[#3a1560]">محفظة الكترونية</p>
+                <p class="text-slate-500 text-sm">Vodafone / Orange / Etisalat</p>
+              </div>
+            </div>
+            <span
+              class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0"
+              [ngClass]="selectedPaymentMethod === 'wallet' ? 'border-[#3a1560]' : 'border-slate-300'"
+            >
+              <span *ngIf="selectedPaymentMethod === 'wallet'" class="w-3 h-3 rounded-full bg-[#3a1560]"></span>
+            </span>
+          </button>
+
+          <!-- فورم بيانات المحفظة -->
+          <div *ngIf="selectedPaymentMethod === 'wallet'" class="bg-slate-50 border-t border-slate-100 px-6 py-6">
+            <label class="block text-sm font-bold text-slate-700 mb-2">أدخل رقم الهاتف</label>
+            <input
+              type="tel"
+              name="walletPhone"
+              [(ngModel)]="walletPhone"
+              placeholder="01xxxxxxxxxxx"
+              maxlength="13"
+              inputmode="numeric"
+              class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-row-reverse gap-4">
+        <button
+          type="button"
+          (click)="onSubmitPayment()"
+          [disabled]="!isPaymentValid"
+          class="flex-1 font-extrabold text-lg py-4 rounded-full shadow-md transition-colors"
+          [ngClass]="isPaymentValid
+            ? 'bg-cyan-400 hover:bg-cyan-500 text-[#3a1560] cursor-pointer'
+            : 'bg-cyan-100 text-white cursor-not-allowed'"
+        >
+          التالي
+        </button>
+        <button
+          type="button"
+          (click)="onBackToPatientData()"
+          class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+        >
+          رجوع
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ============ خطوة 4: مراجعة وتأكيد ============ -->
+    <ng-container *ngIf="currentStep === 4">
+
+      <h2 class="text-xl font-extrabold text-[#3a1560] mb-4">مراجعة وتأكيد</h2>
+
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-2 mb-8">
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">التاريخ</span>
+          <span class="text-slate-700">{{ selectedDateLabel }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الوقت</span>
+          <span class="text-slate-700">{{ selectedTime }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الاسم</span>
+          <span class="text-slate-700">{{ patient.fullName || '-' }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الهاتف</span>
+          <span class="text-slate-700" dir="ltr">{{ fullPhoneNumber }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الجنس</span>
+          <span class="text-slate-700">{{ genderLabel }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">طريقة الدفع</span>
+          <span class="text-slate-700">{{ paymentMethodLabel }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4">
+          <span class="font-bold text-[#3a1560]">التكلفة</span>
+          <span class="text-slate-700">{{ doctor.price }} جنية</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-row-reverse gap-4">
+        <button
+          type="button"
+          (click)="onConfirmBooking()"
+          [disabled]="isLoading"
+          class="flex-1 bg-cyan-400 hover:bg-cyan-500 disabled:opacity-50 transition-colors text-[#3a1560] font-extrabold text-lg py-4 rounded-full shadow-md"
+        >
+          {{ isLoading ? 'جاري تأكيد الحجز...' : 'تأكيد الحجز والدفع' }}
+        </button>
+        <button
+          type="button"
+          (click)="onBackToPayment()"
+          class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+        >
+          رجوع
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ============ خطوة 5: تم تأكيد الحجز ============ -->
+    <ng-container *ngIf="currentStep === 5">
+
+      <div class="flex flex-col items-center text-center pt-16 pb-10">
+
+        <!-- أيقونة النجاح -->
+        <div class="w-24 h-24 rounded-full border-4 border-cyan-400 flex items-center justify-center mb-8">
+          <svg class="w-11 h-11 text-cyan-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        <h2 class="text-3xl font-extrabold text-[#3a1560] mb-3">تم تأكيد الحجز!</h2>
+        <p class="text-purple-300 text-lg">سيصلك رسالة تأكيد على بريدك الإلكتروني قريباً</p>
+      </div>
+
+      <h3 class="text-lg font-extrabold text-[#3a1560] mb-4 text-right">تفاصيل الموعد</h3>
+
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-2 mb-10">
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الطبيب</span>
+          <span class="text-slate-700">{{ doctor.name }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">التخصص</span>
+          <span class="text-slate-700">{{ doctor.specialty }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">التاريخ</span>
+          <span class="text-slate-700">{{ selectedDateLabel }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الوقت</span>
+          <span class="text-slate-700">{{ selectedTime }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الأسم</span>
+          <span class="text-slate-700">{{ patient.fullName || '-' }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">الهاتف</span>
+          <span class="text-slate-700" dir="ltr">{{ fullPhoneNumber }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4 border-b border-slate-100">
+          <span class="font-bold text-[#3a1560]">طريقة الدفع</span>
+          <span class="text-slate-700">{{ paymentMethodLabel }}</span>
+        </div>
+
+        <div class="flex items-center justify-between py-4">
+          <span class="font-bold text-[#3a1560]">التكلفة</span>
+          <span class="text-slate-700">{{ doctor.price }} جنية</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-row-reverse gap-4">
+        <button
+          type="button"
+          (click)="onBackToHome()"
+          class="flex-1 bg-cyan-400 hover:bg-cyan-500 transition-colors text-[#3a1560] font-extrabold text-lg py-4 rounded-full shadow-md"
+        >
+          {{ rebookId ? 'العودة لمواعيدي' : 'العودة للرئيسية' }}
+        </button>
+        <button
+          *ngIf="fromConsultFlow"
+          type="button"
+          (click)="onGoToConsult()"
+          class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+        >
+          إستشارة الطبيب
+        </button>
+        <button
+          *ngIf="!fromConsultFlow"
+          type="button"
+          (click)="onBookAnotherAppointment()"
+          class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+        >
+          حجز موعد اخر
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

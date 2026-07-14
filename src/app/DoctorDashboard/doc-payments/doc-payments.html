@@ -1,0 +1,109 @@
+<div class="space-y-8 p-6   container  mx-auto  w-[90%]" dir="rtl">
+
+  <div>
+    <h2 class="text-2xl font-bold text-[#4A148C]">المدفوعات والأرباح</h2>
+    <p class="text-xs text-gray-400 mt-1">متابعة رصيد محفظتك وطلبات السحب</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">إجمالي الأرباح (كل الوقت)</span>
+        <span class="text-xl font-bold text-gray-800">{{ appointmentService.totalEarnings() | number }} ج.م</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-purple-50 text-[#4A148C] flex items-center justify-center text-sm">$</div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">رصيد مجمّد (طلبات سحب معلّقة)</span>
+        <span class="text-xl font-bold text-gray-800">{{ appointmentService.wallet()?.pendingBalance | number }} ج.م</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-cyan-50 text-[#00E5FF] flex items-center justify-center text-sm">🔄</div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">الرصيد المتاح للسحب</span>
+        <span class="text-xl font-bold text-gray-800">{{ appointmentService.wallet()?.balance | number }} ج.م</span>
+      </div>
+      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-green-50 text-green-500 flex items-center justify-center text-sm">💰</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm lg:col-span-1 space-y-6">
+      <h3 class="font-bold text-gray-800 text-sm">طلب سحب أموال</h3>
+
+      <div class="space-y-2">
+        <label class="text-xs   px-2  font-bold text-gray-700 block">طريقة الاستلام</label>
+        <select [(ngModel)]="withdrawMethod" class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm text-right focus:outline-none focus:border-[#00E5FF] transition-all">
+          <option value="InstaPay">InstaPay</option>
+          <option value="BankTransfer">تحويل بنكي</option>
+        </select>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-gray-700 block">رقم الحساب / المحفظة</label>
+        <input type="text" [(ngModel)]="accountNumber" placeholder="أدخلي رقم الحساب أو المحفظة"
+               class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm text-right focus:outline-none focus:border-[#00E5FF] transition-all">
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-gray-700 block">المبلغ المطلوب</label>
+        <input type="number" [(ngModel)]="withdrawAmount" placeholder="أدخل المبلغ (ج.م)"
+               class="w-full border border-gray-200 rounded-xl py-3 px-4 text-sm text-right focus:outline-none focus:border-[#00E5FF] transition-all">
+        <span class="text-[10px] text-gray-400 block">
+          الرصيد المتاح: <span class="text-[#00E5FF] font-bold">{{ appointmentService.wallet()?.balance | number }} ج.م</span>
+        </span>
+      </div>
+
+      <button (click)="onSubmitWithdraw()" class="w-full bg-[#00E5FF] hover:bg-[#00B4D8] text-white font-bold py-3 rounded-xl transition-all shadow-sm text-xs">
+        إرسال طلب السحب
+      </button>
+      <p class="text-[9px] text-gray-400 text-center">تتم مراجعة الطلب واعتماده يدويًا من الإدارة قبل التحويل الفعلي</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm lg:col-span-2">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-gray-800 text-sm">سجل الحركات المالية</h3>
+        <!-- ⚠️ ده سجل الإيداعات (Credit) بس، مفيش endpoint حاليًا لعرض سجل طلبات السحب الخاصة بالدكتور -->
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead>
+            <tr class="text-gray-400 border-b border-gray-50">
+              <th class="pb-3 font-medium">رقم العملية</th>
+              <th class="pb-3 font-medium">المبلغ</th>
+              <th class="pb-3 font-medium">النوع</th>
+              <th class="pb-3 font-medium">التاريخ</th>
+              <th class="pb-3 font-medium">الحالة</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50 text-gray-700">
+            @for (tx of appointmentService.walletTransactions(); track tx.id) {
+              <tr class="hover:bg-gray-50/40 transition-colors">
+                <td class="py-3.5 font-mono text-gray-500">#{{ tx.id }}</td>
+                <td class="py-3.5 font-bold">{{ tx.amount | number }} ج.م</td>
+                <td class="py-3.5 text-gray-500">{{ tx.type === 'Credit' ? 'إيداع' : tx.type }}</td>
+                <td class="py-3.5 text-gray-400 font-mono">{{ tx.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="py-3.5">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block bg-green-50 text-green-600">
+                    {{ tx.status === 'Available' ? 'متاح' : tx.status }}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center py-12 text-gray-400 italic">لا توجد حركات مالية بعد.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

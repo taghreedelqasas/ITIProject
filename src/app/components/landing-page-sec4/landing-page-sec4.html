@@ -1,0 +1,83 @@
+<section dir="rtl" class="max-w-6xl mx-auto px-6 py-16 text-center font-[Cairo]">
+
+  <!-- Badge -->
+  <span
+    class="inline-block bg-gradient-to-r from-[#F3EAF8] to-[#E6FBFB] text-[#44116D] text-xs font-semibold px-5 py-2 rounded-full mb-5">
+    أطباؤنا المميزون
+  </span>
+
+  <!-- Title -->
+  <h2 class="text-4xl font-extrabold text-[#44116D] mb-3">
+    نخبة من أفضل الأطباء المتخصصين
+  </h2>
+
+  <!-- Subtitle -->
+  <p class="text-[#829196] text-lg mb-16">
+    أكثر من ٥٠٠ طبيب موثق في جميع التخصصات الطبية
+  </p>
+
+  <!-- Doctors -->
+  <div class="relative flex justify-center items-end gap-6 mb-16">
+
+    <!-- Dashed line -->
+    <div
+      class="absolute left-0 right-0 top-[48%] border-t-2 border-dashed border-[#B9D8EA] z-0">
+    </div>
+
+    <!-- Doctor Card -->
+<div
+  *ngFor="let doc of doctors; let i = index"
+  class="relative z-10 w-[180px] overflow-hidden rounded-xl
+         bg-white border border-gray-100
+         shadow-[0_15px_40px_rgba(68,17,109,0.12)]
+         transition-all duration-300 hover:-translate-y-2"
+  [ngClass]="{
+    '-mr-8 rotate-[-6deg]': i === 0,
+    '-mr-8 rotate-[-3deg]': i === 1,
+    '-mr-8 rotate-0': i === 2,
+    '-mr-8 rotate-[3deg]': i === 3,
+    'rotate-[6deg]': i === 4,
+    '-mt-10': doc.raised,
+    'mt-6': !doc.raised
+  }">
+
+  <!-- Image -->
+  <img
+    [src]="doc.photo"
+    [alt]="doc.name"
+    class="w-full h-[230px] object-cover">
+
+  <!-- Footer -->
+  <div class="bg-[#6F3FA2] px-3 py-2 text-center">
+
+    <h3 class="text-white text-[15px] font-bold leading-5">
+      {{doc.name}}
+    </h3>
+
+    <p class="text-[11px] text-[#E7DDF2] mt-1">
+      {{doc.specialty}}
+    </p>
+
+    <div class="flex justify-end items-center gap-1 mt-2">
+      <span class="text-[11px] text-white">
+        ({{doc.rating}})
+      </span>
+
+      <span class="text-[#FFC107] text-[11px]">
+        ★★★★★
+      </span>
+    </div>
+
+  </div>
+
+</div>
+
+  </div>
+
+  <!-- Button -->
+  <button
+    class="border-2 border-[#44116D] text-[#44116D] rounded-full px-12 py-3 font-bold text-lg hover:bg-[#44116D] hover:text-white transition">
+    جرب نبض AI
+  </button>
+
+</section>

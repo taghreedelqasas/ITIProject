@@ -1,0 +1,202 @@
+<div class="appts-wrap" dir="rtl">
+  <div class="appts-card">
+   
+
+    @if (loading()) {
+      <div class="state-msg">جارِ تحميل المواعيد...</div>
+    } @else if (errorMsg()) {
+      <div class="state-msg state-msg--error">{{ errorMsg() }}</div>
+    } @else if (appointments().length === 0) {
+      <div class="state-msg">لا يوجد مواعيد حالياً</div>
+    } @else {
+      <!-- المواعيد القادمة -->
+      <div class="section">
+        <button type="button" class="section-header" (click)="toggleUpcoming()">
+          <span class="section-dot"></span>
+          <span class="section-title">المواعيد القادمة</span>
+          <span class="section-count">{{ upcoming().length }}</span>
+          <span class="chevron" [class.chevron--open]="expandedUpcoming()">‹</span>
+        </button>
+
+        @if (expandedUpcoming()) {
+          @if (upcoming().length === 0) {
+            <div class="state-msg state-msg--small">مفيش مواعيد قادمة</div>
+          } @else {
+            <ul class="appt-list">
+              @for (appt of upcoming(); track appt.id) {
+                <li class="appt-card">
+                  <span class="appt-tag" [ngClass]="statusClass(appt.status)">
+                    {{ statusLabel(appt.status) }}
+                  </span>
+
+                  <div class="appt-row">
+                    <div class="appt-info">
+                      <span class="appt-doctor">{{ appt.doctorName  'الطبيب' }}</span>
+                      @if (appt.doctorSpecialty) {
+                        <span class="appt-specialty">{{ appt.doctorSpecialty }}</span>
+                      }
+                      <div class="appt-meta">
+                        @if (appt.slotStart) {
+                          <span class="meta-item">
+                            <span class="meta-icon">📅</span>
+                            <span dir="ltr">{{ formatDate(appt.slotStart) }}</span>
+                          </span>
+                          <span class="meta-item">
+                            <span class="meta-icon">🕐</span>
+                            <span dir="ltr">{{ formatTimeRange(appt.slotStart, appt.slotEnd) }}</span>
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="appt-avatar">
+                      <img
+                        [src]="appt.doctorImage  ('https://ui-avatars.com/api/?background=efe9fd&color=6d3fe0&bold=true&name=' + (appt.doctorName  'د'))"
+                        [alt]="appt.doctorName  'الطبيب'"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="appt-actions">
+                    <button
+                      type="button"
+                      class="action-btn action-btn--danger-outline"
+                      (click)="openCancel(appt)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18" />
+                        <path d="M6 6l12 12" />
+                      </svg>
+                      إلغاء
+                    </button>
+                    <button
+                      type="button"
+                      class="action-btn action-btn--primary-outline"
+                      (click)="openReschedule(appt)"
+                    >
+                      تعديل
+                    </button>
+                  </div>
+
+                  <!--
+                    ملاحظة للتيم: العنصر ده بيتفعّل بس لو حطيتوا كلاس is-locked
+                    على الـ li (appt-card) بناءً على لوجيك وقت الموعد.
+                    الـ CSS جاهز، محتاج بس الشرط ده من التيم:
+                    [class.is-locked]="!isEditable(appt)"
+                  -->
+                  <div class="locked-banner">
+                    لا يمكن التعديل أو إلغاء الموعد بعد مرور 12 ساعة من ميعاد الحجز
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </div>
+      <!-- المواعيد السابقة -->
+      <div class="section">
+        <button type="button" class="section-header" (click)="togglePast()">
+          <span class="section-dot"></span>
+          <span class="section-title">المواعيد السابقة</span>
+          <span class="section-count">{{ past().length }}</span>
+          <span class="chevron" [class.chevron--open]="expandedPast()">‹</span>
+        </button>
+
+        @if (expandedPast()) {
+          @if (past().length === 0) {
+            <div class="state-msg state-msg--small">مفيش مواعيد سابقة</div>
+          } @else {
+            <ul class="appt-list">
+              @for (appt of past(); track appt.id) {
+                <li class="appt-card">
+                  <span class="appt-tag" [ngClass]="statusClass(appt.status)">
+                    {{ statusLabel(appt.status) }}
+                  </span>
+
+                  <div class="appt-row">
+                    <div class="appt-info">
+                      <span class="appt-doctor">{{ appt.doctorName  'الطبيب' }}</span>
+                      @if (appt.doctorSpecialty) {
+                        <span class="appt-specialty">{{ appt.doctorSpecialty }}</span>
+                      }
+                      <div class="appt-meta">
+                        @if (appt.slotStart) {
+                          <span class="meta-item">
+                            <span class="meta-icon">📅</span>
+                            <span dir="ltr">{{ formatDate(appt.slotStart) }}</span>
+                          </span>
+                          <span class="meta-item">
+                            <span class="meta-icon">🕐</span>
+                            <span dir="ltr">{{ formatTimeRange(appt.slotStart, appt.slotEnd) }}</span>
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="appt-avatar">
+                      <img
+                        [src]="appt.doctorImage  ('https://ui-avatars.com/api/?background=efe9fd&color=6d3fe0&bold=true&name=' + (appt.doctorName  'د'))"
+                        [alt]="appt.doctorName  'الطبيب'"
+                      />
+                    </div>
+                  </div>
+
+                  @if (canBeReviewed(appt)) {
+                    <div class="appt-actions">
+                      <button
+                        type="button"
+                        class="action-btn action-btn--accent-solid"
+                        (click)="openReschedule(appt)"
+                      >
+                        إعادة الحجز
+                      </button>
+                      <button
+                        type="button"
+                        class="action-btn"
+                        [class.action-btn--rated]="existingReviewFor(appt)"
+                        [class.action-btn--primary-outline]="!existingReviewFor(appt)"
+                        (click)="openRate(appt)"
+                      >
+                        @if (existingReviewFor(appt)) {
+                          <span class="star-icon">★</span> تم التقييم
+                        } @else {
+                          تقييم الطبيب
+                        }
+                      </button>
+                    </div>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>
+
+@if (appointmentToReschedule()) {
+  <app-reschedule-modal
+    [appointment]="appointmentToReschedule()!"
+    (closed)="closeReschedule()"
+    (rescheduled)="onRescheduled($event)"
+  ></app-reschedule-modal>
+}
+
+@if (appointmentToCancel()) {
+  <app-cancel-modal
+    [appointment]="appointmentToCancel()!"
+    (closed)="closeCancel()"
+    (cancelled)="onCancelled($event)"
+  ></app-cancel-modal>
+}
+
+@if (appointmentToRate()) {
+  <app-rate-review-modal
+    [appointment]="appointmentToRate()!"
+    [existingReview]="existingReviewFor(appointmentToRate()!)"
+    (closed)="closeRate()"
+    (saved)="onReviewSaved($event)"
+    (deleted)="onReviewDeleted($event)"
+  ></app-rate-review-modal>
+}

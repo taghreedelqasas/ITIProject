@@ -1,0 +1,88 @@
+<div class="modal-overlay" dir="rtl" (click)="dismiss()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>إعادة جدولة الموعد</h3>
+      <button type="button" class="close-btn" (click)="dismiss()" aria-label="إغلاق">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18" />
+          <path d="M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    @if (appointment.doctorName) {
+      <p class="doctor-line">مع {{ appointment.doctorName }}</p>
+    }
+
+    @if (loadingSlots()) {
+      <div class="state-msg">جارِ تحميل المواعيد المتاحة...</div>
+    } @else if (errorMsg() && allSlots().length === 0) {
+      <div class="state-msg state-msg--error">{{ errorMsg() }}</div>
+    } @else {
+      <div class="calendar">
+        <div class="calendar-nav">
+          <button type="button" (click)="nextMonth()" aria-label="الشهر التالي">‹</button>
+          <span class="calendar-month">{{ monthLabel() }}</span>
+          <button type="button" (click)="prevMonth()" aria-label="الشهر السابق">›</button>
+        </div>
+
+        <div class="calendar-weekdays">
+          @for (w of weekdays; track w) {
+            <span>{{ w }}</span>
+          }
+        </div>
+
+        <div class="calendar-grid">
+          @for (day of calendarDays(); track day.date.getTime()) {
+            <button
+              type="button"
+              class="calendar-day"
+              [class.calendar-day--muted]="!day.inCurrentMonth"
+              [class.calendar-day--disabled]="!day.hasSlots || day.isPast"
+              [class.calendar-day--selected]="isDaySelected(day)"
+              [class.calendar-day--today]="day.isToday"
+              [disabled]="!day.hasSlots || day.isPast"
+              (click)="selectDay(day)"
+            >
+              {{ day.dayNumber }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (selectedDateKey()) {
+        <div class="slots">
+          @if (selectedDaySlots().length === 0) {
+            <div class="state-msg">لا يوجد مواعيد متاحة في هذا اليوم</div>
+          } @else {
+            <div class="slots-grid">
+              @for (slot of selectedDaySlots(); track slot.id) {
+                <button
+                  type="button"
+                  class="slot-pill"
+                  [class.slot-pill--selected]="selectedSlotId() === slot.id"
+                  (click)="selectSlot(slot)"
+                >
+                  {{ formatTime(slot.startTime) }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (errorMsg() && allSlots().length > 0) {
+        <div class="state-msg state-msg--error">{{ errorMsg() }}</div>
+      }
+
+      <button
+        type="button"
+        class="confirm-btn"
+        [disabled]="!selectedSlotId() || submitting()"
+        (click)="confirm()"
+      >
+        {{ submitting() ? 'جارِ التأكيد...' : 'تأكيد إعادة الجدولة' }}
+      </button>
+    }
+  </div>
+</div>

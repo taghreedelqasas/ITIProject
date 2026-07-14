@@ -1,0 +1,133 @@
+<!-- Overlay -->
+<div class="fixed inset-0 bg-slate-900/40 z-50" (click)="close()"></div>
+
+<!-- Panel: مثبت على شمال الشاشة زي بروفايل المريض -->
+<div
+  dir="rtl"
+  class="fixed inset-y-0 left-0 w-full max-w-[420px] bg-white z-50 overflow-y-auto shadow-2xl"
+  (click)="$event.stopPropagation()"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+    <button
+      type="button"
+      (click)="close()"
+      class="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50"
+      aria-label="إغلاق"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+      </svg>
+    </button>
+    <h2 class="font-extrabold text-slate-800">ملف الطبيب</h2>
+  </div>
+
+  <!-- تحميل -->
+  <div *ngIf="loading" class="p-6 space-y-4">
+    <div class="h-16 rounded-2xl bg-slate-100 animate-pulse"></div>
+    <div class="h-40 rounded-2xl bg-slate-100 animate-pulse"></div>
+    <div class="h-24 rounded-2xl bg-slate-100 animate-pulse"></div>
+  </div>
+
+  <!-- خطأ -->
+  <div *ngIf="!loading && error" class="p-6 text-sm text-red-500">
+    تعذر تحميل بيانات الطبيب.
+    <button type="button" (click)="doctorId && load(doctorId)" class="text-violet-600 font-semibold underline mr-1">
+      إعادة المحاولة
+    </button>
+  </div>
+
+  <!-- المحتوى -->
+  <div *ngIf="!loading && !error && doctor" class="p-6 space-y-8">
+    <!-- اسم الطبيب + الحالة -->
+    <div class="flex items-center gap-3">
+      <div
+        class="w-14 h-14 rounded-full bg-violet-100 bg-cover bg-center shrink-0"
+        [style.background-image]="doctor.profilePictureUrl ? 'url(' + doctor.profilePictureUrl + ')' : null"
+      ></div>
+      <div>
+        <h3 class="font-bold text-slate-800">د. {{ doctor.fullName }}</h3>
+        <p class="text-xs text-slate-400">{{ doctor.department }}</p>
+        <span
+          class="text-xs font-semibold inline-flex items-center gap-1 mt-1"
+          [ngClass]="doctor.isActive ? 'text-emerald-500' : 'text-red-500'"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+          {{ doctor.isActive ? 'حساب نشط' : 'حساب موقوف' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- تقييم / حجوزات سريع -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="rounded-xl bg-slate-50 p-3 text-center">
+        <p class="text-xs text-slate-400 mb-1">التقييم</p>
+        <p class="font-semibold text-slate-700">{{ doctor.averageRating }} ⭐ ({{ doctor.totalReviews }})</p>
+      </div>
+      <div class="rounded-xl bg-slate-50 p-3 text-center">
+        <p class="text-xs text-slate-400 mb-1">إجمالي الحجوزات</p>
+        <p class="font-semibold text-slate-700">{{ formatCount(doctor.totalAppointments) }}</p>
+      </div>
+    </div>
+
+    <!-- البيانات الشخصية -->
+    <div>
+      <h4 class="font-bold text-slate-800 mb-3">البيانات الشخصية</h4>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-xl bg-slate-50 p-3 text-center">
+          <p class="text-xs text-slate-400 mb-1">الجنس</p>
+          <p class="font-semibold text-slate-700">{{ doctor.gender }}</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center">
+          <p class="text-xs text-slate-400 mb-1">العمر</p>
+          <p class="font-semibold text-slate-700">{{ doctor.age }} سنة</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center">
+          <p class="text-xs text-slate-400 mb-1">تاريخ الانضمام</p>
+          <p class="font-semibold text-slate-700">{{ doctor.registeredAt }}</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center">
+          <p class="text-xs text-slate-400 mb-1">رقم الهاتف</p>
+          <p class="font-semibold text-slate-700">{{ doctor.phoneNumber || 'غير متاح' }}</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center col-span-2">
+          <p class="text-xs text-slate-400 mb-1">البريد الإلكتروني</p>
+          <p class="font-semibold text-slate-700 break-all">{{ doctor.email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- البيانات المهنية -->
+    <div>
+      <h4 class="font-bold text-slate-800 mb-3">البيانات المهنية</h4>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-xl bg-slate-50 p-3 text-center col-span-2">
+          <p class="text-xs text-slate-400 mb-1">العنوان</p>
+          <p class="font-semibold text-slate-700">{{ doctor.address }}</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center">
+          <p class="text-xs text-slate-400 mb-1">رقم الترخيص</p>
+          <p class="font-semibold text-slate-700">{{ doctor.licenseNumber }}</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center">
+          <p class="text-xs text-slate-400 mb-1">رسوم الكشف</p>
+          <p class="font-semibold text-slate-700">{{ formatCurrencyCompact(doctor.consultationFee) }}</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-3 text-center col-span-2">
+          <p class="text-xs text-slate-400 mb-1">تاريخ التخرج</p>
+          <p class="font-semibold text-slate-700">{{ doctor.graduationDate }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- حالة الاعتماد -->
+    <div class="rounded-xl p-4 flex items-center justify-between" [ngClass]="doctor.isVerified ? 'bg-emerald-50' : 'bg-amber-50'">
+      <span class="text-sm font-semibold" [ngClass]="doctor.isVerified ? 'text-emerald-700' : 'text-amber-700'">
+        {{ doctor.isVerified ? 'حساب معتمد' : 'بانتظار المراجعة' }}
+      </span>
+      <svg *ngIf="doctor.isVerified" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-600">
+        <circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3 4.7-5.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</div>

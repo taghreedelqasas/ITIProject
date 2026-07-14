@@ -1,0 +1,59 @@
+<div class="p-6 bg-[#f8f9fa] min-h-screen" style="direction: rtl;">
+  
+  <div class="mb-8 flex justify-between items-center bg-gradient-to-l from-indigo-800 to-purple-700 p-6 rounded-2xl shadow-md text-white">
+    <div>
+      <h2 class="text-3xl font-black mb-1">إدارة المرضى المسجلين</h2>
+      <p class="text-indigo-100 text-sm font-bold">عرض حسابات المرضى ومتابعة إجمالي أعداد الحجوزات الخاصة بهم</p>
+    </div>
+    <div class="bg-white/20 p-3 px-5 rounded-xl font-black text-lg backdrop-blur-sm">
+      إجمالي المرضى: {{ patientsList.length || 0 }}
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-20 font-black text-indigo-600 text-lg animate-pulse">
+    جاري تحميل كروت المرضى...
+  </div>
+
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    
+    <div *ngFor="let patient of patientsList" 
+         class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative flex flex-col justify-between group p-1">
+      
+
+
+      <div class="p-5 text-center border-b border-gray-50">
+        <div class="relative w-20 h-20 mx-auto mb-4">
+          <img [src]="patient.imageProfile || 'https://via.placeholder.com/80'" 
+               class="w-full h-full rounded-full object-cover ring-4 ring-indigo-100 group-hover:ring-indigo-300 transition-all" alt="patient avatar">
+        </div>
+        
+        <h3 class="text-xl font-black text-gray-800 mb-2 group-hover:text-indigo-700 transition-colors">
+          {{ patient.fullName || 'مريض مسجل بالمنصة' }}
+        </h3>
+        
+        <span class="text-xs font-black text-indigo-600 bg-indigo-50 inline-block px-3 py-1 rounded-lg">
+          حساب مريض
+        </span>
+      </div>
+
+      <div class="p-4 border-b border-gray-50 text-center bg-gray-50/50">
+        <span class="block text-[11px] font-black text-gray-400 mb-1">البريد الإلكتروني</span>
+        <span class="text-sm font-black text-gray-700 block truncate px-2" [title]="patient.email">
+          {{ patient.email || 'لا يوجد بريد مسجل' }}
+        </span>
+      </div>
+
+      <div class="p-4 bg-indigo-50/30 flex justify-between items-center rounded-b-2xl">
+        <div>
+          <span class="block text-[10px] font-black text-gray-400 mb-0.5">عدد الحجوزات</span>
+          <span class="text-base font-black text-indigo-800">
+            {{ patient.totalAppointments !== undefined ? patient.totalAppointments : 0 }} حجز
+          </span>
+        </div>
+        
+
+      </div>
+
+    </div>
+  </div>
+</div>

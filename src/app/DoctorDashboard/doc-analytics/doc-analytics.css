@@ -1,0 +1,11 @@
+/* src/app/DoctorDashboard/doc-analytics/doc-analytics.css */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* لمنع أي تداخل في الخطوط العربية داخل الكروت */
+h2, h3, h4, span, p {
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+}

@@ -1,0 +1,119 @@
+<div class="bg-gray-100 font-sans w-full m-0  z-50     fixed" dir="rtl">
+  <div class="bg-white border-b border-purple-100">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      
+      <div class="flex items-center justify-between h-20">
+        
+        <div class="flex-shrink-0">
+          <img src="/images/logoImage.png" alt="Maw3ed Logo" class="h-12 w-auto" />
+        </div>
+        
+      <nav class="hidden md:flex items-center space-x-reverse space-x-4 lg:space-x-4 mx-auto">
+  
+  <a routerLink="/" 
+   [routerLinkActiveOptions]="{exact: true}"
+     routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold" 
+     class="text-[#333333] hover:text-[#53098D] hover:bg-purple-50 font-medium px-2 py-1.5 rounded-lg text-base transition-all duration-200">
+     الرئيسية
+  </a>
+     
+  <a routerLink="/doctors" 
+     routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold" 
+     class="text-[#333333] hover:text-[#53098D] hover:bg-purple-50 font-medium px-3 py-1.5 rounded-lg text-base transition-all duration-200">
+     الأطباء
+  </a>
+     
+  <a routerLink="/ai-pulse" 
+     routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold" 
+     class="text-[#333333] hover:text-[#53098D] hover:bg-purple-50 font-medium px-3 py-1.5 rounded-lg text-base transition-all duration-200">
+      AI
+  </a>
+     
+ <a (click)="scrollToSection('about-section')" class="text-[#333333] hover:text-[#53098D] hover:bg-purple-50 font-medium px-3 py-1.5 rounded-lg text-base transition-all duration-200 cursor-pointer">
+   من نحن
+</a>
+     
+<a (click)="scrollToSection('contact-section')" class="text-[#333333] hover:text-[#53098D] hover:bg-purple-50 font-medium px-3 py-1.5 rounded-lg text-base transition-all duration-200 cursor-pointer">
+   تواصل معنا
+</a>
+
+</nav>
+
+   <div class="hidden md:flex items-center space-x-reverse space-x-4">
+  @if (!authService.isLoggedIn()) {
+    <a routerLink="/auth/login" class="bg-[#00E5E5] text-[#53098D] px-4  mx-2  py-2 rounded-full text-base font-semibold hover:bg-[#00c2c2] transition-colors shadow-sm">
+      سجل دخول
+    </a>
+    <a routerLink="/auth/register" class="relative p-.5 rounded-full bg-gradient-to-r from-[#6CEAEA] to-[#53098D] inline-block hover:opacity-90 transition-opacity">
+      <span class="block bg-white text-[#53098D] px-4   py-2 rounded-full text-base font-semibold">
+        إنشاء حساب
+      </span>
+    </a>
+  } @else {
+    <button (click)="onLogout()" class="bg-[#00E5E5] text-[#53098D] px-4 mx-2 py-2 rounded-full text-base font-semibold hover:bg-[#00c2c2] transition-colors shadow-sm">
+      تسجيل خروج
+    </button>
+  }
+</div>
+        <div class="flex md:hidden">
+          <button (click)="toggleMenu()" type="button" class="text-gray-600 hover:text-[#53098D] focus:outline-none transition-colors">
+            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+      
+      <div [class.hidden]="!isMenuOpen" class="md:hidden border-t border-gray-150 py-4 transition-all duration-300">
+        <div class="flex flex-col space-y-2 px-2">
+          <a routerLink="/home"
+             routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold"
+             (click)="isMenuOpen = false"
+             class="text-gray-600 hover:text-[#53098D] hover:bg-purple-50 px-2 py-1.5 rounded-full text-base font-medium">
+             الرئيسية
+          </a>
+          <a routerLink="/doctors"
+             routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold"
+             (click)="isMenuOpen = false"
+             class="text-gray-600 hover:text-[#53098D] hover:bg-purple-50 px-2 py-1.5 rounded-full text-base font-medium">
+             الأطباء
+          </a>
+          <a routerLink="/ai-pulse"
+             routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold"
+             (click)="isMenuOpen = false"
+             class="text-gray-600 hover:text-[#53098D] hover:bg-purple-50 px-2 py-1.5 rounded-full text-base font-medium">
+             نبض AI
+          </a>
+          <a routerLink="/about"
+             routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold"
+             (click)="isMenuOpen = false"
+             class="text-gray-600 hover:text-[#53098D] hover:bg-purple-50 px-2 py-1.5 rounded-full text-base font-medium">
+             من نحن
+          </a>
+          <a routerLink="/contact"
+             routerLinkActive="text-[#53098D] bg-[#F3E8FF] font-semibold"
+             (click)="isMenuOpen = false"
+             class="text-gray-600 hover:text-[#53098D] hover:bg-purple-50 px-2 py-1.5 rounded-full text-base font-medium">
+             تواصل معنا
+          </a>
+          <hr class="border-gray-100 my-2">
+ <div class="flex flex-col space-y-2 pt-2">
+  @if (!authService.isLoggedIn()) {
+    <a routerLink="/auth/register" (click)="isMenuOpen = false" class="relative p-[2px] rounded-full bg-gradient-to-r from-[#6CEAEA] to-[#53098D] inline-block hover:opacity-90 transition-opacity">
+      <span class="block bg-white text-[#53098D] px-4   py-2 rounded-full text-base font-semibold">
+        إنشاء حساب
+      </span>
+    </a>
+    <a routerLink="/auth/login" (click)="isMenuOpen = false" class="bg-[#00E5E5] text-[#53098D] text-center py-2 rounded-full font-semibold">سجل دخول</a>
+  } @else {
+    <button (click)="onLogout()" class="bg-[#00E5E5] text-[#53098D] text-center py-2 rounded-full font-semibold">تسجيل خروج</button>
+  }
+</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,70 @@
+<div class="p-6 bg-[#f8f9fa] min-h-screen" style="direction: rtl;">
+  
+  <div class="mb-8 flex justify-between items-center bg-gradient-to-l from-purple-800 to-indigo-700 p-6 rounded-2xl shadow-md text-white">
+    <div>
+      <h2 class="text-3xl font-black mb-1">إدارة الأطباء </h2>
+      <p class="text-purple-100 text-sm font-bold">متابعة أداء الأطباء، تقييماتهم، وأرصدتهم المالية داخل المنصة</p>
+    </div>
+    <div class="bg-white/20 p-3 px-5 rounded-xl font-black text-lg backdrop-blur-sm">
+      إجمالي الأطباء: {{ doctorsList.length || 0 }}
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-20 font-black text-purple-600 text-lg animate-pulse">
+    جاري تحميل كروت الأطباء...
+  </div>
+
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    
+    <div *ngFor="let doctor of doctorsList" 
+         class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden relative flex flex-col justify-between group p-1">
+      
+
+
+      <div class="p-5 text-center border-b border-gray-100">
+        <div class="relative w-20 h-20 mx-auto mb-4">
+          <img [src]="doctor.imageProfile || 'https://via.placeholder.com/80'" 
+               class="w-full h-full rounded-full object-cover ring-4 ring-purple-100 group-hover:ring-purple-300 transition-all" alt="doctor avatar">
+        </div>
+        
+        <h3 class="text-xl font-black text-gray-800 mb-2 group-hover:text-purple-700 transition-colors">
+          {{ doctor.fullName || 'دكتور مسجل بالمنصة' }}
+        </h3>
+        <p class="text-xs font-black text-purple-600 bg-purple-50 inline-block px-3 py-1 rounded-lg">
+          {{ doctor.specialty || 'تخصص عام' }}
+        </p>
+        
+        <div class="flex items-center justify-center gap-1 text-gray-500 text-xs mt-4 font-black">
+          <span>📍</span>
+          <span class="truncate max-w-[200px]">{{ doctor.address || 'العنوان غير محدد' }}</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 bg-gray-50/80 text-center divide-x divide-x-reverse divide-gray-200 p-4">
+        <div>
+          <span class="block text-[11px] font-black text-gray-400 mb-1">عدد الحجوزات</span>
+          <span class="text-lg font-black text-gray-800">
+            {{ doctor.totalAppointments !== undefined ? doctor.totalAppointments : 15 }} حجز
+          </span>
+        </div>
+        <div>
+          <span class="block text-[11px] font-black text-gray-400 mb-1">التقييم العام</span>
+          <span class="text-lg font-black text-amber-500 flex items-center justify-center gap-1">
+            ⭐ {{ doctor.rating || '4.5' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="p-4 bg-purple-50/40 flex justify-between items-center rounded-b-2xl">
+        <div>
+          <span class="block text-[10px] font-black text-gray-400 mb-0.5">الرصيد الكلي</span>
+          <span class="text-base font-black text-indigo-700">
+            {{ (doctor.totalBalance !== undefined ? doctor.totalBalance : 5000) | number }} ج.م
+          </span>
+        </div>
+     
+      </div>
+
+    </div>
+  </div>
+</div>
