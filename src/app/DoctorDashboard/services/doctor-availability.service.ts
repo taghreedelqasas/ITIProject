@@ -4,8 +4,7 @@ import {
   DoctorAvailability,
   CreateDoctorAvailabilityDto,
   UpdateDoctorAvailabilityDto,
-  ServiceResult
-} from '../../core/models/doctor-availability';
+} from '../../core/models/availability.model';
 
 @Injectable({
   providedIn: 'root'

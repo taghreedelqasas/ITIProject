@@ -1,27 +1,40 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../../core/services/appointment.service';
+import { ReviewService } from '../../core/services/review.service';
 import { Appointment } from '../../core/models/appointment.model';
+import { Review } from '../../core/models/review.model';
 import { RescheduleModalComponent } from '../reschedule-modal-component/reschedule-modal-component';
 import { CancelModalComponent } from '../cancel-modal-component/cancel-modal-component';
-
+import { RateReviewModalComponent } from '../rate-review-modal-component/rate-review-modal-component';
+// import { RescheduleModalComponent } from '../reschedule-modal/reschedule-modal.component';
+// import { CancelModalComponent } from '../cancel-modal/cancel-modal.component';
+// import { RateReviewModalComponent } from '../rate-review-modal/rate-review-modal.component';
 
 @Component({
   selector: 'app-appointments-list',
   standalone: true,
-  imports: [CommonModule, DatePipe, RescheduleModalComponent,CancelModalComponent],
+  imports: [
+    CommonModule,
+     RescheduleModalComponent,CancelModalComponent,RateReviewModalComponent , 
+  ],
   templateUrl: './appointments-list-component.html',
   styleUrl: './appointments-list-component.css',
 })
 export class AppointmentsListComponent implements OnInit {
   private appointmentService = inject(AppointmentService);
+  private reviewService = inject(ReviewService);
 
   appointments = signal<Appointment[]>([]);
   loading = signal<boolean>(true);
   errorMsg = signal<string | null>(null);
 
+  // تقييمات المريض - بنستخدمها عشان نعرف الموعد ده اتقيّم قبل كده ولا لأ
+  myReviews = signal<Review[]>([]);
+
   appointmentToReschedule = signal<Appointment | null>(null);
   appointmentToCancel = signal<Appointment | null>(null);
+  appointmentToRate = signal<Appointment | null>(null);
 
   expandedUpcoming = signal(true);
   expandedPast = signal(true);
@@ -34,8 +47,17 @@ export class AppointmentsListComponent implements OnInit {
     this.appointments().filter((a) => !this.canModify(a))
   );
 
+  reviewByAppointmentId = computed(() => {
+    const map = new Map<number, Review>();
+    for (const r of this.myReviews()) {
+      if (r.id != null) map.set(r.id, r);
+    }
+    return map;
+  });
+
   ngOnInit(): void {
     this.loadAppointments();
+    this.loadMyReviews();
   }
 
   loadAppointments(): void {
@@ -52,6 +74,23 @@ export class AppointmentsListComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  loadMyReviews(): void {
+    this.reviewService.getMyReviews().subscribe({
+      next: (data) => this.myReviews.set(data ?? []),
+      error: () => {
+        // مش هنعطل الصفحة كلها لو التقييمات فشلت تحمّل، بس زرار التقييم هيفضل شغال كـ "قيم الزيارة"
+      },
+    });
+  }
+
+  existingReviewFor(appt: Appointment): Review | null {
+    return this.reviewByAppointmentId().get(appt.id) ?? null;
+  }
+
+  canBeReviewed(appt: Appointment): boolean {
+    return (appt.status || '').toLowerCase() === 'completed';
   }
 
   toggleUpcoming(): void {
@@ -149,5 +188,26 @@ export class AppointmentsListComponent implements OnInit {
       list.map((a) => (a.id === id ? { ...a, status: 'Cancelled' } : a))
     );
     this.closeCancel();
+  }
+
+  openRate(appt: Appointment): void {
+    this.appointmentToRate.set(appt);
+  }
+
+  closeRate(): void {
+    this.appointmentToRate.set(null);
+  }
+
+  onReviewSaved(review: Review): void {
+    this.myReviews.update((list) => {
+      const exists = list.some((r) => r.id === review.id);
+      return exists ? list.map((r) => (r.id === review.id ? review : r)) : [...list, review];
+    });
+    this.closeRate();
+  }
+
+  onReviewDeleted(reviewId: number): void {
+    this.myReviews.update((list) => list.filter((r) => r.id !== reviewId));
+    this.closeRate();
   }
 }

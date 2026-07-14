@@ -87,16 +87,15 @@
     الجنس
   </label>
 
-  <select >
-    name="gender"
-    [(ngModel)]="userData.gender"
-     [disabled]="!isEditing" 
-    class="w-full border border-gray-300 rounded-xl p-3 bg-white text-sm font-semibold text-gray-800 focus:outline-none appearance-none">
+<select
+  name="gender"
+  [(ngModel)]="userData.gender"
+  [disabled]="!isEditing"
+  class="w-full border border-gray-300 rounded-xl p-3 bg-white text-sm font-semibold text-gray-800 focus:outline-none appearance-none">
 
-    <option  selected  [ngValue]="1">ذكر</option>
-    <option [ngValue]="0">أنثى</option>
-
-  </select>
+  <option [ngValue]="1">ذكر</option>
+  <option [ngValue]="2">أنثى</option>
+</select>
 </div>
 
         <!-- <div class="flex flex-col gap-1.5 md:col-span-2 text-right">
@@ -111,7 +110,7 @@
 
       <div *ngIf="isEditing" class="pt-2 text-right">
         <button type="submit" [disabled]="profileForm.invalid"
-                class="bg-[#23E0E0] text-black px-8 py-2.5 rounded-full text-sm font-bold shadow-sm transition hover:opacity-90">
+                class="bg-[#23E0E0] text-black px-8 py-2.5 rounded-full text-sm font-bold shadow-sm  cursor-pointer   transition hover:opacity-90">
           حفظ التعديلات
         </button>
       </div>

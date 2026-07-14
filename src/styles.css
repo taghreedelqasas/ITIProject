@@ -1,4 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 
 @layer vendor;
 
@@ -6,12 +6,23 @@
 
 @import "tailwindcss";
 
-
+body {
+     font-family: 'Tajawal', sans-serif;
+}
 :root{
      --primary:#6CEAEA ; 
-     --purple:#53098D ; 
+     --purple:#44116D; 
      --hero-blue:#E9FCFC ; 
      --hero-purple:#ECE7F0 ; 
      --text-gray:#5C676B ; 
      --btn-blue:#23E0E0 ; 
+}
+
+:root {
+     --primary: #6CEAEA;
+     --purple: #53098D;
+     --hero-blue: #E9FCFC;
+     --hero-purple: #ECE7F0;
+     --text-gray: #5C676B;
+     --btn-blue: #23E0E0;
 }

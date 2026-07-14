@@ -6,12 +6,14 @@ import {
   Validators
 } from '@angular/forms';
 
-import { DoctorAvailabilityService } from '../../DoctorDashboard/services/doctor-availability.service';
+import { DoctorAvailabilityService } from '../services/doctor-availability.service';
 import {
   DoctorAvailability,
   CreateDoctorAvailabilityDto,
   UpdateDoctorAvailabilityDto
-} from '../../core/models/doctor-availability';
+} from '../../core/models/availability.model';
+import { AuthService } from '../../core/services/auth.service';
+import { AppointmentService } from '../services/appointment';
 
 @Component({
   selector: 'app-doctor-availability',
@@ -24,12 +26,16 @@ import {
   styleUrls: ['./doctor-avaliabilty.css']
 })
 export class DoctorAvailabilityComponent implements OnInit {
-errorMessage = signal('');
+
+  private authService = inject(AuthService);
+  private dashboardService = inject(AppointmentService)
+
+  errorMessage = signal('');
   private fb = inject(FormBuilder);
 
   service = inject(DoctorAvailabilityService);
 
-  doctorId = 3;
+  doctorId = this.authService.getDoctorId()!;
 
   showModal = signal(false);
 
@@ -62,6 +68,7 @@ errorMessage = signal('');
   ngOnInit(): void {
 
     this.loadSlots();
+    this.dashboardService.getDoctorAppointments();
 
   }
 
@@ -309,4 +316,32 @@ formatDateHeader(date: string) {
   });
 
 }
+
+
+  todayAppointments() {
+    const today = new Date().toDateString();
+    return this.dashboardService.appointments().filter(
+      a => new Date(a.slotStart).toDateString() === today
+    );
+  }
+
+
+  markAsCompleted(app: any) {
+  this.dashboardService.completeAppointment(app.id).subscribe({
+    next: () => {
+      app.status = 'Completed';
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+}
+
+  formatShortTime(date: string): string {
+    return new Date(date).toLocaleTimeString('ar-EG', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
 }

@@ -1,93 +1,256 @@
-<div class="space-y-6   container  mx-auto  w-[90%]" dir="rtl">
+<div class="space-y-6 container mx-auto w-[90%]" dir="rtl">
 
   <div class="flex justify-between items-center">
     <div>
-      <h2 class="text-3xl font-bold text-[#53098D]">المرضى</h2>
+      <h2 class="text-3xl font-bold ">المرضى</h2>
       <p class="text-sm text-purple-600 font-medium mt-1">
         {{ filteredPatients().length }} مريض مسجل
       </p>
     </div>
-  </div>
 
-  <div class="relative w-full max-w-md">
-    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-search"></i></span>
+    <div class="relative w-[40%] max-w-md">
+    <!-- <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></span> -->
     <input type="text"
            [(ngModel)]="searchQuery"
            placeholder="ابحث باسم المريض..."
-           class="w-full bg-white border border-gray-200/80 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-purple-500 shadow-sm transition-all">
+           class=" w-full  bg-white border text-[#8275A0]    border-gray-200/80 rounded-3xl  pr-11 pl-4 py-3 text-sm  focus:border-purple-500 shadow-sm transition-all">
   </div>
 
+  </div>
+
+  
   <!-- ⚠️ أعمدة رقم الهاتف/السن/النوع بتعرض "—" لحد ما الـ Backend يضيف الحقول دي فعليًا -->
   <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="w-full text-right border-collapse">
 
-        <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-400 text-xs font-bold">
-          <tr>
-            <th class="p-5">المريض</th>
-            <th class="p-5">رقم الهاتف</th>
-            <th class="p-5">عدد المواعيد</th>
-            <th class="p-5">آخر موعد</th>
-            <th class="p-5">الحالة</th>
+      <table class="w-full text-sm">
+
+        <thead>
+          <tr class="bg-[#FCFCFC] text-gray-500 text-xs  shadow-lg">
+            <th class="px-6 py-4   text-[#8275A0]  text-start font-semibold">المريض</th>
+            <th class="px-6 py-4  text-[#8275A0]   text-start font-semibold">النوع</th>
+            <th class="px-6 py-4  text-[#8275A0]  text-start font-semibold">عدد الزيارات</th>
+            <th class="px-6 py-4  text-[#8275A0]  text-start font-semibold">آخر زيارة</th>
+            <th class="px-6 py-4 text-[#8275A0]  text-start font-semibold">الحالة</th>
+            <th class="px-6 py-4 text-[#8275A0]  text-start font-semibold">الإجراء</th>
           </tr>
         </thead>
 
-        <tbody class="divide-y divide-gray-50 text-sm">
-          @for (patient of filteredPatients(); track patient.id) {
-            <tr class="hover:bg-gray-50/40 transition-colors">
+        <tbody>
 
-              <td class="p-5">
-                <div class="flex items-center space-x-reverse space-x-3">
-                  <div class="w-6 h-6 rounded-full mx-3 bg-purple-50 text-[#53098D] flex items-center justify-center font-bold text-base border border-purple-100 shadow-sm">
-                    {{ patient.name[0] }}
+          @for (patient of filteredPatients(); track patient.id) {
+
+            <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
+
+              <!-- Patient -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-full bg-purple-100 text-[#53098D] flex justify-center items-center font-bold shrink-0">
+                    {{ patient.name.charAt(0) }}
                   </div>
-                  <div>
-                    <h4 class="font-bold text-gray-800">{{ patient.name }}</h4>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ patient.gender }} · {{ patient.age > 0 ? patient.age + ' سنة' : '—' }}</p>
-                  </div>
+                  <h3 class="font-bold text-gray-800">
+                    {{ patient.name }}
+                  </h3>
                 </div>
               </td>
 
-              <td class="p-5 font-mono text-gray-600 font-medium">
-                {{ patient.phone }}
+              <!-- Gender -->
+              <td class="px-6 py-4 text-[#8275A0]">
+                {{ patient.gender }}
               </td>
 
-              <td class="p-5 font-mono text-gray-500 text-center">
-                {{ patient.appointmentsCount }}
+              <!-- Visits count -->
+              <td class="px-6 py-4">
+                <span class="font-bold text-[#8275A0]">{{ patient.appointmentsCount }}</span>
               </td>
 
-              <td class="p-5 font-mono text-gray-500">
+              <!-- Last visit -->
+              <td class="px-6 py-4 text-[#8275A0]">
                 {{ patient.lastAppointment | date:'dd/MM/yyyy' }}
               </td>
 
-              <td class="p-5">
-                <span class="text-[11px] font-bold px-3 py-1.5 rounded-xl inline-block"
-                      [ngClass]="{
-                        'bg-green-50 text-green-600': patient.lastStatus === 'Completed',
-                        'bg-amber-50 text-amber-600': patient.lastStatus === 'Pending',
-                        'bg-red-50 text-red-600': patient.lastStatus === 'Cancelled',
-                        'bg-purple-50 text-purple-600': patient.lastStatus === 'Confirmed'
-                      }">
+              <!-- Status -->
+              <td class="px-6 py-4">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700': patient.lastStatus == 'Completed',
+                    'bg-red-100 text-red-600': patient.lastStatus == 'Cancelled',
+                    'bg-yellow-100 text-yellow-700': patient.lastStatus == 'Pending',
+                    'bg-purple-100 text-[#53098D]': patient.lastStatus == 'Confirmed'
+                  }">
                   {{
-                    patient.lastStatus === 'Completed' ? 'حضر' :
-                    patient.lastStatus === 'Pending' ? 'بانتظار الحضور' :
-                    patient.lastStatus === 'Cancelled' ? 'لم يحضر' : 'قادم'
+                    patient.lastStatus == 'Completed' ? 'حضر' :
+                    patient.lastStatus == 'Pending' ? 'بانتظار الحضور' :
+                    patient.lastStatus == 'Cancelled' ? 'ملغي' :
+                    'قادم'
                   }}
                 </span>
               </td>
 
+              <!-- Action -->
+              <td class="px-6 py-4">
+                <button
+                  (click)="openPatient(patient)"
+                  class="   text-[#53098D]  cursor-pointer     font-bold  flex items-baseline justify-center">
+                   <span>عرض الملف </span>
+                        <i class="fa-solid fa-angle-left px-2  text-[#23E0E0]"></i>
+                       
+                </button>
+              </td>
+
             </tr>
+
           } @empty {
+
             <tr>
-              <td colspan="5" class="text-center py-16 text-gray-400 italic">
-                لا يوجد مرضى يطابقون بحثكِ الحالي.
+              <td colspan="6" class="text-center py-16 text-gray-400">
+                لا يوجد مرضى
               </td>
             </tr>
+
           }
+
         </tbody>
 
       </table>
+
     </div>
   </div>
+
+
+  <!-- Overlay -->
+  @if (drawerOpen) {
+
+    <div
+      class="fixed inset-0 bg-black/40 z-40"
+      (click)="closeDrawer()">
+    </div>
+
+    <!-- Drawer -->
+    <div
+      class="fixed left-0 top-0 h-screen w-[350px] bg-white shadow-2xl z-50 overflow-y-auto animate-slide">
+        
+
+
+      <!-- Header -->
+
+      <div class="relative px-6  ">
+                   <div  class="border-b border-gray-200 py-8  flex  items-center  justify-between  ">
+        <p class="text-[#44116D]  text-lg font-bold ">ملف المريض</p>
+        <button
+          (click)="closeDrawer()"
+          class=" w-9 h-9 rounded-full  border border-gray-200  hover:bg-gray-100">
+          ✕
+        </button>
+
+                   </div>
+        
+        <div class="flex  text-[#44116D]   py-3">
+             
+          <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100">
+  <img
+    src="/images/07e6a7d0f800af63c08479eb7c82b751205733d1.jpg"
+    alt="patientImg"
+    class="w-full h-full object-cover"
+  />
+</div>
+            <div>
+               <h2 class=" text-xl font-bold">
+            {{ selectedPatient.name }}
+          </h2>
+
+          <span  class="test-[9px] text-gray-400">{{selectedPatient.lastAppointment}}</span>
+            </div>
+
+
+         
+
+        
+
+        </div>
+
+      </div>
+
+      <!-- Files -->
+      <div class="p-6">
+
+        <h3 class="font-bold  text-lg   text-[#53098D] mb-5">
+          المرفقات الطبية
+        </h3>
+
+        @for (file of patientFiles(); track file.id) {
+
+          <div class="border border-gray-200 rounded-2xl px-2   py-4 mb-4 hover:bg-gray-50 transition">
+
+            <div class="flex justify-between    items-center">
+               
+                <span class=" rounded-lg  text-lg     px-3 py-1 ">
+                @switch (file.category) {
+                   @case(0){
+                    <i class="fa-regular fa-image   text-[#23E0E0]  bg-[#E9FCFC] "></i>
+                   }
+                   @case(1){
+                   <i class="fa-solid fa-file "></i>
+                   }
+                   @case(2){
+             <i class="fa-regular  fa-x-ray"></i>
+                   }
+                   @case(3){
+                   <i class="fa-regular  fa-folder   bg-[#FFEDED]  text-red-400  "></i>
+                   }
+                }
+              </span>
+
+              <div>
+                <h4 class="font-semibold">
+                  {{ file.fileName }}
+                </h4>
+                <span class="text-xs text-[#A992BC] mt-1  ">
+                  {{ file.uploadedAtUtc | date:'dd/MM/yyyy' }}
+                </span>
+
+                <span class="bg-[#ECE7F0]  py-1 font-bold text-sm    rounded-full  px-2 text-[#44116D]">
+                    @switch (file.category) {
+                   @case(0){
+                    jpg
+                   }
+                   @case(1){
+                    Pdf
+                   }
+                   @case(2){
+                    XRay
+                   }
+                   @case(3){
+                     folder
+                   }
+                }
+                </span>
+              </div>
+
+                <a
+              class=" block w-full    text-[#53098D] text-center  left-0     "
+              target="_blank"
+              [href]="baseUrl + file.fileUrl">
+              <i class="fa-solid fa-eye"></i> 
+            </a>
+
+            </div>
+         
+          </div>
+
+        } @empty {
+
+          <div class="text-center py-20 text-gray-400">
+            لا توجد ملفات
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
 
 </div>

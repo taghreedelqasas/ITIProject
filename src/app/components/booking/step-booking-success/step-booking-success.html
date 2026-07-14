@@ -1,0 +1,81 @@
+<div class="flex flex-col items-center text-center pt-16 pb-10">
+
+  <!-- أيقونة النجاح -->
+  <div class="w-24 h-24 rounded-full border-4 border-cyan-400 flex items-center justify-center mb-8">
+    <svg class="w-11 h-11 text-cyan-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  </div>
+
+  <h2 class="text-3xl font-extrabold text-[#3a1560] mb-3">تم تأكيد الحجز!</h2>
+  <p class="text-purple-300 text-lg">سيصلك رسالة تأكيد على بريدك الإلكتروني قريباً</p>
+</div>
+
+<h3 class="text-lg font-extrabold text-[#3a1560] mb-4 text-right">تفاصيل الموعد</h3>
+
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-2 mb-10">
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الطبيب</span>
+    <span class="text-slate-700">{{ state.doctor().name }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">التخصص</span>
+    <span class="text-slate-700">{{ state.doctor().specialty }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">التاريخ</span>
+    <span class="text-slate-700">{{ state.selectedDateLabel() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الوقت</span>
+    <span class="text-slate-700">{{ state.selectedTime() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الأسم</span>
+    <span class="text-slate-700">{{ state.patient().fullName || '-' }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4 border-b border-slate-100">
+    <span class="font-bold text-[#3a1560]">الهاتف</span>
+    <span class="text-slate-700" dir="ltr">{{ state.fullPhoneNumber() }}</span>
+  </div>
+
+  <div class="flex items-center justify-between py-4">
+    <span class="font-bold text-[#3a1560]">التكلفة</span>
+    <span class="text-slate-700">{{ state.doctor().price }} جنية</span>
+  </div>
+</div>
+
+<!-- Action buttons -->
+<div class="flex flex-row-reverse gap-4">
+  <button
+    type="button"
+    (click)="onBackToHome()"
+    class="flex-1 bg-cyan-400 hover:bg-cyan-500 transition-colors text-[#3a1560] font-extrabold text-lg py-4 rounded-full shadow-md"
+  >
+    {{ state.rebookId ? 'العودة لمواعيدي' : 'العودة للرئيسية' }}
+  </button>
+  @if (state.fromConsultFlow) {
+    <button
+      type="button"
+      (click)="onGoToConsult()"
+      class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+    >
+      إستشارة الطبيب
+    </button>
+  }
+  @if (!state.fromConsultFlow) {
+    <button
+      type="button"
+      (click)="onBookAnother()"
+      class="flex-1 font-extrabold text-lg py-4 rounded-full border-2 border-purple-800 text-purple-800 hover:bg-purple-50 transition-colors"
+    >
+      حجز موعد اخر
+    </button>
+  }
+</div>

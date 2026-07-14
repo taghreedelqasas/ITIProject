@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 import { Home } from './components/home/home';
 import { NabdAi } from './components/nabd-ai/nabd-ai';
 import { Booking } from './components/booking/booking';
+import { StepDateTime } from './components/booking/step-date-time/step-date-time';
+import { StepPatientData } from './components/booking/step-patient-data/step-patient-data';
+import { StepReviewConfirm } from './components/booking/step-review-confirm/step-review-confirm';
+import { StepBookingSuccess } from './components/booking/step-booking-success/step-booking-success';
 import { Doctors } from './components/doctors/doctors';
 import { DoctorProfile } from './components/doctor-profile/doctor-profile';
 import { ConsultRequest } from './components/consult-request/consult-request';
@@ -22,23 +26,38 @@ import { UserProfileComponent } from './components/features/profile/profile';
 import { MedicalHistory } from './components/medical-history/medical-history';
 import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilty/doctor-avaliabilty';
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
+import { DoctorReviewCardComponent } from './components/doctor-review-card-component/doctor-review-card-component';
+import { RatingsPageComponent } from './components/ratings-page-component/ratings-page-component';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'nabd-ai', component: NabdAi },
   // { path: 'doctors', component: Doctors , canActivate: [authGuard] },
-  { path: 'doctors', component: Doctors  },
+  { path: 'doctors', component: Doctors },
   { path: 'doctor/:id', component: DoctorProfile },
-  { path: 'booking', component: Booking },
-  { path: 'profile', component: NavbarPatient ,
-  children :[
-    {path:'' ,redirectTo:'patientProfile' ,pathMatch: 'full'},
-    {path:'patientProfile' , component:UserProfileComponent} ,
-    {path:'medicalHistory' , component:MedicalHistory} ,
-    {path:'appointment' , component:AppointmentsListComponent} ,
-    {path:'PatientSetting' , component:DocSettings} ,
-   
-  ]
+
+  {
+    path: 'booking',
+    component: Booking,
+    children: [
+      { path: '', redirectTo: 'date-time', pathMatch: 'full' },
+      { path: 'date-time', component: StepDateTime },
+      { path: 'patient-data', component: StepPatientData },
+      { path: 'review', component: StepReviewConfirm },
+      { path: 'success', component: StepBookingSuccess },
+    ]
+  },
+  {
+    path: 'profile', component: NavbarPatient,
+    children: [
+      { path: '', redirectTo: 'patientProfile', pathMatch: 'full' },
+      { path: 'patientProfile', component: UserProfileComponent },
+      { path: 'medicalHistory', component: MedicalHistory },
+      { path: 'appointment', component: AppointmentsListComponent },
+      { path: 'PatientSetting', component: DocSettings },
+
+    ]
+
   },
   { path: 'consult', component: ConsultRequest },
   { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
@@ -50,9 +69,9 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
-      { path: 'docSlots', component:DoctorAvailabilityComponent },
+      { path: 'docSlots', component: DoctorAvailabilityComponent },
       { path: 'patients', component: DocPatients },
-      { path: 'consultations', component: DocConsultations  },
+      { path: 'consultations', component: DocConsultations },
       { path: 'analytics', component: DocAnalytics },
       { path: 'finance', component: DocPayments },
       { path: 'profile', component: DocProfile },
@@ -72,7 +91,9 @@ export const routes: Routes = [
   {
     path: 'admin/doctors',
     loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
+
   } ,
+
   {
     path: 'auth/login',
     component: LoginComponent

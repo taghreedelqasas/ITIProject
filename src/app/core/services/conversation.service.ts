@@ -6,7 +6,7 @@ import { ChatMessage, Conversation, SendMessageDto } from '../models/conversatio
 
 @Injectable({ providedIn: 'root' })
 export class ConversationService {
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/Conversation`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/Conversation`;
 
   constructor(private http: HttpClient) {}
 

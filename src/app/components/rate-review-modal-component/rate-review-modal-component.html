@@ -1,0 +1,59 @@
+<div class="modal-overlay" dir="rtl" (click)="dismiss()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'تعديل التقييم' : 'قيم الطبيب' }}</h3>
+      <button type="button" class="close-btn" (click)="dismiss()" aria-label="إغلاق">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18" />
+          <path d="M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    @if (appointment.doctorName) {
+      <p class="doctor-line">{{ appointment.doctorName }}</p>
+    }
+
+    <div class="stars-row">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <button
+          type="button"
+          class="star-btn"
+          [class.star-btn--filled]="i <= displayedStars()"
+          (click)="setRating(i)"
+          (mouseenter)="setHover(i)"
+          (mouseleave)="clearHover()"
+          [attr.aria-label]="i + ' نجوم'"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"
+            />
+          </svg>
+        </button>
+      }
+    </div>
+
+    <textarea
+      class="comment-box"
+      rows="3"
+      placeholder="اكتبي رأيك في تجربتك مع الطبيب (اختياري)"
+      [value]="comment()"
+      (input)="onCommentChange($any($event.target).value)"
+    ></textarea>
+
+    @if (errorMsg()) {
+      <p class="modal-error">{{ errorMsg() }}</p>
+    }
+
+    <button type="button" class="submit-btn" [disabled]="submitting()" (click)="submit()">
+      {{ submitting() ? 'جارِ الإرسال...' : isEditMode ? 'حفظ التعديل' : 'إرسال التقييم' }}
+    </button>
+
+    @if (isEditMode) {
+      <button type="button" class="delete-btn" [disabled]="submitting()" (click)="removeReview()">
+        حذف التقييم
+      </button>
+    }
+  </div>
+</div>

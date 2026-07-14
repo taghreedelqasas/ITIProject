@@ -34,7 +34,7 @@ export class MedicalFileService {
 
   private http = inject(HttpClient);
 
-  private api = `${environment.apiBaseUrl}/MedicalFile`;
+  private api = `${environment.apiBaseUrl}/api/MedicalFile`;
 
   getFiles(): Observable<MedicalFile[]> {
     return this.http.get<MedicalFile[]>(this.api);
@@ -51,6 +51,16 @@ export class MedicalFileService {
       `${this.api}/category/${category}`
     );
   }
+getDoctorFiles(patientId:number){
+
+return this.http.get<MedicalFile[]>(
+
+`${this.api}/doctor-view/${patientId}`
+
+);
+
+}
+
 
   getFile(id: number) {
     return this.http.get<MedicalFile>(
