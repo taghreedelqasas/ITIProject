@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   login(data: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/login`, data).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/api/Auth/login`, data).pipe(
       tap((res: AuthResponse) => {
         this.setAccessToken(res.token);
         this.setDoctorId(res.doctorId);

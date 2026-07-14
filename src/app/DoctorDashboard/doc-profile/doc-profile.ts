@@ -43,11 +43,12 @@ export class DocProfile implements OnInit {
         // 2. هنا السحر: نستخدم الـ id الخاص بالمستخدم لجلب بيانات الطبيب فوراً 
         // (تأكد أن الـ userRes.id هو نفسه الـ id المطلوب للـ Doctor في الـ API عندك)
     
-           const doctorId = (res as any).doctorId ?? (res as any).id;
-           if (doctorId) {
-             this.appointmentService.getDoctorById(doctorId);
-           }
+          //  const doctorId = (res as any).doctorId ?? (res as any).id;
+          //  if (doctorId) {
+          //    this.appointmentService.getDoctorById(doctorId);
+          //  }
        
+           this.appointmentService.getDoctorById(this.doctorId) 
       },
       error: (err) => {
         console.error('فشل في تحميل بيانات ملف المستخدم:', err);
@@ -80,7 +81,7 @@ console.log(body)
         next: () => {
           this.appointmentService.updateDoctorProfile({
             id: doc.id,
-            id: this.doctorId,     
+                
             licenseNumber: doc.licenseNumber,
             consultationFee: doc.consultationFee,
             address: doc.address
