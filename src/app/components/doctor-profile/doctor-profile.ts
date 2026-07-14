@@ -266,4 +266,15 @@ export class DoctorProfile implements OnInit {
       },
     });
   }
+
+  onChatDoctor(): void {
+    this.router.navigate(['/chat'], {
+      queryParams: {
+        doctorId: this.doctorId,
+        name: this.doctor.name,
+        specialty: this.doctor.specialty,
+        image: this.doctor.image,
+      },
+    });
+  }
 }

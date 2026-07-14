@@ -6,6 +6,7 @@ import { Doctors } from './components/doctors/doctors';
 import { DoctorProfile } from './components/doctor-profile/doctor-profile';
 import { ConsultRequest } from './components/consult-request/consult-request';
 import { DoctorChat } from './components/doctor-chat/doctor-chat';
+import { ChatComponent } from './components/chat/chat';
 import { LoginComponent } from './features/auth/login/login.component';
 // Doctor dashboard components
 import { DoctorDash } from './DoctorDashboard/doctor-dash/doctor-dash';
@@ -24,6 +25,7 @@ import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilt
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
 import { DoctorReviewCardComponent } from './components/doctor-review-card-component/doctor-review-card-component';
 import { RatingsPageComponent } from './components/ratings-page-component/ratings-page-component';
+import { AiChat } from './components/ai-chat/ai-chat';
 
 
 export const routes: Routes = [
@@ -46,7 +48,8 @@ export const routes: Routes = [
 
   },
   { path: 'consult', component: ConsultRequest },
-  { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
+  { path: 'chat', component: ChatComponent },
+  { path: 'ai-pulse', component: AiChat },
 
   // مسار لوحة تحكم الطبيب بمساراتها الفرعية
   {
@@ -57,13 +60,12 @@ export const routes: Routes = [
       { path: 'main', component: DocMain },
       { path: 'docSlots', component:DoctorAvailabilityComponent },
       { path: 'patients', component: DocPatients },
-      { path: 'consultations', component: DocConsultations  },
+      { path: 'consultations', component: DocConsultations },
+      { path: 'consultations/chat', component: ChatComponent },
       { path: 'analytics', component: DocAnalytics },
       { path: 'finance', component: DocPayments },
       { path: 'profile', component: DocProfile },
       { path: 'settings', component: DocSettings },
-    
-     
     ]
   },
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy, Input, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,22 +27,24 @@ interface QuickAction {
 }
 
 @Component({
-  selector: 'app-doctor-chat',
+  selector: 'app-chat',
   imports: [CommonModule, FormsModule],
-  templateUrl: './doctor-chat.html',
-  styleUrl: './doctor-chat.css',
+  templateUrl: './chat.html',
+  styleUrl: './chat.css',
 })
-export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
+export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   @ViewChild('scrollAnchor') private scrollAnchor?: ElementRef<HTMLDivElement>;
   @ViewChild('fileInput') private fileInput?: ElementRef<HTMLInputElement>;
 
-  doctorId: number | null = null;
-  conversationId: number | null = null;
+  @Input() conversationId: number | null = null;
+  @Input() doctorId: number | null = null;
+  @Input() patientId: string | null = null;
+
+  isDoctor = false;
   isLoading = false;
   errorMessage = '';
 
   private signalr = inject(SignalRService);
-  private authService = inject(AuthService);
   private subscriptions: Subscription[] = [];
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isSendingTyping = false;
@@ -51,21 +53,37 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    private conversationService: ConversationService
+    private conversationService: ConversationService,
+    private authService: AuthService
   ) {
+    this.isDoctor = this.authService.getUserRoles().some(r => r.toLowerCase() === 'doctor');
+
     const params = this.route.snapshot.queryParamMap;
-    const doctorName = params.get('doctorName');
-    if (doctorName) {
-      this.doctor.name = doctorName;
-      this.doctor.specialty = params.get('specialty') || this.doctor.specialty;
-      this.doctor.image = params.get('image') || this.doctor.image;
+
+    if (!this.conversationId) {
+      const cid = params.get('conversationId');
+      this.conversationId = cid ? Number(cid) : null;
+    }
+    if (!this.doctorId) {
+      const did = params.get('doctorId');
+      this.doctorId = did ? Number(did) : null;
+    }
+    if (!this.patientId) {
+      this.patientId = params.get('patientId');
     }
 
-    const doctorIdParam = params.get('doctorId');
-    this.doctorId = doctorIdParam ? Number(doctorIdParam) : null;
+    const name = params.get('name');
+    const specialty = params.get('specialty');
+    const image = params.get('image');
 
-    const conversationIdParam = params.get('conversationId');
-    this.conversationId = conversationIdParam ? Number(conversationIdParam) : null;
+    if (this.isDoctor) {
+      if (name) this.otherParty.name = name;
+      if (image) this.otherParty.image = image;
+    } else {
+      if (name) this.doctorInfo.name = name;
+      if (specialty) this.doctorInfo.specialty = specialty;
+      if (image) this.doctorInfo.image = image;
+    }
   }
 
   ngOnInit(): void {
@@ -78,8 +96,8 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     this.subscriptions.push(
       this.signalr.messageReceived$.subscribe((msg) => {
         if (msg.conversationId && msg.conversationId !== this.conversationId) return;
-        const isMine = this.isMessageMine(msg);
-        if (isMine) return;
+        const isMyMessage = this.isMessageMine(msg);
+        if (isMyMessage) return;
         const mapped = this.mapMessage(msg);
         this.messages.push(mapped);
         if (this.conversationId) {
@@ -88,11 +106,11 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
       }),
       this.signalr.userTyping$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
-        this.isDoctorTyping = true;
+        this.isTyping = true;
       }),
       this.signalr.userStoppedTyping$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
-        this.isDoctorTyping = false;
+        this.isTyping = false;
       }),
       this.signalr.messagesRead$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
@@ -102,8 +120,10 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
 
     if (this.conversationId) {
       this.loadMessages(true);
-    } else if (this.doctorId) {
-      this.startOrResumeConversation(this.doctorId);
+    } else if (this.isDoctor && this.patientId) {
+      this.startAsDoctor(this.patientId);
+    } else if (!this.isDoctor && this.doctorId) {
+      this.startAsPatient(this.doctorId);
     }
   }
 
@@ -115,7 +135,52 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     }
   }
 
-  private startOrResumeConversation(doctorId: number): void {
+  doctorInfo = {
+    name: 'د. سارة إبراهيم',
+    specialty: 'إستشارية جراحة العظام',
+    image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop&q=80',
+    isOnline: true,
+  };
+
+  otherParty = {
+    name: 'مريض',
+    image: '',
+  };
+
+  optionsMenuOpen = false;
+  todayLabel = 'اليوم';
+  messages: ChatMessage[] = [];
+  isTyping = false;
+  messageText = '';
+
+  quickActions: QuickAction[] = this.isDoctor ? [] : [
+    { label: 'حجز موعد' },
+    { label: 'إرسال تقرير' },
+    { label: 'مشاركة نتائج التحاليل' },
+  ];
+
+  pendingFileAction: 'report' | 'results' | 'attachment' | 'image' | null = null;
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.scrollAnchor?.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    } catch { /* ignore */ }
+  }
+
+  private currentTime(): string {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const period = hours >= 12 ? 'م' : 'ص';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${period}`;
+  }
+
+  private startAsPatient(doctorId: number): void {
     this.isLoading = true;
     this.conversationService.startAsPatient(doctorId).subscribe({
       next: (conversation) => {
@@ -133,23 +198,39 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     });
   }
 
+  private startAsDoctor(patientId: string): void {
+    this.isLoading = true;
+    this.conversationService.startAsDoctor(patientId).subscribe({
+      next: (conversation) => {
+        this.conversationId = (conversation?.id as number) ?? null;
+        this.isLoading = false;
+        if (this.conversationId) {
+          this.loadMessages(true);
+          this.signalr.joinConversation(this.conversationId);
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.errorMessage = 'تعذر فتح المحادثة مع المريض.';
+      },
+    });
+  }
+
   private isMessageMine(m: ApiChatMessage): boolean {
     return !!m.isMine;
   }
 
   private mapMessage(m: ApiChatMessage): ChatMessage {
-    const isMine = this.isMessageMine(m);
+    const isMyMessage = this.isMessageMine(m);
     let time = '';
     const dateStr = m.createdAt;
     if (dateStr) {
       try {
         time = new Date(dateStr).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-      } catch {
-        time = '';
-      }
+      } catch { time = ''; }
     }
     return {
-      sender: isMine ? 'patient' : 'doctor',
+      sender: isMyMessage ? (this.isDoctor ? 'doctor' : 'patient') : (this.isDoctor ? 'patient' : 'doctor'),
       type: 'text',
       text: m.content,
       time,
@@ -176,61 +257,17 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     });
   }
 
-  // ================== بيانات الطبيب ==================
-  doctor = {
-    name: 'د. سارة إبراهيم',
-    specialty: 'إستشارية جراحة العظام',
-    image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop&q=80',
-    isOnline: true,
-  };
-
-  optionsMenuOpen = false;
-
-  // ================== الرسائل ==================
-  todayLabel = 'اليوم';
-
-  messages: ChatMessage[] = [];
-
-  isDoctorTyping = false;
-
-  quickActions: QuickAction[] = [
-    { label: 'حجز موعد' },
-    { label: 'إرسال تقرير' },
-    { label: 'مشاركة نتائج التحاليل' },
-  ];
-
-  messageText = '';
-
-  pendingFileAction: 'report' | 'results' | 'attachment' | 'image' | null = null;
-
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }
-
-  private scrollToBottom(): void {
-    try {
-      this.scrollAnchor?.nativeElement.scrollIntoView({ behavior: 'smooth' });
-    } catch {
-      /* تجاهل أي خطأ في السكرول */
-    }
-  }
-
-  private currentTime(): string {
-    const now = new Date();
-    let hours = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const period = hours >= 12 ? 'م' : 'ص';
-    hours = hours % 12 || 12;
-    return `${hours}:${minutes} ${period}`;
-  }
-
   toggleOptionsMenu(): void {
     this.optionsMenuOpen = !this.optionsMenuOpen;
   }
 
-  onViewDoctorProfile(): void {
+  onViewProfile(): void {
     this.optionsMenuOpen = false;
-    this.router.navigate(['/doctor', this.doctorId ?? 1]);
+    if (this.isDoctor) {
+      this.router.navigate(['/profile']);
+    } else {
+      this.router.navigate(['/doctor', this.doctorId ?? 1]);
+    }
   }
 
   onCloseChat(): void {
@@ -240,10 +277,20 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
 
   onSend(): void {
     const trimmed = this.messageText.trim();
-    if (!trimmed || !this.conversationId) return;
+    if (!trimmed) return;
+    if (!this.conversationId) {
+      this.errorMessage = 'المحادثة لم تبدأ بعد. جاري المحاولة...';
+      if (!this.isDoctor && this.doctorId) {
+        this.startAsPatient(this.doctorId);
+      } else if (this.isDoctor && this.patientId) {
+        this.startAsDoctor(this.patientId);
+      }
+      return;
+    }
 
+    const sender: SenderType = this.isDoctor ? 'doctor' : 'patient';
     const optimisticMessage: ChatMessage = {
-      sender: 'patient',
+      sender,
       type: 'text',
       text: trimmed,
       time: this.currentTime(),
@@ -278,9 +325,9 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
       this.router.navigate(['/booking'], {
         queryParams: {
           doctorId: this.doctorId,
-          rebookDoctorName: this.doctor.name,
-          rebookSpecialty: this.doctor.specialty,
-          rebookImage: this.doctor.image,
+          rebookDoctorName: this.doctorInfo.name,
+          rebookSpecialty: this.doctorInfo.specialty,
+          rebookImage: this.doctorInfo.image,
         },
       });
       return;
@@ -314,24 +361,32 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     const file = input.files && input.files[0];
     if (!file) return;
 
+    const sender: SenderType = this.isDoctor ? 'doctor' : 'patient';
     const sizeKb = file.size / 1024;
     const sizeLabel = sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb.toFixed(0)} KB`;
 
-    let note = 'مرفق ملف.';
-    if (this.pendingFileAction === 'report') note = 'مرفق التقرير الطبي المطلوب.';
-    if (this.pendingFileAction === 'results') note = 'مرفق نتائج التحاليل.';
+    let caption = 'مرفق ملف.';
+    if (this.pendingFileAction === 'report') caption = 'مرفق التقرير الطبي المطلوب.';
+    if (this.pendingFileAction === 'results') caption = 'مرفق نتائج التحاليل.';
+    if (this.pendingFileAction === 'image') caption = 'صورة مرفقة.';
 
-    // ملحوظة: الـ API الحالي لا يدعم إرفاق ملفات داخل رسائل الشات مباشرة،
-    // فبنعرض الملف في واجهة المحادثة فقط، ولو حابب ترفعه فعليًا استخدم تاب "الملف الطبي".
     this.messages.push({
-      sender: 'patient',
+      sender,
       type: 'file',
       fileName: file.name,
       fileSize: sizeLabel,
-      fileNote: note,
+      fileNote: caption,
       time: this.currentTime(),
       read: true,
     });
+
+    if (this.conversationId) {
+      this.conversationService.uploadAttachment(this.conversationId, file, caption).subscribe({
+        error: () => {
+          this.errorMessage = 'تعذر رفع المرفق.';
+        },
+      });
+    }
 
     input.value = '';
     this.pendingFileAction = null;
