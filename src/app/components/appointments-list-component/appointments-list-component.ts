@@ -47,10 +47,10 @@ export class AppointmentsListComponent implements OnInit {
     this.appointments().filter((a) => !this.canModify(a))
   );
 
-  reviewByAppointmentId = computed(() => {
+  reviewByDoctorId = computed(() => {
     const map = new Map<number, Review>();
     for (const r of this.myReviews()) {
-      if (r.id != null) map.set(r.id, r);
+      if (r.doctorId != null && !map.has(r.doctorId)) map.set(r.doctorId, r);
     }
     return map;
   });
@@ -65,8 +65,11 @@ export class AppointmentsListComponent implements OnInit {
     this.errorMsg.set(null);
 
     this.appointmentService.getMyAppointments().subscribe({
-      next: (data) => {
-        this.appointments.set(data ?? []);
+      next: (res: any) => {
+        const list = Array.isArray(res?.data) ? res.data
+                   : Array.isArray(res) ? res
+                   : [];
+        this.appointments.set(list);
         this.loading.set(false);
       },
       error: () => {
@@ -78,7 +81,14 @@ export class AppointmentsListComponent implements OnInit {
 
   loadMyReviews(): void {
     this.reviewService.getMyReviews().subscribe({
-      next: (data) => this.myReviews.set(data ?? []),
+      next: (res: any) => {
+        const list = Array.isArray(res?.data?.reviews) ? res.data.reviews
+                   : Array.isArray(res?.reviews) ? res.reviews
+                   : Array.isArray(res?.data) ? res.data
+                   : Array.isArray(res) ? res
+                   : [];
+        this.myReviews.set(list);
+      },
       error: () => {
         // مش هنعطل الصفحة كلها لو التقييمات فشلت تحمّل، بس زرار التقييم هيفضل شغال كـ "قيم الزيارة"
       },
@@ -86,7 +96,7 @@ export class AppointmentsListComponent implements OnInit {
   }
 
   existingReviewFor(appt: Appointment): Review | null {
-    return this.reviewByAppointmentId().get(appt.id) ?? null;
+    return this.reviewByDoctorId().get(appt.doctorId!) ?? null;
   }
 
   canBeReviewed(appt: Appointment): boolean {

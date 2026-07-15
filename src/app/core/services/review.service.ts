@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateReviewDto, Review, UpdateReviewDto } from '../models/review.model';
+import { CreateReviewDto, DoctorRatingDistribution, Review, UpdateReviewDto } from '../models/review.model';
 
 @Injectable({ providedIn: 'root' })
 export class ReviewService {
@@ -32,6 +32,12 @@ export class ReviewService {
 
   getByDoctor(doctorId: number): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.baseUrl}/doctors/${doctorId}`);
+  }
+
+  getDistribution(doctorId: number): Observable<DoctorRatingDistribution> {
+    return this.http.get<DoctorRatingDistribution>(
+      `${this.baseUrl}/doctors/${doctorId}/distribution`
+    );
   }
 
   // حذف من لوحة تحكم الأدمن

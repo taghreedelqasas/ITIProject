@@ -37,10 +37,10 @@ export class RatingsPageComponent implements OnInit {
     return list;
   });
 
-  reviewByAppointmentId = computed(() => {
+  reviewByDoctorId = computed(() => {
     const map = new Map<number, Review>();
     for (const r of this.myReviews()) {
-      if (r.id != null) map.set(r.id, r);
+      if (r.doctorId != null && !map.has(r.doctorId)) map.set(r.doctorId, r);
     }
     return map;
   });
@@ -54,8 +54,11 @@ export class RatingsPageComponent implements OnInit {
     this.errorMsg.set(null);
 
     this.appointmentService.getMyAppointments().subscribe({
-      next: (data) => {
-        this.appointments.set(data ?? []);
+      next: (res: any) => {
+        const list = Array.isArray(res?.data) ? res.data
+                   : Array.isArray(res) ? res
+                   : [];
+        this.appointments.set(list);
         this.loadReviews();
       },
       error: () => {
@@ -67,8 +70,13 @@ export class RatingsPageComponent implements OnInit {
 
   private loadReviews(): void {
     this.reviewService.getMyReviews().subscribe({
-      next: (data) => {
-        this.myReviews.set(data ?? []);
+      next: (res: any) => {
+        const list = Array.isArray(res?.data?.reviews) ? res.data.reviews
+                   : Array.isArray(res?.reviews) ? res.reviews
+                   : Array.isArray(res?.data) ? res.data
+                   : Array.isArray(res) ? res
+                   : [];
+        this.myReviews.set(list);
         this.loading.set(false);
       },
       error: () => {
@@ -79,7 +87,7 @@ export class RatingsPageComponent implements OnInit {
   }
 
   existingReviewFor(appt: Appointment): Review | null {
-    return this.reviewByAppointmentId().get(appt.id) ?? null;
+    return this.reviewByDoctorId().get(appt.doctorId!) ?? null;
   }
 
   onReviewSaved(review: Review): void {
