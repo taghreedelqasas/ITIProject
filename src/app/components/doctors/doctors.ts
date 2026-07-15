@@ -5,8 +5,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DoctorService } from '../../core/services/doctor.service';
 import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
 
-
-
 interface Doctor {
   id: number;
   name: string;
@@ -32,10 +30,10 @@ const FALLBACK_IMAGE =
   styleUrl: './doctors.css',
 })
 export class Doctors implements OnInit {
-constructor(
+  constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
   ) {}
 
   pageTitle = 'الأطباء';
@@ -88,10 +86,7 @@ constructor(
   }
   private mapDoctor(d: ApiDoctor): Doctor {
     const name =
-      d.name ||
-      d.fullName ||
-      [d.firstName, d.lastName].filter(Boolean).join(' ') ||
-      'طبيب';
+      d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
     return {
       id: d.id,
       name: name.startsWith('د.') ? name : `د. ${name}`,
@@ -149,7 +144,7 @@ constructor(
   }
 
   onChatWithDoctor(doctor: Doctor): void {
-    this.router.navigate(['/chat'], {
+    this.router.navigate(['consult'], {
       queryParams: {
         doctorId: doctor.id,
         doctorName: doctor.name,
@@ -166,6 +161,17 @@ constructor(
   onBookAppointment(doctor: Doctor): void {
     this.router.navigate(['/booking'], {
       queryParams: { doctorId: doctor.id },
+    });
+  }
+
+  onChatDoctor(doctor: Doctor): void {
+    this.router.navigate(['/chat'], {
+      queryParams: {
+        doctorId: doctor.id,
+        name: doctor.name,
+        specialty: doctor.specialty,
+        image: doctor.image,
+      },
     });
   }
 }

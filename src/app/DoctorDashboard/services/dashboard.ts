@@ -150,9 +150,11 @@ export interface ConversationApi {
 export interface MessageApi {
   id: number;
   conversationId: number;
-  senderId: string;
+  senderUserId: string;
+  senderRole: string;
+  isMine: boolean;
   content: string;
-  sentAt: string;
+  createdAt: string;
   isRead: boolean;
 }
 

@@ -108,7 +108,6 @@
 
     <!-- ===================== Tab: عن الطبيب ===================== -->
     <ng-container *ngIf="activeTab === 'about'">
-
       <!-- نبذة عن الطبيب -->
       <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[11px] text-right">
         <h3 class="text-[#1c1c1c] text-[18px] font-bold">نبذة عن الطبيب</h3>
@@ -161,35 +160,49 @@
           </button>
         </div>
       </div>
-
     </ng-container>
 
     <!-- ===================== Tab: أحدث التقييمات ===================== -->
     <ng-container *ngIf="activeTab === 'reviews'">
-
       <!-- ملخص التقييمات -->
       <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-6 mb-5">
         <div class="flex items-center gap-8">
-
           <!-- الرقم الإجمالي -->
           <div class="text-center shrink-0">
             <p class="text-4xl font-extrabold text-[#23e0e0] mb-2">{{ stats.rating }}</p>
             <div class="flex justify-center items-center gap-1 mb-2">
-              <svg *ngFor="let s of [1,2,3,4]" class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+              <svg
+                *ngFor="let s of [1, 2, 3, 4]"
+                class="w-4 h-4 text-amber-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
               </svg>
               <span class="relative w-4 h-4 inline-block">
-                <svg class="absolute inset-0 w-4 h-4 text-slate-200" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                <svg
+                  class="absolute inset-0 w-4 h-4 text-slate-200"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                  />
                 </svg>
                 <span class="absolute inset-0 overflow-hidden" style="width: 50%">
                   <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                    <path
+                      d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                    />
                   </svg>
                 </span>
               </span>
             </div>
-            <p class="text-slate-400 text-sm whitespace-nowrap">بناءً على {{ ratingBasedOnCount }} تقييم</p>
+            <p class="text-slate-400 text-sm whitespace-nowrap">
+              بناءً على {{ ratingBasedOnCount }} تقييم
+            </p>
           </div>
 
           <!-- توزيع النجوم -->
@@ -198,7 +211,9 @@
               <span class="flex items-center gap-1 text-xs text-slate-500 w-8 shrink-0 justify-end">
                 {{ bar.stars }}
                 <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                  <path
+                    d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                  />
                 </svg>
               </span>
               <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -213,7 +228,6 @@
       <div class="flex flex-col gap-4">
         <div *ngFor="let review of reviews" class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-6 shadow-sm">
           <div class="flex items-start justify-between mb-3">
-
             <div class="flex items-center gap-3">
               <span
                 class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
@@ -229,13 +243,15 @@
 
             <div class="flex items-center gap-0.5 mt-1">
               <svg
-                *ngFor="let s of [1,2,3,4,5]"
+                *ngFor="let s of [1, 2, 3, 4, 5]"
                 class="w-3.5 h-3.5"
                 [ngClass]="s <= review.rating ? 'text-amber-400' : 'text-slate-200'"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
-                <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                <path
+                  d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
               </svg>
             </div>
           </div>

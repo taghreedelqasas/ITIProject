@@ -6,7 +6,7 @@ import { ChatMessage, Conversation, SendMessageDto } from '../models/conversatio
 
 @Injectable({ providedIn: 'root' })
 export class ConversationService {
-  private readonly baseUrl = `${environment.apiBaseUrl}/Conversation`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/api/Conversation`;
 
   constructor(private http: HttpClient) {}
 
@@ -38,5 +38,18 @@ export class ConversationService {
 
   markAsRead(conversationId: number): Observable<unknown> {
     return this.http.put(`${this.baseUrl}/${conversationId}/read`, {});
+  }
+
+  uploadAttachment(conversationId: number, file: File, caption: string): Observable<unknown> {
+    const formData = new FormData();
+    formData.append('ContentType', file.type);
+    formData.append('ContentDisposition', `form-data; name="file"; filename="${file.name}"`);
+    formData.append('Headers', '{}');
+    formData.append('Length', file.size.toString());
+    formData.append('Name', file.name);
+    formData.append('FileName', file.name);
+    formData.append('caption', caption);
+    formData.append('file', file, file.name);
+    return this.http.post(`${this.baseUrl}/${conversationId}/attachments`, formData);
   }
 }

@@ -1,24 +1,30 @@
 <div dir="rtl" class="min-h-screen bg-slate-50 font-[Tajawal] py-10">
-
   <!-- ===================== Hero + Search ===================== -->
   <section class="bg-gradient-to-br from-[#f3ecfa] via-[#f6f2fb] to-[#e8fbfb] pt-14 pb-16 px-6">
-
     <div class="max-w-4xl mx-auto text-center mb-10">
       <h1 class="text-4xl md:text-5xl font-extrabold text-[#3a1560] mb-3">{{ pageTitle }}</h1>
       <p class="text-slate-500 text-lg">{{ pageSubtitle }}</p>
     </div>
 
     <div class="max-w-5xl mx-auto bg-white rounded-3xl shadow-md p-6 md:p-10">
-
       <h2 class="flex items-center justify-center gap-2 text-xl font-extrabold text-[#3a1560] mb-8">
         ابحث عن طبيبك
-        <svg class="w-5 h-5 text-[#3a1560]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+        <svg
+          class="w-5 h-5 text-[#3a1560]"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
+          />
         </svg>
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-
         <!-- التخصص -->
         <div>
           <label class="block text-sm font-bold text-slate-600 mb-2">التخصص</label>
@@ -46,8 +52,18 @@
         <div>
           <label class="block text-sm font-bold text-slate-600 mb-2">التاريخ</label>
           <div class="relative">
-            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <svg
+              class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
             </svg>
             <input
               type="text"
@@ -114,17 +130,26 @@
 
   <!-- ===================== Results ===================== -->
   <div class="max-w-6xl mx-auto px-6">
-
     <h2 class="text-2xl font-extrabold text-[#3a1560] mb-6">
       كل التخصصات
       <span class="text-slate-400 text-base font-normal">({{ totalDoctorsLabel }})</span>
     </h2>
 
     <div *ngIf="isLoading" class="text-center text-slate-400 py-10">جاري تحميل الأطباء...</div>
-    <div *ngIf="errorMessage && !isLoading" class="text-center text-red-500 font-semibold py-10">{{ errorMessage }}</div>
-    <div *ngIf="!isLoading && !errorMessage && doctors.length === 0" class="text-center text-slate-400 py-10">لا يوجد أطباء مطابقين لبحثك حاليًا.</div>
+    <div *ngIf="errorMessage && !isLoading" class="text-center text-red-500 font-semibold py-10">
+      {{ errorMessage }}
+    </div>
+    <div
+      *ngIf="!isLoading && !errorMessage && doctors.length === 0"
+      class="text-center text-slate-400 py-10"
+    >
+      لا يوجد أطباء مطابقين لبحثك حاليًا.
+    </div>
 
-    <div *ngIf="!isLoading && doctors.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+    <div
+      *ngIf="!isLoading && doctors.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+    >
       <div
         *ngFor="let doctor of doctors"
         (click)="viewDoctorProfile(doctor)"
@@ -135,7 +160,7 @@
         <div class="relative w-full h-[213px] rounded-[10.5px] overflow-hidden mb-3">
           <img [src]="doctor.image" [alt]="doctor.name" class="w-full h-full object-cover rounded-[10.5px]" />
 
-          <!-- Rating badge inside photo -->
+          <!-- Rating badge inside photo (From main) -->
           <div class="absolute top-[8px] left-[8px] bg-[#e9fcfc] flex items-center gap-1 py-1 px-2.5 rounded-[16px] shadow-sm">
             <span class="text-[#53098d] font-bold text-[12px] font-['Tajawal']">({{ doctor.rating || '4.8' }})</span>
             <svg class="w-3.5 h-3.5 text-[#E8B006]" fill="currentColor" viewBox="0 0 20 20">
@@ -155,7 +180,11 @@
               stroke-width="2.5"
               viewBox="0 0 24 24"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
             </svg>
           </button>
         </div>
@@ -180,14 +209,16 @@
             </div>
           </div>
 
-          <!-- Action buttons -->
+          <!-- Action buttons (Merged perfectly from main & feat/Conversation) -->
           <div class="flex gap-3 items-center justify-center w-full mt-4">
+            <!-- Button: Book Appointment (from main) -->
             <button
               (click)="onBookAppointment(doctor); $event.stopPropagation()"
               class="flex-1 bg-[#23e0e0] rounded-[40px] text-[#44116d] text-[16px] font-extrabold h-[44px] flex items-center justify-center hover:bg-[#23e0e0]/80 transition-colors"
             >
               احجز موعد
             </button>
+            <!-- Button: Chat with Doctor (from feat) -->
             <button
               (click)="onChatWithDoctor(doctor); $event.stopPropagation()"
               class="chat-gradient-btn flex-1 text-[#44116d] text-[16px] font-extrabold h-[44px] flex items-center justify-center transition-colors"
@@ -214,9 +245,11 @@
         *ngFor="let page of pages"
         (click)="goToPage(page)"
         [disabled]="page === '...'"
-        [ngClass]="page === currentPage
-          ? 'border-purple-800 text-[#3a1560] font-bold'
-          : 'border-transparent text-slate-500 hover:bg-slate-100'"
+        [ngClass]="
+          page === currentPage
+            ? 'border-purple-800 text-[#3a1560] font-bold'
+            : 'border-transparent text-slate-500 hover:bg-slate-100'
+        "
         class="w-9 h-9 rounded-full border text-sm flex items-center justify-center transition-colors"
       >
         {{ page }}
