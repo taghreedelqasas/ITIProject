@@ -2,7 +2,6 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
-
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './shared/footer/footer';
 import { CommonModule } from '@angular/common';
@@ -27,7 +26,18 @@ export class App {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const url = event.urlAfterRedirects;
-        const hiddenPrefixes = ['/auth', '/doctor-dashboard'];
+        
+        // هنا نحدد كل البادئات (Prefixes) التي لا نريد ظهور الـ Navbar والـ Footer فيها
+        const hiddenPrefixes = [
+          '/auth', 
+          '/doctor-dashboard', 
+          '/ai-pulse',            // صفحة الـ AI Chat
+          '/confirm-email', 
+          '/api/auth/confirm-email',
+          '/api/auth/reset-password'
+        ];
+        
+        // إذا كان العنوان الحالي يبدأ بأي واحدة منها، سنجعل showChrome = false
         this.showChrome = !hiddenPrefixes.some(prefix => url.startsWith(prefix));
       });
   }

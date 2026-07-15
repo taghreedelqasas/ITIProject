@@ -106,6 +106,14 @@ export interface ReviewApi {
   createdAt: string;
 }
 
+ export interface DoctorReviewsResponse {
+  doctorId: number;
+  doctorName: string;
+  averageRating: number;
+  totalReviews: number;
+  reviews: ReviewApi[];
+} 
+
 // ============================================================
 // 5) حقيقي 100% — Wallet & Payments
 // ============================================================

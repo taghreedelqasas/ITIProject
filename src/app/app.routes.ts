@@ -52,6 +52,8 @@ export const routes: Routes = [
   {
     path: 'booking',
     component: Booking,
+    canActivate: [authGuard],
+    // data: { roles: ['Patient'] },
     children: [
       { path: '', redirectTo: 'date-time', pathMatch: 'full' },
       { path: 'date-time', component: StepDateTime },
@@ -76,12 +78,14 @@ export const routes: Routes = [
 
   { path: 'consult', component: ConsultRequest },
   { path: 'chat', component: ChatComponent },
-  { path: 'ai-pulse', component: AiChat },
+  { path: 'ai-pulse', component: AiChat , canActivate: [authGuard], },
 
   // Doctor Dashboard sub-routes
   {
     path: 'doctor-dashboard',
     component: DoctorDash,
+   canActivate: [authGuard],
+     
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
@@ -90,7 +94,6 @@ export const routes: Routes = [
       { path: 'consultations', component: DocConsultations },
 
       { path: 'consultations/chat', component: ChatComponent },
-
 
       { path: 'analytics', component: DocAnalytics },
       { path: 'finance', component: DocPayments },

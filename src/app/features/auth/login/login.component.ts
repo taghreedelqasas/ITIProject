@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router'; 
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthResponse } from '../../../core/models/auth.models';
@@ -12,16 +12,18 @@ import { AuthResponse } from '../../../core/models/auth.models';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit { 
   loginForm: FormGroup;
   showPassword = false;
   isLoading = false;
   apiError = '';
+  returnUrl: string = ''; 
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute 
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -29,27 +31,30 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
+  }
+
   isInvalid(field: string): boolean {
     const control = this.loginForm.get(field);
     return !!(control?.invalid && control?.touched);
   }
 
-private redirectBasedOnRoles(roles: string[]): void {
-  if (roles.includes('Admin')) {
-    this.router.navigate(['/admin/dashboard']);
-  } else if (roles.includes('Doctor')) {
-    this.router.navigate(['/doctor-dashboard']);
-  } else if (roles.includes('Patient')) {
-    this.router.navigate(['/profile']);   
-  } else {
-    this.router.navigate(['/']);
+  private redirectBasedOnRoles(roles: string[]): void {
+    if (roles.includes('Admin')) {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (roles.includes('Doctor')) {
+      this.router.navigate(['/doctor-dashboard/main']); // التوجيه الصحيح للدكتور
+    } else if (roles.includes('Patient')) {
+      this.router.navigate(['/']);   
+    } else {
+      this.router.navigate(['/']);
+    }
   }
-}
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
-
       return;
     }
 
@@ -62,18 +67,22 @@ private redirectBasedOnRoles(roles: string[]): void {
       next: (response) => {
         this.isLoading = false;
         console.log(' Successfully login');
-      
-         
 
-  //  --------------
+        // جلب الـ Roles أولاً لتحديد هوية المستخدم
         const roles = this.authService.getUserRoles();
+        const finalRoles = roles.length > 0 ? roles : (response.roles || []);
 
-        if (roles.length > 0) {
-          this.redirectBasedOnRoles(roles);
-        } else if (response.roles && response.roles.length > 0) {
-          this.redirectBasedOnRoles(response.roles);
+        // التعديل الذكي والآمن هنا: 
+        // لو المستخدم مريض (Patient) وكان رايح لصفحة الحجز (booking)، نوديه للحجز
+        if (finalRoles.includes('Patient') && this.returnUrl && this.returnUrl.includes('/booking')) {
+          this.router.navigateByUrl(this.returnUrl);
         } else {
-          this.router.navigate(['/']);
+          // في أي حالة تانية (سواء دكتور، أو مريض داخل عادي) يروح لصفحته المخصصة حسب الـ Role
+          if (finalRoles.length > 0) {
+            this.redirectBasedOnRoles(finalRoles);
+          } else {
+            this.router.navigate(['/']);
+          }
         }
       },
       error: (err) => {

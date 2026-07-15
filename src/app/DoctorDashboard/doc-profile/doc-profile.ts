@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../services/appointment';
 import { AuthService } from '../../core/services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-doc-profile',
@@ -16,7 +17,7 @@ export class DocProfile implements OnInit {
   doctorId!: number;
   firstName = '';
   lastName = '';
-
+  
   constructor(private authService: AuthService) {
     const id = this.authService.getDoctorId();
     if (id === null) {
@@ -58,47 +59,79 @@ export class DocProfile implements OnInit {
     // 3. جلب المعاملات المالية بشكل منفصل تماماً
     this.appointmentService.getWalletTransactions();
   }
+private mapGenderToEnum(label: string | number | null | undefined): number | undefined {
+  if (label === 'ذكر' || label === 'Male' || label === 1) return 1;
+  if (label === 'أنثى' || label === 'Female' || label === 2) return 2;
+  return undefined;
+}
 
-  onUpdateProfile(): void {
-    const user = this.appointmentService.userProfile();
-    const doc = this.appointmentService.doctor();
 
-    if (user && doc) {
-      const fullUpdatedName = `${this.firstName} ${this.lastName}`.trim();
-const body = {
-  firstName: this.firstName,
-  lastName: this.lastName,
-  phoneNumber: user.phoneNumber,
-  birthDate: user.birthDate
-};
+onUpdateProfile(): void {
+  const user = this.appointmentService.userProfile();
+  const doc = this.appointmentService.doctor();
 
-console.log(body)
-      this.appointmentService.updateUserProfile({
-        firstName: this.firstName,
-        phoneNumber: user.phoneNumber ?? undefined,
-        birthDate: user.birthDate ?? undefined
-      }).subscribe({
-        next: () => {
-          this.appointmentService.updateDoctorProfile({
-            id: doc.id,
-                
-            licenseNumber: doc.licenseNumber,
-            consultationFee: doc.consultationFee,
-            address: doc.address
+  if (user && doc) {
+    const fullUpdatedName = `${this.firstName} ${this.lastName}`.trim();
 
-          }).subscribe({
-            next: () => {
-              // تحديث الـ Signal محلياً ليعكس الاسم فوراً في الواجهة
-              this.appointmentService.userProfile.update(p => p ? { ...p, fullName: fullUpdatedName } : null);
-              alert('تم تحديث البيانات المهنية والشخصية بنجاح! ✨');
-            },
-            error: (err) => console.error('خطأ أثناء تحديث بيانات الطبيب:', err)
-          });
-        },
-        error: (err) => console.error('خطأ أثناء تحديث الحساب الشخصي:', err)
-      });
-    }
+    this.appointmentService.updateUserProfile({
+      firstName: this.firstName,
+      lastName: this.lastName,
+      phoneNumber: user.phoneNumber ?? undefined,
+      birthDate: user.birthDate ?? undefined,
+      gender: this.mapGenderToEnum(user.gender)
+    }).subscribe({
+      next: () => {
+        this.appointmentService.updateDoctorProfile({
+          id: doc.id,
+          licenseNumber: doc.licenseNumber,
+          consultationFee: doc.consultationFee,
+          address: doc.address
+        }).subscribe({
+          next: () => {
+            // تحديث الاسم في الـ Signal
+            this.appointmentService.userProfile.update(p =>
+              p ? { ...p, fullName: fullUpdatedName } : null
+            );
+
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'success',
+              title: 'تم تحديث البيانات المهنية والشخصية بنجاح! ',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+            });
+          },
+          error: (err) => {
+            console.error('خطأ أثناء تحديث بيانات الطبيب:', err);
+
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'error',
+              title: 'حدث خطأ أثناء تحديث بيانات الطبيب',
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error('خطأ أثناء تحديث الحساب الشخصي:', err);
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'حدث خطأ أثناء تحديث الحساب الشخصي',
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      }
+    });
   }
+}
 
   onUpdateWorkingHours(): void {
     alert('سيتم ربط تعديل أوقات العمل لاحقاً فور توفرها بالـ Backend.');

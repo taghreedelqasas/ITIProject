@@ -102,8 +102,24 @@ select {
   min-width: 160px;
 }
 
+
+
 /* تأثير عند تمرير الماوس فوق الزر */
 .swal-custom-cancel:hover {
   background: linear-gradient(#f5f0fa, #f5f0fa) padding-box,
               linear-gradient(135deg, #6CEAEA, #53098D) border-box !important;
+}
+  .registerBtn {
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+              linear-gradient(135deg, #6CEAEA, #53098D) border-box !important;
+  
+  /* يجب أن يكون الإطار شفافاً (transparent) ليظهر التدرج من تحته */
+  border: 2px solid transparent !important; 
+  
+  color: #53098D !important;
+  border-radius: 30px !important; /* يحافظ على انحناء الحواف تماماً */
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+
 }
