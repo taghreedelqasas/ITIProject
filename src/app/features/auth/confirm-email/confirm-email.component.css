@@ -143,11 +143,18 @@
 
 /* ---- Success Icon ---- */
 .success-icon-wrapper {
-  margin-bottom: 32px;
+   width: 320px;      
+  height: 180px;
+
+  background-image: url('../../../../assets/images/Vector.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
   
 }
 
 .success-icon {
+ 
   width: 120px;
   height: 120px;
   background: linear-gradient(135deg, rgba(0, 194, 203, 0.1), rgba(108, 63, 197, 0.1));
