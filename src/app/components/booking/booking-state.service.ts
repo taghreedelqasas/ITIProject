@@ -32,6 +32,7 @@ export interface PatientData {
 }
 
 const FALLBACK_IMAGE = 'doctor_photo.png';
+const SESSION_KEY = 'booking_state';
 
 export const COUNTRIES: Country[] = [
   { code: '+20', flag: '🇪🇬', name: 'مصر' },
@@ -154,13 +155,55 @@ export class BookingStateService {
     private availabilityService: DoctorAvailabilityService,
     private appointmentService: AppointmentService,
     private paymentService: PaymentService
-  ) {}
+  ) {
+    this.restore();
+  }
+
+  private save(): void {
+    try {
+      const data = {
+        doctorId: this.doctorId,
+        selectedSlotId: this.selectedSlotId(),
+        selectedTime: this.selectedTime(),
+        confirmedAppointmentId: this.confirmedAppointmentId(),
+        patient: this.patient(),
+        selectedCountry: this.selectedCountry(),
+        doctor: this.doctor(),
+        doctorImage: this.doctorImage(),
+      };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+    } catch {}
+  }
+
+  private restore(): boolean {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      if (!data?.doctorId) return false;
+
+      this.doctorId = data.doctorId;
+      this.selectedSlotId.set(data.selectedSlotId ?? null);
+      this.selectedTime.set(data.selectedTime ?? '');
+      this.confirmedAppointmentId.set(data.confirmedAppointmentId ?? null);
+      this.patient.set(data.patient ?? { fullName: '', phone: '', age: null, gender: '', notes: '' });
+      this.selectedCountry.set(data.selectedCountry ?? COUNTRIES[0]);
+      if (data.doctor) this.doctor.set(data.doctor);
+      if (data.doctorImage) this.doctorImage.set(data.doctorImage);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   initFromQueryParams(params: { [key: string]: string | null }): void {
     this.rebookId = params['rebookId'];
     this.fromConsultFlow = params['fromConsult'] === 'true';
     const doctorIdParam = params['doctorId'];
-    this.doctorId = doctorIdParam ? Number(doctorIdParam) : null;
+
+    if (doctorIdParam) {
+      this.doctorId = Number(doctorIdParam);
+    }
 
     const rebookDoctorName = params['rebookDoctorName'];
     if (rebookDoctorName) {
@@ -174,9 +217,12 @@ export class BookingStateService {
     }
 
     const preselectedSlotId = params['slotId'];
-    this.preselectedSlotId = preselectedSlotId ? Number(preselectedSlotId) : null;
+    if (preselectedSlotId) {
+      this.preselectedSlotId = Number(preselectedSlotId);
+    }
 
     if (this.doctorId) {
+      this.save();
       this.loadDoctor(this.doctorId);
       this.loadAvailability(this.doctorId);
     } else if (!rebookDoctorName) {
@@ -276,11 +322,13 @@ export class BookingStateService {
     this.selectedDate.set(day.date);
     this.selectedTime.set('');
     this.selectedSlotId.set(null);
+    this.save();
   }
 
   selectTime(slot: TimeSlot): void {
     this.selectedTime.set(slot.label);
     this.selectedSlotId.set(slot.id);
+    this.save();
   }
 
   toggleCountryMenu(): void {
@@ -290,10 +338,12 @@ export class BookingStateService {
   selectCountry(country: Country): void {
     this.selectedCountry.set(country);
     this.isCountryMenuOpen.set(false);
+    this.save();
   }
 
   updatePatientField(field: keyof PatientData, value: string | number | null): void {
     this.patient.update(p => ({ ...p, [field]: value }));
+    this.save();
   }
 
   onConfirmBooking(): void {
@@ -319,6 +369,7 @@ export class BookingStateService {
         next: (appointment) => {
           const res = appointment as any;
           this.confirmedAppointmentId.set(res?.data?.id ?? res?.id ?? null);
+          this.save();
 
           if (!this.confirmedAppointmentId()) {
             this.isLoading.set(false);
@@ -390,5 +441,6 @@ export class BookingStateService {
     this.paymentOverlayUrl.set(null);
     this.paymentError.set('');
     this.confirmedAppointmentId.set(null);
+    try { sessionStorage.removeItem(SESSION_KEY); } catch {}
   }
 }
