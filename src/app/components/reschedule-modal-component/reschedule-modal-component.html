@@ -56,11 +56,11 @@
             <div class="state-msg">لا يوجد مواعيد متاحة في هذا اليوم</div>
           } @else {
             <div class="slots-grid">
-              @for (slot of selectedDaySlots(); track slot.id) {
+              @for (slot of selectedDaySlots(); track getSlotId(slot)) {
                 <button
                   type="button"
                   class="slot-pill"
-                  [class.slot-pill--selected]="selectedSlotId() === slot.id"
+                  [class.slot-pill--selected]="selectedSlotId() === getSlotId(slot)"
                   (click)="selectSlot(slot)"
                 >
                   {{ formatTime(slot.startTime) }}

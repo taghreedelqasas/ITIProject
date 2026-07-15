@@ -39,13 +39,24 @@ export class UserProfileComponent implements OnInit {
     this.patientServices.getUserProfile().subscribe({
       next: (res: any) => {
         this.patientServices.userProfile.set(res);
+        
+        // Normalize gender: 1 = Male (ذكر), 2 = Female (أنثى)
+        let genderVal = 1;
+        if (res.gender !== undefined && res.gender !== null) {
+          const rawGender = String(res.gender).toLowerCase();
+          if (rawGender === 'female' || rawGender === '2' || (rawGender === '1' && Gender.Female === 1)) {
+            genderVal = 2; // Female (أنثى)
+          } else {
+            genderVal = 1; // Male (ذكر)
+          }
+        }
+
         this.userData = {
           fullName: res.fullName,
           email: res.email,
           phone: res.phoneNumber,
           birthDate: res.birthDate?.split('T')[0],
-          // الباك إند بيرجع الـ enum كرقم (1 أو 2)، لو رجع string لأي سبب بنحولها بأمان
-          gender: typeof res.gender === 'number' ? res.gender : Gender.Male
+          gender: genderVal as any
         };
       },
       error: (err) => console.log(err)
