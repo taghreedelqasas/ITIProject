@@ -1,0 +1,107 @@
+<!-- HTML Structure -->
+<div class="page-wrapper">
+  <div class="image-panel"></div>
+
+  <div class="form-panel">
+    <div class="form-container">
+
+      <div class="logo"></div>
+      <h1 class="title">المعلومات المهنية</h1>
+
+      <form [formGroup]="infoForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- التخصص -->
+        <div class="field-group">
+          <label>التخصص<span class="req">*</span></label>
+          <select formControlName="departmentId" [class.invalid]="isInvalid('departmentId')">
+            <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+          </select>
+        </div>
+
+       
+
+        <!-- عنوان العيادة -->
+        <div class="field-group">
+          <label>عنوان العيادة<span class="req">*</span></label>
+          <input formControlName="address" type="text"
+            placeholder="أدخل عنوان العيادة"
+            [class.invalid]="isInvalid('address')" />
+          <span class="error-msg" *ngIf="isInvalid('address')">عنوان العيادة مطلوب</span>
+        </div>
+<div class="double-fields">
+        <!-- رقم الترخيص -->
+         <div class="aside" style="width: 50%;">
+        <div class="field-group">
+          <label>رقم الترخيص<span class="req">*</span></label>
+          <input formControlName="licenseNumber" type="text"
+            placeholder="أدخل رقم الترخيص"
+            [class.invalid]="isInvalid('licenseNumber')" />
+          <span class="error-msg" *ngIf="isInvalid('licenseNumber')">رقم الترخيص مطلوب</span>
+        </div>
+        </div>
+        <div class="aside" style="width: 50%;">
+         <!-- سنوات الخبرة -->
+        <div class="field-group">
+          <label>سنوات الخبرة<span class="req">*</span></label>
+          <input formControlName="yearsOfExperience" type="number" min="0" max="60"
+            placeholder="عدد سنوات الخبرة"
+            [class.invalid]="isInvalid('yearsOfExperience')" />
+          <span class="error-msg" *ngIf="isInvalid('yearsOfExperience')">من فضلك أدخل عدد صحيح لسنوات الخبرة</span>
+        </div>
+        </div>
+    </div>
+
+        <!-- المستندات -->
+        <h3 class="docs-title">المستندات المطلوبة (Upload)</h3>
+
+        <div class="doc-row">
+          <label class="upload-btn" for="ssnFile">
+            <i class="fas fa-upload"></i>
+          </label>
+          <input id="ssnFile" type="file" accept="image/*" hidden
+            (change)="onFileSelected($event, 'ssn')" />
+          <div class="doc-text">
+            <strong>البطاقة الشخصية<span class="req">*</span></strong>
+            <span>صورة واضحة من الوجهين</span>
+          </div>
+          <span class="doc-check" [class.checked]="ssnImageFile"></span>
+        </div>
+
+        <div class="doc-row">
+          <label class="upload-btn" for="licenseFile">
+            <i class="fas fa-upload"></i>
+          </label>
+          <input id="licenseFile" type="file" accept="image/*" hidden
+            (change)="onFileSelected($event, 'license')" />
+          <div class="doc-text">
+            <strong>رخصة مزاولة المهنة<span class="req">*</span></strong>
+            <span>سارية المفعول</span>
+          </div>
+          <span class="doc-check" [class.checked]="licenseImageFile"></span>
+        </div>
+
+        <div class="doc-row">
+          <label class="upload-btn" for="certificateFile">
+            <i class="fas fa-upload"></i>
+          </label>
+          <input id="certificateFile" type="file" accept="image/*" hidden
+            (change)="onFileSelected($event, 'certificate')" />
+          <div class="doc-text">
+            <strong>شهادة المؤهل<span class="req">*</span></strong>
+            <span>شهادة البكالوريوس و الدراسات</span>
+          </div>
+          <span class="doc-check" [class.checked]="certificateImageFile"></span>
+        </div>
+
+        <div class="api-error" *ngIf="apiError">{{ apiError }}</div>
+
+        <button class="submit-btn" type="submit" [disabled]="isLoading">
+          <span *ngIf="!isLoading">متابعة</span>
+          <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+</div>

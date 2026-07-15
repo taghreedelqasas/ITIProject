@@ -1,0 +1,152 @@
+<div class="flex h-[calc(100vh-64px)] bg-slate-50">
+
+  <!-- Main chat column -->
+  <div class="flex-1 flex flex-col">
+
+    <!-- Header banner -->
+    <div class="bg-gradient-to-l from-purple-700 to-purple-900 text-white px-8 py-5 flex items-center justify-between">
+      <div class="text-right">
+        <div class="flex items-center gap-2 justify-end">
+          <h1 class="text-xl font-bold">نبض AI</h1>
+        </div>
+        <p class="text-sm text-white/80">مساعدك الصحي الذكي للتشخيص المبدئي وتوجيهك للطبيب المناسب</p>
+      </div>
+      <div class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center">
+        <span class="text-lg">✨</span>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="messages().length === 0" class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+        <span class="text-2xl">✨</span>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 mb-1">مرحباً 👋 أنا نبض</h2>
+      <p class="text-slate-500 text-sm mb-8">
+        أخبرني بما تشعر به وسأساعدك في فهم أعراضك والعثور على التخصص الطبي المناسب لحالتك.
+      </p>
+
+      <p class="text-sm text-slate-400 mb-3">جرب أن تسألني:</p>
+      <div class="flex flex-col gap-2 w-full max-w-md">
+        <button *ngFor="let q of suggestedQuestions" (click)="sendMessage(q)"
+          class="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 hover:border-purple-400 transition text-right">
+          <span>{{ q }}</span>
+          <span class="text-slate-400">‹</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat messages -->
+    <div *ngIf="messages().length > 0" class="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
+      <ng-container *ngFor="let msg of messages()">
+
+        <!-- User bubble -->
+        <div *ngIf="msg.role === 'user'" class="flex justify-end">
+          <div class="bg-purple-700 text-white rounded-2xl px-4 py-3 max-w-lg text-sm flex flex-col gap-2">
+
+            <!-- Image attachment -->
+            <img
+              *ngIf="msg.attachmentIsImage && msg.attachmentUrl"
+              [src]="msg.attachmentUrl"
+              class="rounded-lg max-h-48 object-cover"
+            />
+
+            <!-- File (non-image) attachment -->
+            <div
+              *ngIf="msg.attachmentName && !msg.attachmentIsImage"
+              class="flex items-center gap-2 bg-purple-800/50 rounded-lg px-3 py-2 text-xs"
+            >
+              📄 {{ msg.attachmentName }}
+            </div>
+
+            <span *ngIf="msg.text">{{ msg.text }}</span>
+          </div>
+        </div>
+
+        <!-- AI bubble -->
+        <div *ngIf="msg.role === 'ai'" class="flex items-start gap-2">
+          <div class="w-8 h-8 shrink-0 rounded-full bg-purple-700 flex items-center justify-center text-white text-sm">✨
+          </div>
+          <div class="bg-white border border-slate-200 rounded-2xl px-4 py-3 max-w-lg text-sm text-slate-700">
+            <p class="mb-3">{{ msg.text }}</p>
+
+            <div *ngIf="msg.specialties?.length" class="border-t pt-3 mt-1">
+              <p class="text-xs text-slate-500 mb-2">التخصصات المقترحة:</p>
+              <div class="flex gap-2 flex-wrap">
+                <span *ngFor="let s of msg.specialties"
+                  class="bg-purple-50 text-purple-700 text-xs px-3 py-1.5 rounded-lg">
+                  {{ s }}
+                </span>
+              </div>
+              <button class="text-xs text-purple-700 mt-3 hover:underline">هل تريد البحث عن طبيب؟</button>
+              <p class="text-[11px] text-slate-400 mt-2">* ملاحظة: هذا التحليل مبدئي وليس بديلاً عن الاستشارة الطبية
+                المتخصصة.</p>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <!-- Pending attachment preview -->
+    <div *ngIf="selectedFile()" class="px-6 pt-3 flex items-center gap-2 border-t bg-white">
+      <div class="flex items-center gap-2 bg-purple-50 text-purple-700 text-xs px-3 py-2 rounded-lg">
+        <img
+          *ngIf="selectedFilePreviewUrl()"
+          [src]="selectedFilePreviewUrl()"
+          class="w-8 h-8 rounded object-cover"
+        />
+        <span *ngIf="!selectedFilePreviewUrl()">📄</span>
+        <span>{{ selectedFile()!.name }}</span>
+        <button (click)="removeSelectedFile()" class="text-purple-400 hover:text-purple-700 ml-1">✕</button>
+      </div>
+    </div>
+
+    <!-- Input bar (no mic) -->
+    <div class="border-t bg-white px-6 py-4 flex items-center gap-3">
+      <input type="file" #fileInput class="hidden" accept="image/*,.pdf" (change)="onFileSelected($event)" />
+      <button (click)="fileInput.click()" class="text-slate-400 hover:text-slate-600">
+        <span class="text-xl">📎</span>
+      </button>
+      <input type="text" [ngModel]="inputText()" (ngModelChange)="inputText.set($event)" (keyup.enter)="sendMessage()"
+        placeholder="صف ما تشعر به هنا..."
+        class="flex-1 bg-slate-100 rounded-xl px-4 py-3 text-sm text-right outline-none focus:ring-2 focus:ring-purple-400" />
+      <button (click)="sendMessage()"
+        class="w-10 h-10 shrink-0 rounded-xl bg-purple-700 hover:bg-purple-800 transition flex items-center justify-center text-white">
+        <span class="rotate-180">➤</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="w-72 border-r bg-white flex flex-col">
+    <div class="flex items-center justify-between px-4 py-4 border-b">
+      <button class="text-slate-400 hover:text-slate-600">✕</button>
+      <button (click)="startNewChat()" class="flex items-center gap-1 text-sm text-purple-700 font-medium">
+        <span>+</span> شات جديدة
+      </button>
+    </div>
+
+    <div class="px-4 py-3">
+      <div class="relative">
+        <input type="text" placeholder="بحث..."
+          class="w-full bg-slate-100 rounded-lg pl-3 pr-9 py-2 text-sm text-right outline-none" />
+        <span class="absolute right-3 top-2 text-slate-400">🔍</span>
+      </div>
+    </div>
+
+    <div class="px-4 py-1 text-xs text-slate-400">المحادثات السابقة</div>
+
+    <div class="flex-1 overflow-y-auto px-2">
+      <button *ngFor="let chat of previousChats"
+        class="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700 text-right">
+        <span class="text-slate-400">···</span>
+        <span>{{ chat.title }}</span>
+      </button>
+    </div>
+
+    <button class="text-xs text-slate-400 px-4 py-3 text-right hover:text-slate-600">تحميل المزيد...</button>
+  </aside>
+
+</div>

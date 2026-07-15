@@ -180,7 +180,7 @@ export class DoctorProfile implements OnInit {
           id: s.id,
           label: this.formatTime(s.startTime),
         }));
-        this.availableTimes = this.timeSlotOptions.map((s) => s.label);
+        this.availableTimes = Array.from(new Set(this.timeSlotOptions.map((s) => s.label)));
         if (this.timeSlotOptions.length > 0) {
           this.stats.nextAppointment = this.timeSlotOptions[0].label;
         }

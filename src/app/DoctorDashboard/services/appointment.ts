@@ -1,6 +1,6 @@
-
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import {
   ServiceResult,
   DoctorReadDto,
@@ -15,7 +15,6 @@ import {
   WalletResponse,
   WalletTransactionApi,
   WithdrawRequestPayload,
-  PaymentInitiateResponse,
   MessageApi,
   ConversationApi,
   AnalyticsStats,
@@ -23,7 +22,7 @@ import {
   PatientDerived
 } from './dashboard';
 
-const BASE = 'https://mawed.runasp.net';
+const BASE = environment.apiBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
@@ -209,7 +208,7 @@ getAvailabilityById(id: number) {
   reviews = signal<ReviewApi[]>([]);
 
  getMyReviews(): void {
-  this.http.get<ServiceResult<ReviewApi[]>>(`https://mawed.runasp.net/api/Reviews/my`).subscribe({
+  this.http.get<ServiceResult<ReviewApi[]>>(`${BASE}/api/Reviews/my`).subscribe({
     next: (res) => this.reviews.set(res.data ?? []),
     error: (err) => {
       console.error('Error fetching reviews:', err);
@@ -231,7 +230,7 @@ getAvailabilityById(id: number) {
   walletTransactions = signal<WalletTransactionApi[]>([]);
 
 getWallet(): void {
-  this.http.get<ServiceResult<WalletResponse>>(`https://mawed.runasp.net/api/wallet`).subscribe({
+  this.http.get<ServiceResult<WalletResponse>>(`${BASE}/api/wallet`).subscribe({
     next: (res) => this.wallet.set(res.data ?? null),
     error: (err) => {
       console.error('Error fetching wallet:', err);
@@ -253,11 +252,8 @@ getWallet(): void {
     return this.http.post<ServiceResult<null>>(`${BASE}/api/wallet/withdraw`, payload);
   }
 
-  initiatePayment(appointmentId: number) {
-    return this.http.post<ServiceResult<PaymentInitiateResponse>>(
-      `${BASE}/api/payments/initiate/${appointmentId}`, {}
-    );
-  }
+  // Payment initiation is handled by the patient booking flow (core/services/payment.service.ts)
+  // The POST /api/payments/initiate endpoint requires Patient role and should not be called from doctor dashboard
 
   // دخل الشهر — محسوب من بيانات حقيقية (حركات Credit في الشهر الحالي)
   monthlyEarnings = computed(() => {
@@ -357,22 +353,24 @@ markConversationRead(conversationId: number) {
       totalPatients: this.totalPatientsComputed(),
       totalAppointments: this.totalAppointmentsComputed(),
       totalConsultations: this.totalConsultationsComputed(),
-      attendanceRate: 100, // نسبة افتراضية مؤقتاً
-      cancellationRate: 0, // نسبة افتراضية مؤقتاً
+    attendanceRate: this.attendanceRateReal(),
+cancellationRate: this.cancellationRateReal(),
       monthlyEarnings: [
         { month: 'مايو', amount: this.wallet()?.balance || 0 }, // ربط ديناميكي مع المحفظة الحقيقية
         { month: 'يونيو', amount: 0 },
         { month: 'يوليو', amount: 0 }
       ],
-      patientGrowth: [
-        { month: 'يناير', count: this.totalPatientsComputed() }
-      ],
-      mostActiveDay: 'الأحد',
-      mostActiveTime: '10:00 ص',
+      patientGrowth: this.patientGrowthComputed(),
+     mostActiveDay: this.mostActiveDayReal(),
+      mostActiveTime: this.mostActiveTimeReal() , 
       attendanceChangeRate: '0%'
     };
   });
 
+ maxMonthlyEarning = computed(() => {
+  const earnings = this.analyticsDataComputed().monthlyEarnings;
+  return Math.max(...earnings.map(e => e.amount), 1);
+});
   // ============================================================
 
   settingsData = signal<DoctorSettings>({
@@ -401,4 +399,109 @@ totalReviewsCount = computed(() => this.reviews().length);
 totalEarnings = computed(() =>
   this.walletTransactions().filter(t => t.type === 'Credit').reduce((sum, t) => sum + t.amount, 0)
 );
+
+// ============================================================
+// إضافات لصفحة التحليلات — كلها محسوبة من بيانات حقيقية موجودة بالفعل
+// ============================================================
+
+attendedCountComputed = computed(() => this.appointments().filter(a => a.status === 'Completed').length);
+
+noShowCountComputed = computed(() => this.appointments().filter(a => a.status === 'Cancelled').length);
+
+attendanceRateReal = computed(() => {
+  const total = this.appointments().length;
+  if (!total) return 0;
+  return Math.round((this.attendedCountComputed() / total) * 100);
+});
+
+noShowRateReal = computed(() => {
+  const total = this.appointments().length;
+  if (!total) return 0;
+  return Math.round((this.noShowCountComputed() / total) * 100);
+});
+
+cancellationRateReal = computed(() => {
+  const total = this.appointments().length;
+  if (!total) return 0;
+  const cancelled = this.appointments().filter(a => a.status === 'Cancelled').length;
+  return Math.round((cancelled / total) * 100);
+});
+
+// نمو الحجوزات لآخر 6 شهور — لعرضها في رسم بياني بدون أي بيانات وهمية
+bookingsGrowthComputed = computed(() => {
+  const now = new Date();
+  const months: { month: string; count: number }[] = [];
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = d.toLocaleDateString('ar-EG', { month: 'short' });
+    const count = this.appointments().filter(a => {
+      const ad = new Date(a.slotStart);
+      return ad.getFullYear() === d.getFullYear() && ad.getMonth() === d.getMonth();
+    }).length;
+    months.push({ month: label, count });
+  }
+
+  return months;
+});
+
+// نمو المرضى (عدد المرضى الفريدين) لآخر 6 شهور — حقيقي 100%، بدل النقطة الوحيدة القديمة
+patientGrowthComputed = computed(() => {
+  const now = new Date();
+  const months: { month: string; count: number }[] = [];
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = d.toLocaleDateString('ar-EG', { month: 'short' });
+    const uniquePatients = new Set(
+      this.appointments()
+        .filter(a => {
+          const ad = new Date(a.slotStart);
+          return ad.getFullYear() === d.getFullYear() && ad.getMonth() === d.getMonth();
+        })
+        .map(a => a.patientId)
+    );
+    months.push({ month: label, count: uniquePatients.size });
+  }
+
+  return months;
+});
+
+// أكثر يوم وأكثر توقيت نشاطاً — حقيقي بناءً على مواعيد الطبيب الفعلية
+mostActiveDayReal = computed(() => {
+  const counts: Record<string, number> = {};
+  this.appointments().forEach(a => {
+    const day = new Date(a.slotStart).toLocaleDateString('ar-EG', { weekday: 'long' });
+    counts[day] = (counts[day] || 0) + 1;
+  });
+  let best = '—';
+  let max = 0;
+  Object.entries(counts).forEach(([day, c]) => {
+    if (c > max) { max = c; best = day; }
+  });
+  return best;
+});
+
+mostActiveTimeReal = computed(() => {
+  const counts: Record<string, number> = {};
+  this.appointments().forEach(a => {
+    const time = new Date(a.slotStart).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
+    counts[time] = (counts[time] || 0) + 1;
+  });
+  let best = '—';
+  let max = 0;
+  Object.entries(counts).forEach(([time, c]) => {
+    if (c > max) { max = c; best = time; }
+  });
+  return best;
+});
+
+// عمولة المنصة — نسبة تقديرية 10% لحين توفر endpoint رسمي لها من الباك إند
+commissionRate = 0.10;
+
+// العمولة وصافي الأرباح بيتحسبوا على سعر الكشف الفعلي بتاع الدكتور (doctor().consultationFee)
+// مش على مجموع حركات المحفظة، لأن دي عمولة "الكشف" الواحد مش إجمالي الأرباح
+commissionAmountComputed = computed(() => Math.round((this.doctor()?.consultationFee ?? 0) * this.commissionRate));
+
+netEarningsComputed = computed(() => (this.doctor()?.consultationFee ?? 0) - this.commissionAmountComputed());
 }

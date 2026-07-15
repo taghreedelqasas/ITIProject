@@ -103,39 +103,30 @@
   </section>
 
   <!-- ===================== Sort bar ===================== -->
-  <div class="max-w-6xl mx-auto px-6 mt-8 mb-6 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex flex-wrap gap-3">
-      <button
-        *ngFor="let opt of sortOptions"
-        (click)="selectSort(opt.value)"
-        [ngClass]="
-          opt.value === selectedSort
-            ? 'bg-[#3a1560] text-white'
-            : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300'
-        "
-        class="px-5 py-2 rounded-full text-sm font-bold transition-colors"
-      >
-        {{ opt.label }}
-      </button>
-    </div>
+  <section class="bg-[#fcfcfc] border-[#f0ebfa] border-b border-solid py-[13px] px-6 md:px-[100px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] mb-8" dir="rtl">
+    <div class="max-w-6xl mx-auto flex items-center justify-start gap-4">
+      <div class="flex items-center gap-2 text-[#82609d] opacity-80 whitespace-nowrap">
+        <svg class="w-6 h-6 text-[#6CEAEA]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        <span class="text-[24px] font-['Tajawal']">ترتيب:</span>
+      </div>
 
-    <div class="flex items-center gap-2 text-slate-500 font-bold text-sm whitespace-nowrap">
-      <svg
-        class="w-5 h-5 text-[#3a1560]"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M3 4h13M3 8h9M3 12h9m5-4v12m0 0l-3-3m3 3l3-3"
-        />
-      </svg>
-      ترتيب:
+      <div class="flex flex-wrap gap-4">
+        <button
+          *ngFor="let opt of sortOptions"
+          (click)="selectSort(opt.value)"
+          [ngClass]="opt.value === selectedSort
+            ? 'text-[#fcfcfc]'
+            : 'bg-[#ece7f0] text-[#69418a] hover:bg-[#ece7f0]/80'"
+          [style.background-image]="opt.value === selectedSort ? 'linear-gradient(126.444deg, rgb(105, 65, 138) 0%, rgb(130, 96, 157) 100%)' : null"
+          class="h-[44px] px-[16px] py-[6px] rounded-[16px] text-[16px] font-['Tajawal'] transition-all font-medium cursor-pointer"
+        >
+          {{ opt.label }}
+        </button>
+      </div>
     </div>
-  </div>
+  </section>
 
   <!-- ===================== Results ===================== -->
   <div class="max-w-6xl mx-auto px-6">
@@ -162,33 +153,31 @@
       <div
         *ngFor="let doctor of doctors"
         (click)="viewDoctorProfile(doctor)"
-        class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+        class="backdrop-blur-[11.4px] bg-[#f3f4f5]/90 border-[1.1px] border-solid border-white rounded-[18.3px] shadow-[0px_-2.3px_4.6px_0px_rgba(0,0,0,0.05),0px_2.3px_4.6px_0px_rgba(0,0,0,0.05)] w-full overflow-hidden text-right p-3 cursor-pointer transition-shadow hover:shadow-md"
+        dir="rtl"
       >
         <!-- Photo -->
-        <div class="relative h-48">
-          <img [src]="doctor.image" [alt]="doctor.name" class="w-full h-full object-cover" />
+        <div class="relative w-full h-[213px] rounded-[10.5px] overflow-hidden mb-3">
+          <img [src]="doctor.image" [alt]="doctor.name" class="w-full h-full object-cover rounded-[10.5px]" />
 
-          <span
-            class="absolute top-3 left-3 bg-white/95 backdrop-blur rounded-full px-2.5 py-1 flex items-center gap-1 shadow-sm"
-          >
-            <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
-              />
+          <!-- Rating badge inside photo (From main) -->
+          <div class="absolute top-[8px] left-[8px] bg-[#e9fcfc] flex items-center gap-1 py-1 px-2.5 rounded-[16px] shadow-sm">
+            <span class="text-[#53098d] font-bold text-[12px] font-['Tajawal']">({{ doctor.rating || '4.8' }})</span>
+            <svg class="w-3.5 h-3.5 text-[#E8B006]" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
             </svg>
-            <span class="text-xs font-bold text-[#3a1560]">{{ doctor.rating }}</span>
-          </span>
+          </div>
 
+          <!-- Favorite button inside photo -->
           <button
             (click)="toggleFavorite(doctor); $event.stopPropagation()"
-            class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow-sm"
+            class="absolute top-[8px] right-[8px] backdrop-blur-[4px] bg-[#c6cccf]/60 w-[33px] h-[32px] rounded-full flex items-center justify-center transition-colors"
           >
             <svg
               class="w-4 h-4"
-              [ngClass]="doctor.isFavorite ? 'text-red-500' : 'text-slate-300'"
-              [attr.fill]="doctor.isFavorite ? 'currentColor' : 'none'"
+              [ngClass]="doctor.isFavorite ? 'text-red-500 fill-red-500' : 'text-white'"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="2.5"
               viewBox="0 0 24 24"
             >
               <path
@@ -200,38 +189,41 @@
           </button>
         </div>
 
-        <!-- Info -->
-        <div class="p-4">
-          <h3 class="font-bold text-[#3a1560] text-base mb-1">{{ doctor.name }}</h3>
-          <p class="text-slate-500 text-xs leading-relaxed">{{ doctor.specialty }}</p>
-          <p class="text-slate-400 text-xs mb-2">{{ doctor.detail }}</p>
-
-          <div class="flex items-center gap-0.5 mb-4">
-            <svg
-              *ngFor="let s of starsArray"
-              class="w-3.5 h-3.5 text-amber-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
-              />
-            </svg>
+        <!-- Info & Actions block -->
+        <div class="px-2 pb-2">
+          <div class="flex flex-col gap-1 items-start text-right w-full mb-3">
+            <h3 class="text-[#1c1c1c] text-[19.2px] font-bold font-['Tajawal']">{{ doctor.name }}</h3>
+            <p class="text-[#373d3f] text-[10px] font-['Tajawal']">{{ doctor.specialty }}</p>
+            <p class="text-[#1c1c1c] text-[12px] font-['Tajawal'] mt-1">{{ doctor.detail }}</p>
+            
+            <!-- Stars & rating text -->
+            <div class="flex items-center gap-1 mt-1">
+              <span class="text-[#23e0e0] text-[10px] font-['Tajawal']">({{ doctor.rating || '4.8' }})</span>
+              <div class="flex items-center gap-0.5">
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                  <svg class="w-[13.4px] h-[13.4px] text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                  </svg>
+                }
+              </div>
+            </div>
           </div>
 
-          <div class="flex gap-2">
-            <!-- Chat with doctor -->
-            <button
-              (click)="onChatDoctor(doctor); $event.stopPropagation()"
-              class="flex-1 border border-purple-800 text-[#3a1560] text-sm font-bold rounded-full py-2 hover:bg-purple-50 transition-colors"
-            >
-              شات الطبيب
-            </button>
+          <!-- Action buttons (Merged perfectly from main & feat/Conversation) -->
+          <div class="flex gap-3 items-center justify-center w-full mt-4">
+            <!-- Button: Book Appointment (from main) -->
             <button
               (click)="onBookAppointment(doctor); $event.stopPropagation()"
-              class="flex-1 bg-cyan-400 hover:bg-cyan-500 text-white text-sm font-bold rounded-full py-2 transition-colors"
+              class="flex-1 bg-[#23e0e0] rounded-[40px] text-[#44116d] text-[16px] font-extrabold h-[44px] flex items-center justify-center hover:bg-[#23e0e0]/80 transition-colors"
             >
               احجز موعد
+            </button>
+            <!-- Button: Chat with Doctor (from feat) -->
+            <button
+              (click)="onChatWithDoctor(doctor); $event.stopPropagation()"
+              class="chat-gradient-btn flex-1 text-[#44116d] text-[16px] font-extrabold h-[44px] flex items-center justify-center transition-colors"
+            >
+              شات الطبيب
             </button>
           </div>
         </div>

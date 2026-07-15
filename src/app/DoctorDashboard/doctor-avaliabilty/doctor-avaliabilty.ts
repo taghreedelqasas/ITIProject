@@ -13,6 +13,8 @@ import {
   UpdateDoctorAvailabilityDto
 } from '../../core/models/availability.model';
 import { AuthService } from '../../core/services/auth.service';
+import { AppointmentService } from '../services/appointment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-doctor-availability',
@@ -27,6 +29,7 @@ import { AuthService } from '../../core/services/auth.service';
 export class DoctorAvailabilityComponent implements OnInit {
 
   private authService = inject(AuthService);
+  private dashboardService = inject(AppointmentService)
 
   errorMessage = signal('');
   private fb = inject(FormBuilder);
@@ -66,8 +69,24 @@ export class DoctorAvailabilityComponent implements OnInit {
   ngOnInit(): void {
 
     this.loadSlots();
+    this.dashboardService.getDoctorAppointments();
 
   }
+// أضيفي دول جوه الكومبوننت من غير ما تلمسي حاجة تانية
+
+activeStatusFilter = signal<'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | null>(null);
+
+setStatusFilter(status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | null) {
+  this.activeStatusFilter.set(status);
+}
+
+filteredAppointments = computed(() => {
+  const filter = this.activeStatusFilter();
+  const all = this.todayAppointments();
+  return filter ? all.filter(app => app.status === filter) : all;
+});
+
+
 
   loadSlots() {
 
@@ -114,103 +133,110 @@ this.errorMessage.set('');
   }
 
   save() {
-
-    if(this.form.invalid){
-
-      this.form.markAllAsTouched();
-
-      return;
-
-    }
-
-    this.saving.set(true);
-
-    if(this.editMode()){
-
-      const dto: UpdateDoctorAvailabilityDto={
-
-        id:this.selectedId(),
-
-        startTime:this.form.value.startTime!,
-
-        endTime:this.form.value.endTime!
-
-      };
-
-      this.service.update(dto).subscribe({
-
-        next:()=>{
-
-          this.closeModal();
-
-          this.loadSlots();
-
-        },
-
-        error:(err)=>{
-
-           this.errorMessage.set(err.error?.message ?? 'حدث خطأ');
-
-          this.saving.set(false);
-
-        },
-
-        complete:()=>{
-
-          this.saving.set(false);
-
-        }
-
-      });
-
-    }
-
-    else{
-
-      const dto:CreateDoctorAvailabilityDto={
-
-        doctorId:this.doctorId,
-
-        startTime:this.form.value.startTime!,
-
-        endTime:this.form.value.endTime!
-
-      };
-
-      this.service.create(dto).subscribe({
-
-        next:()=>{
-
-          this.closeModal();
-
-          this.loadSlots();
-
-        },
-
-        error:(err)=>{
-
-           this.errorMessage.set(err.error?.message ?? 'حدث خطأ');
-
-          this.saving.set(false);
-
-        },
-
-        complete:()=>{
-
-          this.saving.set(false);
-
-        }
-
-      });
-
-    }
-
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
-    delete(slot: DoctorAvailability) {
 
-    if (!confirm('هل تريد حذف هذا الموعد؟')) {
-      return;
-    }
+  const startVal = new Date(this.form.value.startTime!);
+  const endVal = new Date(this.form.value.endTime!);
+  const now = new Date();
+
+  // 1. التحقق من أن تاريخ البداية ليس في الماضي
+  if (startVal < now) {
+    this.errorMessage.set('لا يمكن اختيار وقت بداية في الماضي!');
+    return;
+  }
+
+  // 2. التحقق من أن تاريخ النهاية بعد تاريخ البداية
+  if (endVal <= startVal) {
+    this.errorMessage.set('وقت النهاية يجب أن يكون بعد وقت البداية!');
+    return;
+  }
+
+  this.saving.set(true);
+  this.errorMessage.set(''); // تصفير رسالة الخطأ إذا كان كل شيء سليم
+
+  if (this.editMode()) {
+    const dto: UpdateDoctorAvailabilityDto = {
+      id: this.selectedId(),
+      startTime: this.form.value.startTime!,
+      endTime: this.form.value.endTime!
+    };
+
+    this.service.update(dto).subscribe({
+      next: () => {
+        this.closeModal();
+        this.loadSlots();
+        Swal.fire({
+          icon: 'success',
+          title: 'تم بنجاح',
+          text: 'تمت تعديل الموعد',
+          timer: 1800,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'حدث خطأ',
+          text: err.error?.message ?? 'حدث خطأ',
+          confirmButtonColor: '#4A148C'
+        });
+        this.saving.set(false);
+      },
+      complete: () => {
+        this.saving.set(false);
+      }
+    });
+  } else {
+    const dto: CreateDoctorAvailabilityDto = {
+      doctorId: this.doctorId,
+      startTime: this.form.value.startTime!,
+      endTime: this.form.value.endTime!
+    };
+
+    this.service.create(dto).subscribe({
+      next: () => {
+        this.closeModal();
+        this.loadSlots();
+        Swal.fire({
+          icon: 'success',
+          title: 'تم بنجاح',
+          text: 'تمت إضافة الموعد',
+          timer: 1800,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'حدث خطأ',
+          text: err.error?.message ?? 'حدث خطأ',
+          confirmButtonColor: '#4A148C'
+        });
+        this.saving.set(false);
+      },
+      complete: () => {
+        this.saving.set(false);
+      }
+    });
+  }
+}
+    async delete(slot: DoctorAvailability) {
+
+  const result = await Swal.fire({
+  title: 'حذف الموعد؟',
+  text: 'لن تتمكن من استرجاعه بعد الحذف',
+
+  showCancelButton: true,
+  confirmButtonText: 'نعم، احذف',
+  cancelButtonText: 'إلغاء',
+  confirmButtonColor: '#4A148C',
+  cancelButtonColor: '#9CA3AF'
+});
+
+if (!result.isConfirmed) return;
 
     this.service.delete(slot.id).subscribe({
 
@@ -222,7 +248,12 @@ this.errorMessage.set('');
 
       error: (err) => {
 
-       this.errorMessage.set(err.error?.message ?? ' تعذر حذف الموعد');
+        Swal.fire({
+          icon: 'error',
+          title: 'حدث خطأ',
+          text: err.error?.message ?? 'تعذر حذف الموعد',
+          confirmButtonColor: '#4A148C'
+        });
 
       }
 
@@ -272,14 +303,19 @@ this.errorMessage.set('');
 
   }
 
-  groupedSlots() {
-
+groupedSlots() {
   const groups: { date: string; slots: DoctorAvailability[] }[] = [];
+  const now = new Date(); // اللحظة الحالية تماماً
 
-  this.slots().forEach(slot => {
+  // 1. فلترة الـ slots واستبعاد أي slot وقته انتهى خلاص
+  const activeSlots = this.slots().filter(slot => {
+    const slotEndTime = new Date(slot.endTime);
+    return slotEndTime >= now; // الاحتفاظ فقط بالمواعيد المستقبلية أو اللي شغالة دلوقتي
+  });
 
+  // 2. تجميع المواعيد النشطة فقط حسب اليوم
+  activeSlots.forEach(slot => {
     const date = slot.startTime.split('T')[0];
-
     let group = groups.find(g => g.date === date);
 
     if (!group) {
@@ -287,16 +323,13 @@ this.errorMessage.set('');
         date,
         slots: []
       };
-
       groups.push(group);
     }
 
     group.slots.push(slot);
-
   });
 
   return groups;
-
 }
 formatDateHeader(date: string) {
 
@@ -313,4 +346,114 @@ formatDateHeader(date: string) {
   });
 
 }
+
+
+  todayAppointments() {
+    const today = new Date().toDateString();
+    return this.dashboardService.appointments().filter(
+      a => new Date(a.slotStart).toDateString() === today
+    );
+  }
+
+
+  async markAsCompleted(app: any) {
+
+  if (app.status === 'Completed') return;
+
+  // الباك إند بيرفض إتمام موعد لسه Pending، لازم يتأكد الأول
+  if (app.status === 'Pending') {
+
+    const confirmResult = await Swal.fire({
+      title: 'تأكيد الموعد؟',
+      text: 'الموعد لسه بانتظار الحضور، هل تريد تأكيده أولاً؟',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، أكد الموعد',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: '#4A148C',
+      cancelButtonColor: '#9CA3AF'
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    this.dashboardService.confirmAppointment(app.id).subscribe({
+      next: () => {
+        app.status = 'Confirmed';
+
+        Swal.fire({
+          icon: 'success',
+          title: 'تم بنجاح',
+          text: 'تم تأكيد الموعد، اضغطي تسجيل الحضور مرة أخرى لإتمامه',
+          timer: 2200,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'حدث خطأ',
+          text: err.error?.message ?? 'تعذر تأكيد الموعد',
+          confirmButtonColor: '#4A148C'
+        });
+      }
+    });
+
+    return;
+  }
+
+  const result = await Swal.fire({
+    title: 'تسجيل الحضور؟',
+    text: 'هل تريد تسجيل حضور المريض لهذا الموعد؟',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'نعم، سجل الحضور',
+    cancelButtonText: 'إلغاء',
+    confirmButtonColor: '#4A148C',
+    cancelButtonColor: '#9CA3AF'
+  });
+
+  if (!result.isConfirmed) return;
+
+  this.dashboardService.completeAppointment(app.id).subscribe({
+    next: () => {
+      app.status = 'Completed';
+
+      Swal.fire({
+        icon: 'success',
+        title: 'تم بنجاح',
+        text: 'تم تسجيل حضور المريض',
+        timer: 1800,
+        showConfirmButton: false
+      });
+    },
+    error: (err) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'حدث خطأ',
+        text: err.error?.message ?? 'تعذر تسجيل الحضور',
+        confirmButtonColor: '#4A148C'
+      });
+    }
+  });
+}
+
+
+// للحصول على الوقت الحالي بالصيغة المطلوبة لـ datetime-local (YYYY-MM-DDTHH:mm)
+get minDateTime(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+  formatShortTime(date: string): string {
+    return new Date(date).toLocaleTimeString('ar-EG', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
 }

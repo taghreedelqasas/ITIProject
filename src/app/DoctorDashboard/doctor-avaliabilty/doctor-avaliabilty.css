@@ -1,0 +1,15 @@
+
+
+/* إخفاء شريط التمرير الافتراضي للمودال الطويل */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* تهيئة مظهر القائمة المنسدلة لتدعم المتصفحات المختلفة */
+select {
+  background-image: none;
+}

@@ -40,7 +40,7 @@ private redirectBasedOnRoles(roles: string[]): void {
   } else if (roles.includes('Doctor')) {
     this.router.navigate(['/doctor-dashboard']);
   } else if (roles.includes('Patient')) {
-    this.router.navigate(['/profile']);   // بدل '/'
+    this.router.navigate(['/profile']);   
   } else {
     this.router.navigate(['/']);
   }
@@ -65,7 +65,7 @@ private redirectBasedOnRoles(roles: string[]): void {
       
          
 
-
+  //  --------------
         const roles = this.authService.getUserRoles();
 
         if (roles.length > 0) {

@@ -2,105 +2,296 @@
 
   <div>
     <h2 class="text-3xl font-bold text-[#1E1B4B]">التحليلات</h2>
-    <p class="text-sm text-gray-400 mt-1">تحليلات مفصلة لأداء عيادتك وتقييمات المرضى بناءً على البيانات الفعلية</p>
+    <p class="text-sm text-gray-400 mt-1">تحليلات مفصلة لأداء عيادتك وتقييمات المرضى</p>
   </div>
 
+  <!-- Top stat cards -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-    
-    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
-      <div class="space-y-1">
-        <span class="text-xs text-gray-400 font-medium block">متوسط التقييم</span>
-        <span class="text-2xl font-bold text-[#53098D]">{{ data.averageRating }}</span>
-        <span class="text-[10px] text-gray-400 block">من إجمالي تقييمات المرضى</span>
-      </div>
-      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-sm">⭐</div>
-    </div>
 
     <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
       <div class="space-y-1">
-        <span class="text-xs text-gray-400 font-medium block">إجمالي المرضى</span>
-        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalPatients }}</span>
-        <span class="text-[10px] text-gray-400 block">مريض فريد مسجل بالعيادة</span>
+        <span class="text-xs text-gray-400 font-medium block">إجمالي الاستشارات</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalConsultations }}</span>
       </div>
-      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center text-sm">👥</div>
+      <div class="absolute top-5 left-5 w-8 h-8 rounded-lg bg-[#E6FBF9] text-[#17b6a7] flex items-center justify-center text-sm">
+        <i class="fa-solid fa-comment-dots"></i>
+      </div>
     </div>
 
     <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
       <div class="space-y-1">
         <span class="text-xs text-gray-400 font-medium block">إجمالي الحجوزات</span>
         <span class="text-2xl font-bold text-[#53098D]">{{ data.totalAppointments }}</span>
-        <span class="text-[10px] text-gray-400 block">حجوزات مسجلة بالنظام</span>
       </div>
-      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center text-sm">📅</div>
+      <div class="absolute top-5 left-5 w-8 h-8 rounded-lg bg-[#E6FBF9] text-[#17b6a7] flex items-center justify-center text-sm">
+        <i class="fa-solid fa-calendar-days"></i>
+      </div>
     </div>
 
     <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
       <div class="space-y-1">
-        <span class="text-xs text-gray-400 font-medium block">إجمالي الاستشارات</span>
-        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalConsultations }}</span>
-        <span class="text-[10px] text-gray-400 block">محادثة واستشارة مفتوحة</span>
+        <span class="text-xs text-gray-400 font-medium block">إجمالي المرضى</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.totalPatients }}</span>
       </div>
-      <div class="absolute bottom-5 left-5 w-8 h-8 rounded-lg bg-green-50 text-green-500 flex items-center justify-center text-sm">💬</div>
+      <div class="absolute top-5 left-5 w-8 h-8 rounded-lg bg-[#E6FBF9] text-[#17b6a7] flex items-center justify-center text-sm">
+        <i class="fa-solid fa-user-group"></i>
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all">
+      <div class="space-y-1">
+        <span class="text-xs text-gray-400 font-medium block">متوسط التقييم</span>
+        <span class="text-2xl font-bold text-[#53098D]">{{ data.averageRating }}</span>
+        <span class="text-[10px] text-gray-400 block">من {{ appointmentService.totalReviewsCount() }} تقييم</span>
+      </div>
+      <div class="absolute top-5 left-5 w-8 h-8 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-sm">
+        <i class="fa-solid fa-star"></i>
+      </div>
     </div>
 
   </div>
 
+  <!-- Attendance donut + Growth line chart -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
-    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2 space-y-6">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="font-bold text-gray-800 text-base">الأرباح الشهرية الحالية</h3>
-          <p class="text-xs text-gray-400 mt-0.5">مقارنة الدخل الحالي المسجل بالمحفظة الإلكترونية</p>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1 space-y-4">
+      <div>
+        <h3 class="font-bold text-gray-800 text-base">معدل الحضور</h3>
+        <p class="text-xs text-gray-400 mt-0.5">نسبة حضور المرضى الفعليين</p>
+      </div>
+
+      <div class="relative w-32 h-32 mx-auto">
+        <svg viewBox="0 0 120 120" class="w-32 h-32 -rotate-90">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#F1ECFB" stroke-width="14"></circle>
+          <circle
+            cx="60" cy="60" r="50" fill="none"
+            stroke="#53098D" stroke-width="14" stroke-linecap="round"
+            [attr.stroke-dasharray]="314.16"
+            [attr.stroke-dashoffset]="314.16 - (314.16 * appointmentService.attendanceRateReal() / 100)">
+          </circle>
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-xl font-bold text-[#1E1B4B]">{{ appointmentService.attendanceRateReal() }}%</span>
         </div>
       </div>
-      
-      <div class="space-y-4 pt-2">
+
+      <div class="flex justify-center gap-6 text-xs pt-2">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#53098D]"></span>
+          <span class="text-gray-500">{{ appointmentService.attendanceRateReal() }}% حضر</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#F1ECFB]"></span>
+          <span class="text-gray-500">{{ appointmentService.noShowRateReal() }}% لم يحضر</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+      <div>
+        <h3 class="font-bold text-gray-800 text-base">الإيرادات والأرباح</h3>
+        <p class="text-xs text-gray-400 mt-0.5">حركة الأرباح</p>
+      </div>
+
+      <div class="flex items-end justify-between gap-3 h-24 px-2">
         @for (earning of data.monthlyEarnings; track earning.month) {
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-xs font-medium">
-              <span class="text-gray-600">{{ earning.month }}</span>
-              <span class="text-gray-800 font-bold">{{ earning.amount }} ج.م</span>
-            </div>
-            <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
-              <div class="bg-[#53098D] h-full rounded-full transition-all duration-500" 
-                   [style.width.%]="earning.amount > 0 ? 100 : 5"></div>
-            </div>
+          <div class="flex flex-col justify-end items-center gap-1.5 flex-1 h-full">
+            <div class="w-[20px] bg-[#23E0E0] rounded-t-md"
+[style.height.%]="(earning.amount / appointmentService.maxMonthlyEarning()) * 100" >
+</div>            <span class="text-[10px] text-gray-400">{{ earning.month }}</span>
           </div>
         }
       </div>
-    </div>
 
-    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-1 space-y-4">
-      <h3 class="font-bold text-[#53098D] text-sm">تحليلات الأداء العام</h3>
-      
-      <div class="grid grid-cols-1 gap-3">
-        <div class="bg-[#ECE7F0] p-3 rounded-xl flex justify-between items-center">
-          <div class="space-y-0.5">
-            <span class="text-[10px] text-gray-400 block">أكثر الأيام نشاطاً</span>
-            <span class="text-sm font-bold text-[#53098D]">{{ data.mostActiveDay }}</span>
-          </div>
-          <span class="text-lg"><i class="fas fa-calendar-day"></i></span>
+      <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+        <span class="text-xs text-gray-500">نسبة عمولة الكشف</span>
+        <span class="text-xs font-bold text-gray-700">{{ appointmentService.commissionRate * 100 }}%</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-red-50 rounded-xl p-3 text-center">
+          <span class="text-[10px] text-gray-400 block">قيمة العمولة</span>
+          <span class="text-sm font-bold text-red-500">-{{ appointmentService.commissionAmountComputed() }} ج.م</span>
         </div>
-
-        <div class="bg-[#ECE7F0] p-3 rounded-xl flex justify-between items-center">
-          <div class="space-y-0.5">
-            <span class="text-[10px] text-gray-400 block">التوقيت الأكثر تكراراً</span>
-            <span class="text-sm font-bold text-[#53098D]">{{ data.mostActiveTime }}</span>
-          </div>
-          <span class="text-lg"><i class="fas fa-clock"></i></span>
-        </div>
-
-        <div class="bg-[#ECE7F0] p-3 rounded-xl flex justify-between items-center">
-          <div class="space-y-0.5">
-            <span class="text-[10px] text-gray-400 block">حالة الاتصال والـ Sync</span>
-            <span class="text-xs font-bold text-green-600 block">تحديث فوري نشط ●</span>
-          </div>
-          <span class="text-lg"><i class="fas fa-sync"></i></span>
+        <div class="bg-[#ECE7F0] rounded-xl p-3 text-center">
+          <span class="text-[10px] text-gray-400 block">صافي الأرباح</span>
+          <span class="text-sm font-bold text-[#53098D]">{{ appointmentService.netEarningsComputed() }} ج.م</span>
         </div>
       </div>
+
+
+      
     </div>
 
+
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+    <h3 class="font-bold text-gray-800 text-base">تحليلات الأداء</h3>
+
+    <div class=" gap-4  ">
+
+      <div class="bg-red-50 rounded-xl p-2  my-2  flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-[10px] text-gray-400 block">معدل إلغاء الحجوزات</span>
+          <span class="text-sm font-bold text-red-500">{{ appointmentService.cancellationRateReal() }}%</span>
+          <span class="text-[10px] text-gray-400 block">أقل من الشهر الماضي</span>
+        </div>
+        <span class="text-red-400"><i class="fa-solid fa-circle-xmark"></i></span>
+      </div>
+
+      <div class="bg-[#ECE7F0] rounded-xl  p-2  my-2 flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-[10px] text-gray-400 block">أكثر الأوقات ازدحاماً</span>
+          <span class="text-sm font-bold text-[#53098D]">{{ appointmentService.mostActiveTimeReal() }}</span>
+          <span class="text-[10px] text-gray-400 block">أعلى الأوقات حجزاً</span>
+        </div>
+        <span class="text-[#53098D]"><i class="fa-solid fa-clock"></i></span>
+      </div>
+
+      <div class="bg-[#ECE7F0] rounded-xl  p-2  my-2 flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-[10px] text-gray-400 block">الأيام الأكثر حجزاً</span>
+          <span class="text-sm font-bold text-[#53098D]">{{ appointmentService.mostActiveDayReal() }}</span>
+          <span class="text-[10px] text-gray-400 block">موصوفة لك</span>
+        </div>
+        <span class="text-[#53098D]"><i class="fa-solid fa-calendar-day"></i></span>
+      </div>
+
+    </div>
   </div>
+
+    <!-- <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2 space-y-4">
+      <div>
+        <h3 class="font-bold text-gray-800 text-base">نمو المرضى</h3>
+        <p class="text-xs text-gray-400 mt-0.5">إجمالي المرضى الجدد خلال آخر 6 أشهر</p>
+      </div>
+
+      <svg viewBox="0 0 300 100" preserveAspectRatio="none" class="w-full h-28">
+        <polyline
+          [attr.points]="growthChartPoints()"
+          fill="none"
+          stroke="#17b6a7"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+        </polyline>
+      </svg>
+
+      <div class="flex justify-between text-[11px] text-gray-400">
+        @for (m of appointmentService.patientGrowthComputed(); track m.month) {
+          <span>{{ m.month }}</span>
+        }
+      </div>
+    </div> -->
+
+  </div>
+
+
+
+
+  <!-- Reviews + Earnings -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-gray-800 text-base">التقييمات والآراء</h3>
+        <div class="flex items-center gap-1.5">
+          <span class="text-lg font-bold text-[#53098D]">{{ data.averageRating }}</span>
+          <span class="text-amber-400 text-xs">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star-half-stroke"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        @for (review of appointmentService.reviews().slice(0, 2); track $index) {
+          <div class="bg-gray-50 rounded-xl p-3 space-y-1.5">
+            <span class="text-amber-400 text-xs">
+              @for (star of [1,2,3,4,5]; track star) {
+                <i class="fa-solid fa-star" [class.text-gray-200]="star > review.rating"></i>
+              }
+            </span>
+            <p class="text-xs text-gray-500 leading-relaxed">{{ review.comment }}</p>
+          </div>
+        } @empty {
+          <div class="text-center text-xs text-gray-400 py-6">لا توجد تقييمات بعد</div>
+        }
+      </div>
+    </div> -->
+<!-- 
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+      <div>
+        <h3 class="font-bold text-gray-800 text-base">الإيرادات والأرباح</h3>
+        <p class="text-xs text-gray-400 mt-0.5">حركة الأرباح</p>
+      </div>
+
+      <div class="flex items-end justify-between gap-3 h-24 px-2">
+        @for (earning of data.monthlyEarnings; track earning.month) {
+          <div class="flex flex-col justify-end items-center gap-1.5 flex-1 h-full">
+            <div class="w-full bg-[#17b6a7] rounded-t-md"
+[style.height.%]="(earning.amount / appointmentService.maxMonthlyEarning()) * 100" >
+</div>            <span class="text-[10px] text-gray-400">{{ earning.month }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+        <span class="text-xs text-gray-500">نسبة عمولة الكشف</span>
+        <span class="text-xs font-bold text-gray-700">{{ appointmentService.commissionRate * 100 }}%</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-red-50 rounded-xl p-3 text-center">
+          <span class="text-[10px] text-gray-400 block">قيمة العمولة</span>
+          <span class="text-sm font-bold text-red-500">-{{ appointmentService.commissionAmountComputed() }} ج.م</span>
+        </div>
+        <div class="bg-[#ECE7F0] rounded-xl p-3 text-center">
+          <span class="text-[10px] text-gray-400 block">صافي الأرباح</span>
+          <span class="text-sm font-bold text-[#53098D]">{{ appointmentService.netEarningsComputed() }} ج.م</span>
+        </div>
+      </div>
+    </div> -->
+
+  </div>
+
+  <!-- Performance summary cards -->
+  <!-- <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+    <h3 class="font-bold text-gray-800 text-base">تحليلات الأداء</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div class="bg-red-50 rounded-xl p-4 flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-[10px] text-gray-400 block">معدل إلغاء الحجوزات</span>
+          <span class="text-sm font-bold text-red-500">{{ appointmentService.cancellationRateReal() }}%</span>
+          <span class="text-[10px] text-gray-400 block">أقل من الشهر الماضي</span>
+        </div>
+        <span class="text-red-400"><i class="fa-solid fa-circle-xmark"></i></span>
+      </div>
+
+      <div class="bg-[#ECE7F0] rounded-xl p-4 flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-[10px] text-gray-400 block">أكثر الأوقات ازدحاماً</span>
+          <span class="text-sm font-bold text-[#53098D]">{{ appointmentService.mostActiveTimeReal() }}</span>
+          <span class="text-[10px] text-gray-400 block">أعلى الأوقات حجزاً</span>
+        </div>
+        <span class="text-[#53098D]"><i class="fa-solid fa-clock"></i></span>
+      </div>
+
+      <div class="bg-[#ECE7F0] rounded-xl p-4 flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-[10px] text-gray-400 block">الأيام الأكثر حجزاً</span>
+          <span class="text-sm font-bold text-[#53098D]">{{ appointmentService.mostActiveDayReal() }}</span>
+          <span class="text-[10px] text-gray-400 block">موصوفة لك</span>
+        </div>
+        <span class="text-[#53098D]"><i class="fa-solid fa-calendar-day"></i></span>
+      </div>
+
+    </div>
+  </div> -->
 
 </div>

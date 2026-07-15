@@ -1,0 +1,42 @@
+<div class="page-wrapper">
+  
+  
+
+  <!-- Right Panel: Content -->
+  <div class="form-panel">
+    <div class="content-container">
+
+       <!-- Logo -->
+      <div class="logo"></div>
+
+
+      <!-- Success Icon -->
+      <div class="success-icon-wrapper"></div>
+      <br>
+
+      <!-- Title -->
+      <h1 class="main-title">تم تفعيل حساب بنجاح!</h1>
+      <h1 class="main-title" *ngIf="userRole==='Doctor'">تم ارسال طلبك بنجاح!</h1>
+
+      <!-- Subtitle -->
+      <p class="subtitle" >يمكنك الآن الوصول لكل الخدمات بسهولة</p>
+      <p class="subtitle" *ngIf="userRole==='Doctor'">سيتم مراجعة طلبك من فريقنا ستصلك رسالة خلال 3-1 ايام عبر بريدك الالكتروني</p>
+
+      <!-- Buttons -->
+      <div class="button-group">
+        <button class="btn-primary" (click)="goToDashboard()">
+          <i class="fas fa-home"></i>
+          الصفحه الرئيسية
+        </button>
+        <button class="btn-secondary" (click)="goToLogin()">
+          <i class="fas fa-sign-in-alt"></i>
+          تسجيل الدخول
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <!-- Left Panel: Image -->
+  <div class="image-panel"></div>
+
+</div>

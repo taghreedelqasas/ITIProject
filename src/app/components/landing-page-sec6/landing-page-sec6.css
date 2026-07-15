@@ -1,0 +1,283 @@
+/* =========================================
+   تنسيقات السكشن الرئيسي والهيدر
+   ========================================= */
+.medical-records-section {
+  background-color: #f8fafc; /* خلفية هادئة فاتحة للسكشن بالكامل */
+  padding: 80px 20px;
+  direction: rtl;
+  font-family: 'Almarai', 'Cairo', sans-serif;
+}
+
+.records-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.records-header h2 {
+  color: #1a0933; /* البنفسجي الداكن */
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.records-header p {
+  color: #64748b;
+  font-size: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* الحاوية المرنة (Flexbox Layout) */
+.records-container {
+  display: flex;
+  max-width: 1140px;
+  margin: 0 auto;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* =========================================
+   تنسيقات الكروت الثلاثة العريضة (اليمين)
+   ========================================= */
+.info-cards-side {
+  flex: 1.2;
+  min-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* رمي النص يمين والأيقونة شمال تماماً كالفيجما */
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateX(-4px);
+}
+
+.info-card .info-text {
+  color: #1a0933;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: right;
+  flex: 1;
+}
+
+.info-card .info-icon-wrapper {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.info-card .info-icon-wrapper .font-icon-teal {
+  color: #19ebd9; /* اللون التيل الصريح للخط البياني */
+  font-size: 20px;
+}
+
+/* =========================================
+   تنسيقات شاشة المريض الـ Mockup (اليسار)
+   ========================================= */
+.patient-profile-mockup {
+  flex: 1;
+  min-width: 350px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* الهيدر الداخلي للملف */
+.profile-meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-meta-header .update-time {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.profile-meta-header .profile-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1a0933;
+}
+
+.profile-meta-header .profile-title h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.profile-meta-header .profile-title .folder-icon {
+  color: #1a0933;
+  font-size: 16px;
+}
+
+/* التابات والفلاتر */
+.tabs-filter {
+  display: flex;
+  background: #f8fafc;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  justify-content: space-between;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.tab-item.active {
+  background: #1a0933; /* التاب النشط باللون البنفسجي */
+  color: #ffffff;
+}
+
+/* قائمة المستندات والصفوف */
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.doc-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* بادجات الحالة (جديد / أرشيف) */
+.status-badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.status-badge.new {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status-badge.archive {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* معلومات الوثيقة */
+.doc-info {
+  flex: 1;
+  text-align: right;
+  margin-right: 16px;
+}
+
+.doc-info h4 {
+  font-size: 14px;
+  color: #1a0933;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+}
+
+.doc-info p {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* الدوائر الملونة للأيقونات الطبية الصغيرة */
+.doc-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* الألوان الخاصة بكل نوع وثيقة */
+.bg-light-red { background-color: #fff1f2; }
+.text-red { color: #f43f5e; }
+
+.bg-light-teal { background-color: #f0fdfa; }
+.text-teal { color: #0d9488; }
+
+.bg-light-yellow { background-color: #fefce8; }
+.text-yellow { color: #ca8a04; }
+
+.bg-light-pink { background-color: #fdf2f8; }
+.text-pink { color: #db2777; }
+
+/* منطقة الرفع المتقطعة بالأسفل */
+.upload-dashed-zone {
+  border: 1px dashed #cbd5e1;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: #1a0933;
+  font-weight: 700;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.upload-dashed-zone:hover {
+  background: #f8fafc;
+}
+
+.upload-dashed-zone .upload-icon {
+  font-size: 16px;
+  color: #1a0933;
+}
+
+/* =========================================
+   التجاوب مع الشاشات الصغيرة (Responsive)
+   ========================================= */
+@media (max-width: 992px) {
+  .records-container {
+    flex-direction: column;
+  }
+  .info-cards-side, .patient-profile-mockup {
+    width: 100%;
+  }
+}
