@@ -106,6 +106,7 @@ export class RescheduleModalComponent implements OnInit {
 
     this.appointmentService.getAvailableSlots(doctorId).subscribe({
       next: (slots) => {
+        console.log('Available Slots loaded:', slots);
         this.allSlots.set(slots ?? []);
         this.loadingSlots.set(false);
         this.autoSelectFirstAvailableDay();
@@ -115,6 +116,23 @@ export class RescheduleModalComponent implements OnInit {
         this.loadingSlots.set(false);
       },
     });
+  }
+
+  getSlotId(slot: any): number {
+    if (!slot) return 0;
+    if (slot.id !== undefined && slot.id !== null) return slot.id;
+    if (slot.doctorAvailabilityId !== undefined && slot.doctorAvailabilityId !== null) return slot.doctorAvailabilityId;
+    if (slot.availabilityId !== undefined && slot.availabilityId !== null) return slot.availabilityId;
+    if (slot.slotId !== undefined && slot.slotId !== null) return slot.slotId;
+    
+    // Fallback: look for any key ending in 'id'
+    const keys = Object.keys(slot);
+    for (const key of keys) {
+      if (key.toLowerCase().endsWith('id') && typeof slot[key] === 'number') {
+        return slot[key];
+      }
+    }
+    return 0;
   }
 
   private autoSelectFirstAvailableDay(): void {
@@ -147,7 +165,7 @@ export class RescheduleModalComponent implements OnInit {
   }
 
   selectSlot(slot: AvailableSlot): void {
-    this.selectedSlotId.set(slot.id);
+    this.selectedSlotId.set(this.getSlotId(slot));
   }
 
   isDaySelected(day: CalendarDay): boolean {
