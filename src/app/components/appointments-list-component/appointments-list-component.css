@@ -219,6 +219,12 @@
   background: var(--appt-accent-light);
 }
 
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .action-btn--icon-danger {
   width: 28px;
   height: 28px;

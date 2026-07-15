@@ -17,5 +17,18 @@ export interface Review {
   rating: number;
   comment?: string;
   createdAt?: string;
+  reviewDate?: string;
   [key: string]: unknown;
+}
+
+export interface DoctorRatingDistribution {
+  doctorId: number;
+  doctorName: string;
+  averageRating: number | null;
+  totalReviews: number;
+  fiveStar: number;
+  fourStar: number;
+  threeStar: number;
+  twoStar: number;
+  oneStar: number;
 }

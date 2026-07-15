@@ -5,7 +5,7 @@ import { DoctorService } from '../../core/services/doctor.service';
 import { ReviewService } from '../../core/services/review.service';
 import { DoctorAvailabilityService } from '../../core/services/doctor-availability.service';
 import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
-import { Review as ApiReview } from '../../core/models/review.model';
+import { Review as ApiReview, DoctorRatingDistribution } from '../../core/models/review.model';
 import { DoctorAvailability } from '../../core/models/availability.model';
 
 interface Qualification {
@@ -50,7 +50,7 @@ export class DoctorProfile implements OnInit {
     private router: Router,
     private doctorService: DoctorService,
     private reviewService: ReviewService,
-    private availabilityService: DoctorAvailabilityService
+    private availabilityService: DoctorAvailabilityService,
   ) {
     const idParam = this.route.snapshot.paramMap.get('id');
     this.doctorId = idParam ? Number(idParam) : null;
@@ -90,6 +90,7 @@ export class DoctorProfile implements OnInit {
   activeTab: ProfileTab = 'about';
 
   ratingBasedOnCount = 0;
+  averageRating = 0;
 
   ratingBars: RatingBar[] = [
     { stars: 5, percent: 0 },
@@ -107,6 +108,7 @@ export class DoctorProfile implements OnInit {
       return;
     }
     this.loadDoctor(this.doctorId);
+    this.loadDistribution(this.doctorId);
     this.loadReviews(this.doctorId);
     this.loadAvailability(this.doctorId);
   }
@@ -140,18 +142,20 @@ export class DoctorProfile implements OnInit {
   private loadReviews(doctorId: number): void {
     // نداء API: GET /api/Reviews/doctors/{doctorId}
     this.reviewService.getByDoctor(doctorId).subscribe({
-      next: (res: ApiReview[]) => {
-        this.reviews = (res || []).map((r) => ({
+      next: (res: any) => {
+        const list = Array.isArray(res?.reviews) ? res.reviews
+                   : Array.isArray(res?.data?.reviews) ? res.data.reviews
+                   : Array.isArray(res?.data) ? res.data
+                   : Array.isArray(res) ? res
+                   : [];
+        this.reviews = list.map((r: ApiReview) => ({
           patientName: r.patientName || 'مريض',
           avatarLetter: (r.patientName || 'م').charAt(0),
           avatarColor: (r.id ?? 0) % 2 === 0 ? 'purple' : 'cyan',
           rating: r.rating,
           comment: r.comment || '',
-          date: r.createdAt || '',
+          date: r.reviewDate || r.createdAt || '',
         }));
-        this.stats.reviewsCount = this.reviews.length;
-        this.ratingBasedOnCount = this.reviews.length;
-        this.recomputeRatingBars();
       },
       error: () => {
         // مفيش تقييمات أو فشل التحميل - بنسيب القايمة فاضية بدون ما نوقف باقي الصفحة
@@ -159,17 +163,30 @@ export class DoctorProfile implements OnInit {
     });
   }
 
-  private recomputeRatingBars(): void {
-    if (this.reviews.length === 0) return;
-    const counts = [0, 0, 0, 0, 0]; // index 0 => 1 star ... index 4 => 5 stars
-    this.reviews.forEach((r) => {
-      const idx = Math.min(Math.max(Math.round(r.rating), 1), 5) - 1;
-      counts[idx]++;
+  private loadDistribution(doctorId: number): void {
+    this.reviewService.getDistribution(doctorId).subscribe({
+      next: (res: any) => {
+        const dist = res?.data ?? res;
+        if (!dist || typeof dist !== 'object') return;
+
+        const total = dist.totalReviews || 0;
+        this.stats.reviewsCount = total;
+        this.ratingBasedOnCount = total;
+        this.averageRating = dist.averageRating;
+
+        if (total === 0) return;
+
+        const counts = [dist.oneStar, dist.twoStar, dist.threeStar, dist.fourStar, dist.fiveStar];
+
+        this.ratingBars = [5, 4, 3, 2, 1].map((stars) => ({
+          stars,
+          percent: Math.round((counts[stars - 1] / total) * 100),
+        }));
+      },
+      error: () => {
+        // فشل تحميل التوزيع - بنسيب القيم الافتراضية
+      },
     });
-    this.ratingBars = [5, 4, 3, 2, 1].map((stars) => ({
-      stars,
-      percent: Math.round((counts[stars - 1] / this.reviews.length) * 100),
-    }));
   }
 
   private loadAvailability(doctorId: number): void {

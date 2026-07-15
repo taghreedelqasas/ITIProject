@@ -129,9 +129,10 @@
                       <button
                         type="button"
                         class="action-btn action-btn--outline"
+                        [disabled]="existingReviewFor(appt) !== null"
                         (click)="openRate(appt)"
                       >
-                        {{ existingReviewFor(appt) ? 'تعديل تقييمك' : 'قيم الزيارة' }}
+                        {{ existingReviewFor(appt) ? 'تم التقييم' : 'قيم الزيارة' }}
                       </button>
                     </div>
                   }
