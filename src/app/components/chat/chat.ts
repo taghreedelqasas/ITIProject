@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy, Input, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy, Input, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,8 +41,8 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   @Input() patientId: string | null = null;
 
   isDoctor = false;
-  isLoading = false;
-  errorMessage = '';
+  isLoading = signal(false);
+  errorMessage = signal('');
 
   private signalr = inject(SignalRService);
   private subscriptions: Subscription[] = [];
@@ -99,22 +99,22 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
         const isMyMessage = this.isMessageMine(msg);
         if (isMyMessage) return;
         const mapped = this.mapMessage(msg);
-        this.messages.push(mapped);
+        this.messages.update((prev) => [...prev, mapped]);
         if (this.conversationId) {
           this.signalr.sendMarkAsRead(this.conversationId);
         }
       }),
       this.signalr.userTyping$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
-        this.isTyping = true;
+        this.isTyping.set(true);
       }),
       this.signalr.userStoppedTyping$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
-        this.isTyping = false;
+        this.isTyping.set(false);
       }),
       this.signalr.messagesRead$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
-        this.messages.forEach(m => m.read = true);
+        this.messages.update((prev) => prev.map(m => ({ ...m, read: true })));
       })
     );
 
@@ -149,8 +149,8 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
 
   optionsMenuOpen = false;
   todayLabel = 'اليوم';
-  messages: ChatMessage[] = [];
-  isTyping = false;
+  messages = signal<ChatMessage[]>([]);
+  isTyping = signal(false);
   messageText = '';
 
   quickActions: QuickAction[] = this.isDoctor ? [] : [
@@ -181,37 +181,37 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   }
 
   private startAsPatient(doctorId: number): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.conversationService.startAsPatient(doctorId).subscribe({
       next: (conversation) => {
         this.conversationId = (conversation?.id as number) ?? null;
-        this.isLoading = false;
+        this.isLoading.set(false);
         if (this.conversationId) {
           this.loadMessages(true);
           this.signalr.joinConversation(this.conversationId);
         }
       },
       error: () => {
-        this.isLoading = false;
-        this.errorMessage = 'تعذر فتح المحادثة مع الطبيب.';
+        this.isLoading.set(false);
+        this.errorMessage.set('تعذر فتح المحادثة مع الطبيب.');
       },
     });
   }
 
   private startAsDoctor(patientId: string): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.conversationService.startAsDoctor(patientId).subscribe({
       next: (conversation) => {
         this.conversationId = (conversation?.id as number) ?? null;
-        this.isLoading = false;
+        this.isLoading.set(false);
         if (this.conversationId) {
           this.loadMessages(true);
           this.signalr.joinConversation(this.conversationId);
         }
       },
       error: () => {
-        this.isLoading = false;
-        this.errorMessage = 'تعذر فتح المحادثة مع المريض.';
+        this.isLoading.set(false);
+        this.errorMessage.set('تعذر فتح المحادثة مع المريض.');
       },
     });
   }
@@ -240,19 +240,19 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
 
   private loadMessages(showLoading: boolean): void {
     if (!this.conversationId) return;
-    if (showLoading) this.isLoading = true;
+    if (showLoading) this.isLoading.set(true);
 
     this.conversationService.getMessages(this.conversationId).subscribe({
       next: (msgs) => {
-        this.messages = (msgs || []).map((m) => this.mapMessage(m));
-        this.isLoading = false;
+        this.messages.set((msgs || []).map((m) => this.mapMessage(m)));
+        this.isLoading.set(false);
         if (this.conversationId) {
           this.signalr.sendMarkAsRead(this.conversationId);
         }
       },
       error: () => {
-        this.isLoading = false;
-        if (showLoading) this.errorMessage = 'تعذر تحميل الرسائل.';
+        this.isLoading.set(false);
+        if (showLoading) this.errorMessage.set('تعذر تحميل الرسائل.');
       },
     });
   }
@@ -279,7 +279,7 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
     const trimmed = this.messageText.trim();
     if (!trimmed) return;
     if (!this.conversationId) {
-      this.errorMessage = 'المحادثة لم تبدأ بعد. جاري المحاولة...';
+      this.errorMessage.set('المحادثة لم تبدأ بعد. جاري المحاولة...');
       if (!this.isDoctor && this.doctorId) {
         this.startAsPatient(this.doctorId);
       } else if (this.isDoctor && this.patientId) {
@@ -296,14 +296,14 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
       time: this.currentTime(),
       read: true,
     };
-    this.messages.push(optimisticMessage);
+    this.messages.update((prev) => [...prev, optimisticMessage]);
     this.messageText = '';
 
     this.signalr.sendStopTyping(this.conversationId);
 
     this.conversationService.sendMessage(this.conversationId, { content: trimmed }).subscribe({
       error: () => {
-        this.errorMessage = 'تعذر إرسال الرسالة.';
+        this.errorMessage.set('تعذر إرسال الرسالة.');
       },
     });
   }
@@ -370,20 +370,23 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
     if (this.pendingFileAction === 'results') caption = 'مرفق نتائج التحاليل.';
     if (this.pendingFileAction === 'image') caption = 'صورة مرفقة.';
 
-    this.messages.push({
-      sender,
-      type: 'file',
-      fileName: file.name,
-      fileSize: sizeLabel,
-      fileNote: caption,
-      time: this.currentTime(),
-      read: true,
-    });
+    this.messages.update((prev) => [
+      ...prev,
+      {
+        sender,
+        type: 'file',
+        fileName: file.name,
+        fileSize: sizeLabel,
+        fileNote: caption,
+        time: this.currentTime(),
+        read: true,
+      }
+    ]);
 
     if (this.conversationId) {
       this.conversationService.uploadAttachment(this.conversationId, file, caption).subscribe({
         error: () => {
-          this.errorMessage = 'تعذر رفع المرفق.';
+          this.errorMessage.set('تعذر رفع المرفق.');
         },
       });
     }
