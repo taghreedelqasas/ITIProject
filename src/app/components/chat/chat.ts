@@ -98,6 +98,8 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
         if (msg.conversationId && msg.conversationId !== this.conversationId) return;
         const isMyMessage = this.isMessageMine(msg);
         if (isMyMessage) return;
+
+        
         const mapped = this.mapMessage(msg);
         this.messages.update((prev) => [...prev, mapped]);
         if (this.conversationId) {
@@ -216,9 +218,9 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
     });
   }
 
-  private isMessageMine(m: ApiChatMessage): boolean {
-    return !!m.isMine;
-  }
+private isMessageMine(m: ApiChatMessage): boolean {
+  return m.senderUserId === this.signalr.currentUserId;
+}
 
   private mapMessage(m: ApiChatMessage): ChatMessage {
     const isMyMessage = this.isMessageMine(m);

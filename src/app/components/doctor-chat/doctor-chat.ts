@@ -336,4 +336,7 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     input.value = '';
     this.pendingFileAction = null;
   }
+
+
+  
 }
