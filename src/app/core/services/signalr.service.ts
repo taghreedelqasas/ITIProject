@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
   private readonly authService = inject(AuthService);
-  private readonly hubUrl = `${environment.apiBaseUrl}/api/Conversation/`;
+  private readonly hubUrl = `${environment.apiBaseUrl}/hubs/chat`;
 
   private hubConnection: signalR.HubConnection | null = null;
   private currentConversationId: number | null = null;

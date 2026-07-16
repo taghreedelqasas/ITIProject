@@ -7,6 +7,8 @@ import { DoctorAvailabilityService } from '../../core/services/doctor-availabili
 import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
 import { Review as ApiReview, DoctorRatingDistribution } from '../../core/models/review.model';
 import { DoctorAvailability } from '../../core/models/availability.model';
+import { AppointmentService } from '../../core/services/appointment.service';
+import { ConversationService } from '../../core/services/conversation.service';
 
 interface Qualification {
   label: string;
@@ -51,6 +53,8 @@ export class DoctorProfile implements OnInit {
     private doctorService: DoctorService,
     private reviewService: ReviewService,
     private availabilityService: DoctorAvailabilityService,
+    private appointmentService: AppointmentService,
+    private conversationService: ConversationService
   ) {
     const idParam = this.route.snapshot.paramMap.get('id');
     this.doctorId = idParam ? Number(idParam) : null;
@@ -111,6 +115,7 @@ export class DoctorProfile implements OnInit {
     this.loadDistribution(this.doctorId);
     this.loadReviews(this.doctorId);
     this.loadAvailability(this.doctorId);
+    this.checkPreviousAppointments(this.doctorId);
   }
 
   private loadDoctor(id: number): void {
@@ -234,23 +239,44 @@ export class DoctorProfile implements OnInit {
   // ================== استشارة الطبيب ==================
 
   consultPopupOpen = false;
-
-  // ملحوظة: التحقق من وجود موعد سابق مع نفس الطبيب بيتم فعليًا عبر GET /api/Appointments/my
-  // ومقارنة doctorId، بدل الاعتماد على قائمة ثابتة بالأسماء.
   hasPreviousAppointment = false;
+  isLoadingConsult = false;
+
+  private checkPreviousAppointments(doctorId: number): void {
+    this.appointmentService.getMyAppointments().subscribe({
+      next: (appointments) => {
+        this.hasPreviousAppointment = (appointments || []).some(
+          (app) => Number(app.doctorId) === Number(doctorId) && app.status !== 'Cancelled'
+        );
+      },
+      error: (err) => console.error('Error checking appointments:', err)
+    });
+  }
 
   onConsultDoctor(): void {
     if (this.hasPreviousAppointment) {
-      this.router.navigate(['/consult'], {
-        queryParams: {
-          doctorId: this.doctorId,
-          doctorName: this.doctor.name,
-          specialty: this.doctor.specialty,
-          location: this.doctor.location,
-          image: this.doctor.image,
-          rating: this.stats.rating,
-          reviewsCount: this.stats.reviewsCount,
+      if (!this.doctorId || this.isLoadingConsult) return;
+      this.isLoadingConsult = true;
+
+      this.conversationService.startAsPatient(this.doctorId).subscribe({
+        next: (conversation) => {
+          this.isLoadingConsult = false;
+          if (conversation && conversation.id) {
+            this.router.navigate(['/chat'], {
+              queryParams: {
+                conversationId: conversation.id,
+                doctorId: this.doctorId,
+                name: this.doctor.name,
+                specialty: this.doctor.specialty,
+                image: this.doctor.image,
+              },
+            });
+          }
         },
+        error: (err) => {
+          this.isLoadingConsult = false;
+          console.error('Error starting conversation:', err);
+        }
       });
     } else {
       this.consultPopupOpen = true;
