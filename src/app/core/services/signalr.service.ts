@@ -49,8 +49,9 @@ export class SignalRService {
 
     try {
       await this.hubConnection.start();
-    } catch {
-      // Silently fail — HTTP fallback handles messaging
+      console.log('⚡ Connected to SignalR Hub successfully!');
+    } catch (err) {
+      console.error('❌ SignalR Hub Connection failed:', err);
     }
   }
 
