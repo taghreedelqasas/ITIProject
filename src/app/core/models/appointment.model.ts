@@ -22,6 +22,7 @@ export interface Appointment {
   doctorName?: string;
   doctorSpecialty?: string;
   doctorImage?: string; // لو مش موجودة من الباك إند، الكومبوننت بيستخدم صورة افتراضية
+  doctorAddress?: string;
   slotStart?: string; // ISO datetime
   slotEnd?: string; // ISO datetime
   createdAt?: string;

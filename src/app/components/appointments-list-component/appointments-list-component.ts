@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AppointmentService } from '../../core/services/appointment.service';
 import { ReviewService } from '../../core/services/review.service';
 import { Appointment } from '../../core/models/appointment.model';
@@ -16,7 +17,8 @@ import { RateReviewModalComponent } from '../rate-review-modal-component/rate-re
   standalone: true,
   imports: [
     CommonModule,
-     RescheduleModalComponent,CancelModalComponent,RateReviewModalComponent , 
+    RouterLink,
+    RescheduleModalComponent,CancelModalComponent,RateReviewModalComponent , 
   ],
   templateUrl: './appointments-list-component.html',
   styleUrl: './appointments-list-component.css',
@@ -95,12 +97,22 @@ export class AppointmentsListComponent implements OnInit {
     });
   }
 
+  // يمكن التعديل أو الإلغاء فقط قبل موعد الحجز بـ 12 ساعة على الأقل
+  canEditOrCancel(appt: Appointment): boolean {
+    if (!appt.slotStart) return false;
+    const now = new Date();
+    const slotTime = new Date(appt.slotStart);
+    const diffMs = slotTime.getTime() - now.getTime();
+    const diffHrs = diffMs / (1000 * 60 * 60);
+    return diffHrs >= 12;
+  }
+
   existingReviewFor(appt: Appointment): Review | null {
     return this.reviewByDoctorId().get(appt.doctorId!) ?? null;
   }
 
   canBeReviewed(appt: Appointment): boolean {
-    return (appt.status || '').toLowerCase() === 'completed';
+    return String(appt.status || '').toLowerCase() === 'completed';
   }
 
   toggleUpcoming(): void {
@@ -111,8 +123,8 @@ export class AppointmentsListComponent implements OnInit {
     this.expandedPast.update((v) => !v);
   }
 
-  statusLabel(status?: string): string {
-    switch ((status || '').toLowerCase()) {
+  statusLabel(status?: string | number): string {
+    switch (String(status || '').toLowerCase()) {
       case 'pending':
         return 'قيد الانتظار';
       case 'confirmed':
@@ -122,12 +134,12 @@ export class AppointmentsListComponent implements OnInit {
       case 'cancelled':
         return 'ملغي';
       default:
-        return status || '—';
+        return String(status || '—');
     }
   }
 
-  statusClass(status?: string): string {
-    switch ((status || '').toLowerCase()) {
+  statusClass(status?: string | number): string {
+    switch (String(status || '').toLowerCase()) {
       case 'pending':
         return 'status--pending';
       case 'confirmed':
@@ -143,7 +155,7 @@ export class AppointmentsListComponent implements OnInit {
 
   // إعادة الجدولة والإلغاء متاحين بس للمواعيد اللي لسه شغالة
   canModify(appt: Appointment): boolean {
-    const s = (appt.status || '').toLowerCase();
+    const s = String(appt.status || '').toLowerCase();
     return s === 'pending' || s === 'confirmed';
   }
 
