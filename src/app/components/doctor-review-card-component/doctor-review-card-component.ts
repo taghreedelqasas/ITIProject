@@ -40,6 +40,24 @@ export class DoctorReviewCardComponent implements OnInit {
     }
   }
 
+  formatDate(iso?: string): string {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('ar-EG', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  formatTime(iso?: string): string {
+    if (!iso) return '';
+    return new Date(iso).toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  }
+
   setRating(value: number): void {
     this.rating.set(value);
   }

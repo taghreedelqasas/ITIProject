@@ -72,6 +72,7 @@ export const routes: Routes = [
       { path: 'patientProfile', component: UserProfileComponent },
       { path: 'medicalHistory', component: MedicalHistory },
       { path: 'appointment', component: AppointmentsListComponent },
+      { path: 'docReview', component: RatingsPageComponent },
       { path: 'PatientSetting', component: DocSettings },
     ]
   },
