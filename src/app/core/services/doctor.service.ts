@@ -21,7 +21,7 @@ export class DoctorService {
     }
     return this.http.get<Doctor[]>(this.baseUrl, { params });
   }
-
+// -------------------------------------------
   getById(id: number): Observable<Doctor> {
     return this.http.get<Doctor>(`${this.baseUrl}/${id}`);
   }
