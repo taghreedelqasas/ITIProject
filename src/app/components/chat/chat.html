@@ -161,7 +161,9 @@
   </div>
 
   <!-- Quick actions (patient only) -->
-  <div *ngIf="!isDoctor" class="px-4 md:px-10 pb-3">
+ <!-- Quick actions (patient only) -->
+@if (!isDoctor && quickActions.length > 0) {
+  <div class="px-4 md:px-10 pb-3">
     <div class="max-w-4xl mx-auto flex items-center justify-end gap-3 overflow-x-auto">
       <button
         *ngFor="let action of quickActions"
@@ -172,7 +174,7 @@
       </button>
     </div>
   </div>
-
+}
   <!-- Input bar -->
   <div class="bg-white border-t border-slate-100 px-4 md:px-10 py-4">
     <div class="max-w-4xl mx-auto flex items-center gap-3">

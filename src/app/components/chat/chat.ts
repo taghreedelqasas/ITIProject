@@ -48,44 +48,66 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isSendingTyping = false;
+// 1. تأكدي أن المتغير معرّف هكذا في البداية خارج الـ constructor
+quickActions: QuickAction[] = [];
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private location: Location,
-    private conversationService: ConversationService,
-    private authService: AuthService
-  ) {
-    this.isDoctor = this.authService.getUserRoles().some(r => r.toLowerCase() === 'doctor');
+constructor(
+  private router: Router,
+  private route: ActivatedRoute,
+  private location: Location,
+  private conversationService: ConversationService,
+  private authService: AuthService 
+) {
+  // جلب الرتب من الـ authService وطباعتها في المتصفح للتأكد منها
+  const roles = this.authService.getUserRoles() || [];
 
-    const params = this.route.snapshot.queryParamMap;
+  console.log('المستخدم لديه الرتب التالية:', roles);
+  const localDoctorId = this.authService.getDoctorId() ; 
+this.isDoctor = !!localDoctorId;
+  // التأكد من وجود كلمة doctor بأي شكل (Doctor, doctor, DOCTOR)
+  // this.isDoctor = roles.some(r => r && r.toLowerCase().trim() === 'doctor');
+    
+  console.log('هل تم تحديد المستخدم كطبيب؟', this.isDoctor);
 
-    if (!this.conversationId) {
-      const cid = params.get('conversationId');
-      this.conversationId = cid ? Number(cid) : null;
-    }
-    if (!this.doctorId) {
-      const did = params.get('doctorId');
-      this.doctorId = did ? Number(did) : null;
-    }
-    if (!this.patientId) {
-      this.patientId = params.get('patientId');
-    }
-
-    const name = params.get('name');
-    const specialty = params.get('specialty');
-    const image = params.get('image');
-
-    if (this.isDoctor) {
-      if (name) this.otherParty.name = name;
-      if (image) this.otherParty.image = image;
-    } else {
-      if (name) this.doctorInfo.name = name;
-      if (specialty) this.doctorInfo.specialty = specialty;
-      if (image) this.doctorInfo.image = image;
-    }
+  // بناءً على النتيجة السابقة، نحدد الأزرار
+  if (!this.isDoctor) {
+    this.quickActions = [
+      { label: 'حجز موعد' },
+      { label: 'إرسال تقرير' },
+      { label: 'مشاركة نتائج التحاليل' },
+    ];
+  } else {
+    this.quickActions = []; // إذا كان طبيب، نضمن أن المصفوفة فارغة تماماً
   }
 
+  // باقي الكود القديم الخاص بالـ constructor كما هو دون تعديل:
+  const params = this.route.snapshot.queryParamMap;
+
+  if (!this.conversationId) {
+    const cid = params.get('conversationId');
+    this.conversationId = cid ? Number(cid) : null;
+  }
+  if (!this.doctorId) {
+    const did = params.get('doctorId');
+    this.doctorId = did ? Number(did) : null;
+  }
+  if (!this.patientId) {
+    this.patientId = params.get('patientId');
+  }
+
+  const name = params.get('name');
+  const specialty = params.get('specialty');
+  const image = params.get('image');
+
+  if (this.isDoctor) {
+    if (name) this.otherParty.name = name;
+    if (image) this.otherParty.image = image;
+  } else {
+    if (name) this.doctorInfo.name = name;
+    if (specialty) this.doctorInfo.specialty = specialty;
+    if (image) this.doctorInfo.image = image;
+  }
+}
   ngOnInit(): void {
     this.signalr.startConnection().then(() => {
       if (this.conversationId) {
@@ -155,12 +177,13 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   isTyping = signal(false);
   messageText = '';
 
-  quickActions: QuickAction[] = this.isDoctor ? [] : [
-    { label: 'حجز موعد' },
-    { label: 'إرسال تقرير' },
-    { label: 'مشاركة نتائج التحاليل' },
-  ];
+  // quickActions: QuickAction[] = this.isDoctor ? [] : [
+  //   { label: 'حجز موعد' },
+  //   { label: 'إرسال تقرير' },
+  //   { label: 'مشاركة نتائج التحاليل' },
+  // ];
 
+  
   pendingFileAction: 'report' | 'results' | 'attachment' | 'image' | null = null;
 
   ngAfterViewChecked(): void {

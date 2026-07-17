@@ -20,36 +20,44 @@ export class Navbar implements OnInit {
   userAvatar = '/images/22.jpg'; // الصورة الافتراضية للمريض
   protected userInfoService = inject(AppointmentService) ; 
   constructor(private router: Router, public authService: AuthService) {}
-  userData: {
-    fullName: string;
-    email: string;
-    phone: string;
-    birthDate: string;
-    gender: Gender;
-  } = {
-    fullName: '',
-    email: '',
-    phone: '',
-    birthDate: '',
-    gender: Gender.Male // = 1
-  };
+// 1. نقوم بتحديث الموديل الداخلي ليشمل الصورة الشخصية
+userData: {
+  fullName: string;
+  email: string;
+  phone: string;
+  birthDate: string;
+  gender: Gender;
+  profilePictureUrl: string; // إضافة هذا الحقل
+} = {
+  fullName: '',
+  email: '',
+  phone: '',
+  birthDate: '',
+  gender: Gender.Male,
+  profilePictureUrl: '' // قيمة افتراضية فارغة
+};
 
-    getProfile() {
-    this.userInfoService.getUserProfile().subscribe({
-      next: (res: any) => {
-        this.userInfoService.userProfile.set(res);
-        this.userData = {
-          fullName: res.fullName,
-          email: res.email,
-          phone: res.phoneNumber,
-          birthDate: res.birthDate?.split('T')[0],
-          // الباك إند بيرجع الـ enum كرقم (1 أو 2)، لو رجع string لأي سبب بنحولها بأمان
-          gender: typeof res.gender === 'number' ? res.gender : Gender.Male
-        };
-      },
-      error: (err) => console.log(err)
-    });
-  }
+getProfile() {
+  this.userInfoService.getUserProfile().subscribe({
+    next: (res: any) => {
+      this.userInfoService.userProfile.set(res);
+      this.userData = {
+        fullName: res.fullName,
+        email: res.email,
+        phone: res.phoneNumber,
+        birthDate: res.birthDate?.split('T')[0],
+        gender: typeof res.gender === 'number' ? res.gender : Gender.Male,
+        profilePictureUrl: res.profilePictureUrl // جلب مسار الصورة الشخصية من السيرفر
+      };
+    },
+    error: (err) => console.log(err)
+  });
+}
+
+// 2. دالة getter اختيارية لتبسيط القراءة في الـ HTML ومراعاة الصورة الافتراضية إذا لم يرفع صورة بعد
+getUserAvatar(): string {
+  return this.userData.profilePictureUrl || '/images/22.jpg'; // إذا لم تكن هناك صورة حقيقية، تظهر الصورة الافتراضية 22.jpg
+}
   ngOnInit(): void {
    if (this.authService.isLoggedIn()) {
       this.getProfile();
