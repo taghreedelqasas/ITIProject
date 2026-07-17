@@ -73,7 +73,9 @@ updateUserProfile(payload: UpdateProfileDto) {
     formData.append('file', file);
     return this.http.post<ServiceResult<null>>(`${BASE}/api/UserProfile/picture`, formData);
   }
-
+deleteProfilePicture() {
+    return this.http.delete<ServiceResult<null>>(`${BASE}/api/UserProfile/picture`);
+  }
   
 
   // ============================================================

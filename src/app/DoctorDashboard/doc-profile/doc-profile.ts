@@ -132,7 +132,55 @@ onUpdateProfile(): void {
     });
   }
 }
+onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
 
+    // إظهار مؤشر تحميل بسيط أو رسالة تنبيه
+    Swal.fire({
+      title: 'جاري رفع الصورة...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.appointmentService.uploadProfilePicture(file).subscribe({
+      next: (res) => {
+        // تحديث الـ Signal محليًا بالصورة الجديدة فورًا بدون الحاجة لإعادة تحميل الصفحة بالكامل
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.appointmentService.userProfile.update(profile => 
+            profile ? { ...profile, profilePictureUrl: e.target?.result as string } : null
+          );
+        };
+        reader.readAsDataURL(file);
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'تم تحديث الصورة الشخصية بنجاح! ',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      },
+      error: (err) => {
+        console.error('خطأ أثناء رفع الصورة الشخصية:', err);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'حدث خطأ أثناء رفع الصورة',
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      }
+    });
+  }
+}
   onUpdateWorkingHours(): void {
     alert('سيتم ربط تعديل أوقات العمل لاحقاً فور توفرها بالـ Backend.');
   }
