@@ -1,6 +1,13 @@
 <div class="review-card">
   <!-- Doctor Profile Details (RTL: avatar on the right, details left) -->
   <div class="doctor-profile-header">
+    <div class="doctor-avatar">
+      <img
+        [src]="appointment.doctorImage || 'assets/images/doctor-placeholder.png'"
+        [alt]="appointment.doctorName || 'الطبيب'"
+      />
+    </div>
+
     <div class="doctor-info-column">
       <h3 class="doctor-name">{{ appointment.doctorName || 'الطبيب' }}</h3>
       <p class="doctor-specialty">{{ appointment.doctorSpecialty || 'أخصائي' }}</p>
@@ -16,13 +23,6 @@
           </svg>
         </div>
       }
-    </div>
-
-    <div class="doctor-avatar">
-      <img
-        [src]="appointment.doctorImage || 'assets/images/doctor-placeholder.png'"
-        [alt]="appointment.doctorName || 'الطبيب'"
-      />
     </div>
   </div>
 
