@@ -34,7 +34,8 @@ export class App {
           '/ai-pulse',            // صفحة الـ AI Chat
           '/confirm-email', 
           '/api/auth/confirm-email',
-          '/api/auth/reset-password'
+          '/api/auth/reset-password' , 
+          '/admin' ,
         ];
         
         // إذا كان العنوان الحالي يبدأ بأي واحدة منها، سنجعل showChrome = false
