@@ -84,20 +84,22 @@ export class Doctors implements OnInit {
 
     this.fetchDoctors();
   }
-  private mapDoctor(d: ApiDoctor): Doctor {
-    const name =
-      d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
-    return {
-      id: d.id,
-      name: name.startsWith('د.') ? name : `د. ${name}`,
-      specialty: (d.specialty || d.departmentName || 'طبيب عام') as string,
-      detail: d.consultationFee ? `الكشف - ${d.consultationFee}` : 'الكشف - غير محدد',
-      rating: d.rating ?? 0,
-      image: (d.imageProfile as string) || FALLBACK_IMAGE,
-      isFavorite: false,
-    };
-  }
-
+ private mapDoctor(d: ApiDoctor): Doctor {
+  const name =
+    d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
+  
+  return {
+    id: d.id,
+    name: name.startsWith('د.') ? name : `د. ${name}`,
+    specialty: (d.specialty || d.departmentName || 'طبيب عام') as string,
+    detail: d.consultationFee ? `الكشف - ${d.consultationFee}` : 'الكشف - غير محدد',
+    rating: d.rating ?? 0,
+    // هنا نضمن قراءة الصورة الحقيقية القادمة من السيرفر (imageProfile)
+    // وإذا كانت فارغة أو غير موجودة نضع الصورة الافتراضية
+    image: d.imageProfile ? d.imageProfile : FALLBACK_IMAGE,
+    isFavorite: false,
+  };
+}
   private fetchDoctors(): void {
     this.isLoading = true;
     this.errorMessage = '';
@@ -116,6 +118,7 @@ export class Doctors implements OnInit {
           this.doctors = (res || []).map((d) => this.mapDoctor(d));
           this.totalDoctorsLabel = `${this.doctors.length} طبيب متاح`;
           this.isLoading = false;
+          console.log('بيانات الأطباء من السيرفر:', res);
         },
         error: () => {
           this.errorMessage = 'تعذر تحميل قائمة الأطباء، حاول مرة أخرى.';
