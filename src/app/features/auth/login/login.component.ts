@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
 
   private redirectBasedOnRoles(roles: string[]): void {
     if (roles.includes('Admin')) {
-      this.router.navigate(['/admin/dashboard']);
+      this.router.navigate(['/admin']);
     } else if (roles.includes('Doctor')) {
       this.router.navigate(['/doctor-dashboard/main']); // التوجيه الصحيح للدكتور
     } else if (roles.includes('Patient')) {
