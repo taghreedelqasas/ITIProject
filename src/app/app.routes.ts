@@ -53,7 +53,7 @@ export const routes: Routes = [
     path: 'booking',
     component: Booking,
     canActivate: [authGuard],
-    // data: { roles: ['Patient'] },
+    data: { roles: ['Patient'] },
     children: [
       { path: '', redirectTo: 'date-time', pathMatch: 'full' },
       { path: 'date-time', component: StepDateTime },
@@ -67,6 +67,10 @@ export const routes: Routes = [
   {
     path: 'profile', 
     component: NavbarPatient,
+    canActivate:[authGuard] , 
+    data :{
+      roles :['Patient']
+    } , 
     children: [
       { path: '', redirectTo: 'patientProfile', pathMatch: 'full' },
       { path: 'patientProfile', component: UserProfileComponent },
@@ -86,7 +90,9 @@ export const routes: Routes = [
     path: 'doctor-dashboard',
     component: DoctorDash,
    canActivate: [authGuard],
-     
+     data:{
+      roles :['Doctor']
+     } , 
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
