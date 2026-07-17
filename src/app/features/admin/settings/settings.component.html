@@ -1,0 +1,370 @@
+<div dir="rtl" class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-800">الإعدادات</h1>
+    <p class="text-sm text-slate-400 mt-1">إدارة الملف الشخصي، الإشعارات، الأمان، وإعدادات المنصة العامة.</p>
+  </div>
+
+  <!-- ============ تبويبات ============ -->
+  <div class="flex flex-wrap gap-2 border-b border-slate-100 pb-1">
+    <button
+      *ngFor="let tab of tabs"
+      type="button"
+      (click)="setTab(tab.key)"
+      class="flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-semibold transition-colors"
+      [ngClass]="activeTab === tab.key
+        ? 'bg-violet-50 text-violet-700 border-b-2 border-violet-700'
+        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'"
+    >
+      <ng-container [ngSwitch]="tab.icon">
+        <svg *ngSwitchCase="'profile'" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.9 3.6-6.5 8-6.5s8 2.6 8 6.5" stroke-linecap="round"/></svg>
+        <svg *ngSwitchCase="'bell'" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg *ngSwitchCase="'lock'" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10.5" width="15" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 018 0v3.5" stroke-linecap="round"/></svg>
+        <svg *ngSwitchCase="'sliders'" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h9M17 6h3M4 12h3M9 12h11M4 18h13M20 18h0" stroke-linecap="round"/><circle cx="12" cy="6" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+      </ng-container>
+      <span>{{ tab.label }}</span>
+    </button>
+  </div>
+
+  <!-- ============ الملف الشخصي ============ -->
+  <div *ngIf="activeTab === 'profile'" class="rounded-2xl bg-white border border-slate-100 p-6 max-w-2xl">
+    <h3 class="font-bold text-slate-800 mb-1">بيانات الملف الشخصي</h3>
+    <p class="text-sm text-slate-400 mb-6">هذه البيانات تظهر في أعلى لوحة التحكم.</p>
+
+    <div class="flex items-center gap-4 mb-6">
+      <div class="w-16 h-16 rounded-full bg-slate-200 shrink-0"></div>
+      <div>
+        <button type="button" class="text-sm font-semibold text-violet-700 hover:underline">تغيير الصورة</button>
+        <p class="text-xs text-slate-400 mt-1">JPG أو PNG، بحد أقصى 2MB</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">الاسم الكامل</label>
+        <input
+          type="text"
+          [(ngModel)]="profileForm.name"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">الدور الوظيفي</label>
+        <input
+          type="text"
+          [(ngModel)]="profileForm.role"
+          disabled
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 px-4 text-sm text-slate-400 cursor-not-allowed"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">البريد الإلكتروني</label>
+        <input
+          type="email"
+          [(ngModel)]="profileForm.email"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">رقم الهاتف</label>
+        <input
+          type="tel"
+          [(ngModel)]="profileForm.phone"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 mt-6">
+      <button
+        type="button"
+        (click)="saveProfile()"
+        class="rounded-full bg-violet-700 text-white text-sm font-semibold px-6 py-2.5 hover:bg-violet-800 transition-colors"
+      >
+        حفظ التغييرات
+      </button>
+      <p *ngIf="profileSaved" class="text-sm text-teal-600 font-medium">تم الحفظ بنجاح ✓</p>
+    </div>
+  </div>
+
+  <!-- ============ الإشعارات ============ -->
+  <div *ngIf="activeTab === 'notifications'" class="rounded-2xl bg-white border border-slate-100 p-6 max-w-2xl">
+    <h3 class="font-bold text-slate-800 mb-1">تفضيلات الإشعارات</h3>
+    <p class="text-sm text-slate-400 mb-6">اختاري الإشعارات التي تريدين استلامها.</p>
+
+    <div class="divide-y divide-slate-100">
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">تسجيل طبيب جديد</p>
+          <p class="text-xs text-slate-400 mt-0.5">إشعار عند انضمام طبيب جديد للمنصة</p>
+        </div>
+        <button
+          type="button"
+          (click)="notificationPrefs.newDoctorSignup = !notificationPrefs.newDoctorSignup"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="notificationPrefs.newDoctorSignup ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="notificationPrefs.newDoctorSignup ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">تسجيل مريض جديد</p>
+          <p class="text-xs text-slate-400 mt-0.5">إشعار عند تسجيل مريض جديد</p>
+        </div>
+        <button
+          type="button"
+          (click)="notificationPrefs.newPatientSignup = !notificationPrefs.newPatientSignup"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="notificationPrefs.newPatientSignup ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="notificationPrefs.newPatientSignup ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">حجز موعد جديد</p>
+          <p class="text-xs text-slate-400 mt-0.5">إشعار عند حجز أي موعد على المنصة</p>
+        </div>
+        <button
+          type="button"
+          (click)="notificationPrefs.newAppointment = !notificationPrefs.newAppointment"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="notificationPrefs.newAppointment ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="notificationPrefs.newAppointment ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">إلغاء موعد</p>
+          <p class="text-xs text-slate-400 mt-0.5">إشعار عند إلغاء أي موعد</p>
+        </div>
+        <button
+          type="button"
+          (click)="notificationPrefs.cancelledAppointment = !notificationPrefs.cancelledAppointment"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="notificationPrefs.cancelledAppointment ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="notificationPrefs.cancelledAppointment ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">طلبات السحب</p>
+          <p class="text-xs text-slate-400 mt-0.5">إشعار عند تقديم طبيب لطلب سحب أرباح</p>
+        </div>
+        <button
+          type="button"
+          (click)="notificationPrefs.withdrawalRequests = !notificationPrefs.withdrawalRequests"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="notificationPrefs.withdrawalRequests ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="notificationPrefs.withdrawalRequests ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">ملخص أسبوعي بالبريد</p>
+          <p class="text-xs text-slate-400 mt-0.5">تقرير أداء المنصة كل أسبوع على الإيميل</p>
+        </div>
+        <button
+          type="button"
+          (click)="notificationPrefs.weeklySummaryEmail = !notificationPrefs.weeklySummaryEmail"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="notificationPrefs.weeklySummaryEmail ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="notificationPrefs.weeklySummaryEmail ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 mt-4">
+      <button
+        type="button"
+        (click)="saveNotifications()"
+        class="rounded-full bg-violet-700 text-white text-sm font-semibold px-6 py-2.5 hover:bg-violet-800 transition-colors"
+      >
+        حفظ التفضيلات
+      </button>
+      <p *ngIf="notificationsSaved" class="text-sm text-teal-600 font-medium">تم الحفظ بنجاح ✓</p>
+    </div>
+  </div>
+
+  <!-- ============ الأمان ============ -->
+  <div *ngIf="activeTab === 'security'" class="rounded-2xl bg-white border border-slate-100 p-6 max-w-2xl">
+    <h3 class="font-bold text-slate-800 mb-1">تغيير كلمة المرور</h3>
+    <p class="text-sm text-slate-400 mb-6">يُفضّل استخدام كلمة مرور قوية لا تُستخدم في مكان آخر.</p>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">كلمة المرور الحالية</label>
+        <input
+          type="password"
+          [(ngModel)]="securityForm.currentPassword"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1.5">كلمة المرور الجديدة</label>
+          <input
+            type="password"
+            [(ngModel)]="securityForm.newPassword"
+            class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1.5">تأكيد كلمة المرور</label>
+          <input
+            type="password"
+            [(ngModel)]="securityForm.confirmPassword"
+            class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+          />
+        </div>
+      </div>
+    </div>
+
+    <p *ngIf="securityError" class="rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm p-3 mt-4">{{ securityError }}</p>
+
+    <div class="flex items-center gap-3 mt-6">
+      <button
+        type="button"
+        (click)="saveSecurity()"
+        class="rounded-full bg-violet-700 text-white text-sm font-semibold px-6 py-2.5 hover:bg-violet-800 transition-colors"
+      >
+        تحديث كلمة المرور
+      </button>
+      <p *ngIf="securitySaved" class="text-sm text-teal-600 font-medium">تم التحديث بنجاح ✓</p>
+    </div>
+
+    <div class="border-t border-slate-100 mt-8 pt-6 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-semibold text-slate-700">التحقق بخطوتين (2FA)</p>
+        <p class="text-xs text-slate-400 mt-0.5">طبقة حماية إضافية عند تسجيل الدخول</p>
+      </div>
+      <button
+        type="button"
+        (click)="twoFactorEnabled = !twoFactorEnabled"
+        class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+        [ngClass]="twoFactorEnabled ? 'bg-violet-700' : 'bg-slate-200'"
+      >
+        <span
+          class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+          [ngClass]="twoFactorEnabled ? 'right-0.5' : 'right-5'"
+        ></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ إعدادات المنصة العامة ============ -->
+  <div *ngIf="activeTab === 'platform'" class="rounded-2xl bg-white border border-slate-100 p-6 max-w-2xl">
+    <h3 class="font-bold text-slate-800 mb-1">إعدادات المنصة العامة</h3>
+    <p class="text-sm text-slate-400 mb-6">إعدادات عامة تؤثر على المنصة بالكامل.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">اسم المنصة</label>
+        <input
+          type="text"
+          [(ngModel)]="platformForm.platformName"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">بريد الدعم الفني</label>
+        <input
+          type="email"
+          [(ngModel)]="platformForm.supportEmail"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1.5">نسبة عمولة المنصة الافتراضية (%)</label>
+        <input
+          type="number"
+          min="0"
+          max="100"
+          [(ngModel)]="platformForm.defaultCommissionRate"
+          class="w-full rounded-xl border border-slate-200 py-2.5 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
+        />
+        <p class="text-xs text-slate-400 mt-1">النسبة الفعلية تُدار من صفحة المدفوعات والعمولات.</p>
+      </div>
+    </div>
+
+    <div class="divide-y divide-slate-100 mt-6 border-t border-slate-100">
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">فتح تسجيل الأطباء الجدد</p>
+          <p class="text-xs text-slate-400 mt-0.5">السماح للأطباء بالتسجيل الذاتي على المنصة</p>
+        </div>
+        <button
+          type="button"
+          (click)="platformForm.allowNewDoctorSignups = !platformForm.allowNewDoctorSignups"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="platformForm.allowNewDoctorSignups ? 'bg-violet-700' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="platformForm.allowNewDoctorSignups ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between py-4">
+        <div>
+          <p class="text-sm font-semibold text-slate-700">وضع الصيانة</p>
+          <p class="text-xs text-slate-400 mt-0.5">إيقاف الموقع مؤقتًا عن المستخدمين لغير الأدمن</p>
+        </div>
+        <button
+          type="button"
+          (click)="platformForm.maintenanceMode = !platformForm.maintenanceMode"
+          class="w-11 h-6 rounded-full relative transition-colors shrink-0"
+          [ngClass]="platformForm.maintenanceMode ? 'bg-red-500' : 'bg-slate-200'"
+        >
+          <span
+            class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
+            [ngClass]="platformForm.maintenanceMode ? 'right-0.5' : 'right-5'"
+          ></span>
+        </button>
+      </div>
+    </div>
+
+    <p *ngIf="platformForm.maintenanceMode" class="rounded-xl border border-amber-100 bg-amber-50 text-amber-700 text-sm p-3 mt-4">
+      تنبيه: تفعيل وضع الصيانة سيمنع كل المستخدمين (غير الأدمن) من الدخول للمنصة.
+    </p>
+
+    <div class="flex items-center gap-3 mt-6">
+      <button
+        type="button"
+        (click)="savePlatform()"
+        class="rounded-full bg-violet-700 text-white text-sm font-semibold px-6 py-2.5 hover:bg-violet-800 transition-colors"
+      >
+        حفظ الإعدادات
+      </button>
+      <p *ngIf="platformSaved" class="text-sm text-teal-600 font-medium">تم الحفظ بنجاح ✓</p>
+    </div>
+  </div>
+</div>
