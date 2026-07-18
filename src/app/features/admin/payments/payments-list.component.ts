@@ -137,17 +137,33 @@ export class PaymentsListComponent implements OnInit {
   }
 
   // ============ تحليل الإيرادات والعمولات ============
+  // ملحوظة: بيانات ثابتة (static) مؤقتًا لحد ما نتأكد إن الـ endpoint بتاع الباك بيرجّع بيانات فعلية.
   loadTrend(): void {
     this.loadingTrend = true;
     this.trendError = false;
 
-    this.paymentsService
-      .getRevenueCommissionTrend(6)
-      .pipe(finalize(() => (this.loadingTrend = false)))
-      .subscribe({
-        next: (trend) => (this.trendChart = this.buildTrendOptions(trend)),
-        error: () => (this.trendError = true),
-      });
+    const staticTrend: RevenueCommissionTrendDto = {
+      points: [
+        { year: 2026, month: 2, label: 'فبراير', revenue: 1800, commission: 180 },
+        { year: 2026, month: 3, label: 'مارس', revenue: 2100, commission: 210 },
+        { year: 2026, month: 4, label: 'أبريل', revenue: 1650, commission: 165 },
+        { year: 2026, month: 5, label: 'مايو', revenue: 2400, commission: 240 },
+        { year: 2026, month: 6, label: 'يونيو', revenue: 2200, commission: 220 },
+        { year: 2026, month: 7, label: 'يوليو', revenue: 2850, commission: 285 },
+      ],
+    };
+
+    this.trendChart = this.buildTrendOptions(staticTrend);
+    this.loadingTrend = false;
+
+    // الكود الأصلي اللي بيجيب البيانات من الباك - هنرجعله لما الـ API يبقى جاهز:
+    // this.paymentsService
+    //   .getRevenueCommissionTrend(6)
+    //   .pipe(finalize(() => (this.loadingTrend = false)))
+    //   .subscribe({
+    //     next: (trend) => (this.trendChart = this.buildTrendOptions(trend)),
+    //     error: () => (this.trendError = true),
+    //   });
   }
 
   private buildTrendOptions(trend: RevenueCommissionTrendDto): ApexOptions {
