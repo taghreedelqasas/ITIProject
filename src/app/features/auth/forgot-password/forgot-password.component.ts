@@ -43,7 +43,7 @@ export class ForgotPasswordComponent {
     this.successMessage = '';
 
     const email = this.forgotPasswordForm.get('email')?.value;
-    const clientBaseUrl = 'http://localhost:4200'; 
+    const clientBaseUrl = window.location.origin; 
 
    
     this.authService.forgotPassword(email, clientBaseUrl).subscribe({
