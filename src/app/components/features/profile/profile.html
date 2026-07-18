@@ -15,7 +15,7 @@
       <div class="flex items-center gap-4">
         <div class="relative">
           <div class="w-16 h-16 rounded-2xl border-4 border-[#23E0E0] overflow-hidden bg-gray-100 shadow-sm">
-            <img src="https://randomuser.me/api/portraits/men/22.jpg" class="w-full h-full object-cover" alt="profile" />
+            <img [src]="patientServices.userProfile()?.profilePictureUrl" class="w-full h-full object-cover" alt="profile" />
           </div>
           <div class="absolute -bottom-1 -left-1 bg-[#53098D] text-white p-1 rounded-full text-[10px] border border-white">
             📷

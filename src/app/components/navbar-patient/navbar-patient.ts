@@ -14,7 +14,9 @@ export class NavbarPatient implements OnInit {
       this.patientServices.getUserProfile().subscribe({
     next: (res) => {
       this.patientServices.userProfile.set(res);
+      console.log(res) ; 
       console.log(res.fullName);
+
     },
     error: (err) => console.error(err)
   });
