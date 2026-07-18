@@ -85,14 +85,22 @@
         <div class="flex justify-between items-start">
 
           <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 rounded-full bg-[#F4ECFF] text-[#53098D]
-              flex items-center justify-center font-bold">
+      <!-- مكان الدائرة الخاصة بصورة المريض الحالية -->
+<div class="w-10 h-10 rounded-full bg-[#F4ECFF] text-[#53098D] flex items-center justify-center font-bold overflow-hidden shrink-0">
+  
+  <!-- التعديل الجديد: عرض الصورة الحقيقية للمريض إذا كانت متوفرة -->
+  @if (app.patientImageUrl) {
+    <img 
+      [src]="app.patientImageUrl" 
+      alt="patientImg" 
+      class="w-full h-full object-cover" 
+    />
+  } @else {
+    <!-- الحرف الأول كبديل في حال عدم وجود صورة -->
+    {{ app.patientName.charAt(0) }}
+  }
 
-              {{app.patientName.charAt(0)}}
-
-            </div>
-
+</div>
             <div>
               <h3 class="font-bold text-gray-800 text-sm">
                 {{app.patientName}}

@@ -77,7 +77,7 @@ export interface AppointmentApi {
   slotStart: string; // ISO date-time
   slotEnd: string;
   createdAt: string;
-  PatientImageUrl:string ; 
+  patientImageUrl: string;
 }
 
 export interface AvailableSlotApi {

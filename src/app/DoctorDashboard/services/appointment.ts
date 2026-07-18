@@ -201,7 +201,7 @@ getAvailabilityById(id: number) {
           gender: '—',
           age: 0,
           phone: '—' ,
-          imageUrl: appt.PatientImageUrl , 
+          imageUrl: appt.patientImageUrl , 
 
         });
       }

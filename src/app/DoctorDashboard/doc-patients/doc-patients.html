@@ -46,10 +46,10 @@
            <!-- Patient -->
 <td class="px-6 py-4">
   <div class="flex items-center gap-3">
-    <!-- تعديل الـ Avatar ليعرض الصورة الحقيقية أو أول حرف -->
     <div class="w-11 h-11 rounded-full overflow-hidden bg-purple-100 text-[#53098D] flex justify-center items-center font-bold shrink-0">
+      <!-- التعديل هنا: عرض الرابط القادم مباشرة من السيرفر -->
       @if (patient.imageUrl) {
-        <img [src]="baseUrl + patient.imageUrl" alt="patientImg" class="w-full h-full object-cover" />
+        <img [src]="patient.imageUrl" alt="patientImg" class="w-full h-full object-cover" />
       } @else {
         {{ patient.name.charAt(0) }}
       }
@@ -151,12 +151,12 @@
 
                    </div>
         
-      <div class="flex text-[#44116D] py-3">
-  <!-- تعديل الصورة في الـ Drawer لتصبح ديناميكية[cite: 8] -->
+<div class="flex text-[#44116D] py-3">
   <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100 flex justify-center items-center font-bold shrink-0">
+    <!-- التعديل هنا أيضاً للرابط المباشر -->
     @if (selectedPatient?.imageUrl) {
       <img
-        [src]="baseUrl + selectedPatient.imageUrl"
+        [src]="selectedPatient.imageUrl"
         alt="patientImg"
         class="w-full h-full object-cover"
       />
