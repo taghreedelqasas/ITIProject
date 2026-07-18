@@ -30,7 +30,8 @@
           <label class="block text-sm font-bold text-slate-600 mb-2">التخصص</label>
           <select
             [(ngModel)]="selectedSpecialty"
-            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-500 bg-white focus:outline-none focus:border-cyan-400 appearance-none"
+            (change)="onSearch()"
+            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-500 bg-white focus:outline-none focus:border-cyan-400 appearance-none cursor-pointer"
           >
             <option value="">أختر التخصص</option>
             <option *ngFor="let s of specialties" [value]="s">{{ s }}</option>
@@ -43,7 +44,9 @@
           <input
             type="text"
             [(ngModel)]="selectedLocation"
-            placeholder="أدخل المحافظة"
+            (keyup.enter)="onSearch()"
+            (blur)="onSearch()"
+            placeholder="أدخل المحافظة واضغط Enter"
             class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-500 placeholder:text-slate-400 focus:outline-none focus:border-cyan-400"
           />
         </div>
@@ -68,6 +71,8 @@
             <input
               type="text"
               [(ngModel)]="selectedDate"
+              (keyup.enter)="onSearch()"
+              (blur)="onSearch()"
               placeholder="يوم / شهر / سنة"
               class="w-full border border-slate-200 rounded-xl pr-11 pl-4 py-3 text-slate-500 placeholder:text-slate-400 focus:outline-none focus:border-cyan-400"
             />
@@ -82,7 +87,8 @@
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            placeholder="ابحث بإسم الطبيب أو إسم العيادة"
+            (keyup.enter)="onSearch()"
+            placeholder="ابحث بإسم الطبيب أو إسم العيادة ثم اضغط Enter"
             class="flex-1 border border-slate-200 rounded-xl px-4 py-3 text-slate-500 placeholder:text-slate-400 focus:outline-none focus:border-cyan-400"
           />
           <button
@@ -209,16 +215,16 @@
             </div>
           </div>
 
-          <!-- Action buttons (Merged perfectly from main & feat/Conversation) -->
+          <!-- Action buttons -->
           <div class="flex gap-3 items-center justify-center w-full mt-4">
-            <!-- Button: Book Appointment (from main) -->
+            <!-- Button: Book Appointment -->
             <button
               (click)="onBookAppointment(doctor); $event.stopPropagation()"
               class="flex-1 bg-[#23e0e0] rounded-[40px] text-[#44116d] text-[16px] font-extrabold h-[44px] flex items-center justify-center hover:bg-[#23e0e0]/80 transition-colors"
             >
               احجز موعد
             </button>
-            <!-- Button: Chat with Doctor (from feat) -->
+            <!-- Button: Chat with Doctor -->
             <button
               (click)="onChatWithDoctor(doctor); $event.stopPropagation()"
               class="chat-gradient-btn flex-1 text-[#44116d] text-[16px] font-extrabold h-[44px] flex items-center justify-center transition-colors"

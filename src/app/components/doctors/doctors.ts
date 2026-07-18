@@ -141,11 +141,23 @@ export class Doctors implements OnInit {
     this.currentPage = page;
   }
 
-  onSearch(): void {
-    // نداء API: GET /api/Doctor بفلاتر البحث
-    this.fetchDoctors();
-  }
+ // 1. تعديل دالة البحث لتحديث الرابط وجلب البيانات بشكل متزامن
+onSearch(): void {
+  // تحديث الـ URL بالفلاتر الحالية لضمان استقرار حالة الصفحة
+  this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams: {
+      search: this.searchQuery || null,
+      specialty: this.selectedSpecialty || null,
+      location: this.selectedLocation || null,
+      date: this.selectedDate || null,
+      sort: this.selectedSort || null
+    },
+    queryParamsHandling: 'merge' // يضمن الحفاظ على البارامترات الأخرى إن وجدت
+  });
 
+  this.fetchDoctors();
+}
   onChatWithDoctor(doctor: Doctor): void {
     this.router.navigate(['consult'], {
       queryParams: {

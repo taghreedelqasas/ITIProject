@@ -20,26 +20,35 @@ import { CommonModule } from '@angular/common';
 export class App {
   protected readonly title = signal('Maw3ed');
   showChrome = true;
+  showFooter = true; // متغير جديد للتحكم في الفوتر بشكل مستقل
 
   constructor(public router: Router) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const url = event.urlAfterRedirects;
+        const cleanUrl = url.split('?')[0]; // تجاهل الـ Query Parameters لضمان دقة الشرط
         
-        // هنا نحدد كل البادئات (Prefixes) التي لا نريد ظهور الـ Navbar والـ Footer فيها
         const hiddenPrefixes = [
           '/auth', 
           '/doctor-dashboard', 
-          '/ai-pulse',            // صفحة الـ AI Chat
+          '/ai-pulse', 
           '/confirm-email', 
           '/api/auth/confirm-email',
-          '/api/auth/reset-password' , 
-          '/admin' ,
+          '/api/auth/reset-password', 
+          '/admin',
         ];
         
-        // إذا كان العنوان الحالي يبدأ بأي واحدة منها، سنجعل showChrome = false
+        // الـ Navbar والـ Footer يختفيان تماماً في الصفحات المحددة مسبقاً
         this.showChrome = !hiddenPrefixes.some(prefix => url.startsWith(prefix));
+
+        // هنا نحدد شروط إخفاء الفوتر فقط:
+        // يختفي لو كانت الصفحة الأساسية مش ظاهرة (showChrome = false) أو لو كان المستخدم في صفحة الشات
+        if (!this.showChrome || cleanUrl === '/chat') {
+          this.showFooter = false;
+        } else {
+          this.showFooter = true;
+        }
       });
   }
 }
