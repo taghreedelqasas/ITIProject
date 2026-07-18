@@ -43,17 +43,22 @@
             <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
 
               <!-- Patient -->
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-11 h-11 rounded-full bg-purple-100 text-[#53098D] flex justify-center items-center font-bold shrink-0">
-                    {{ patient.name.charAt(0) }}
-                  </div>
-                  <h3 class="font-bold text-gray-800">
-                    {{ patient.name }}
-                  </h3>
-                </div>
-              </td>
-
+           <!-- Patient -->
+<td class="px-6 py-4">
+  <div class="flex items-center gap-3">
+    <!-- تعديل الـ Avatar ليعرض الصورة الحقيقية أو أول حرف -->
+    <div class="w-11 h-11 rounded-full overflow-hidden bg-purple-100 text-[#53098D] flex justify-center items-center font-bold shrink-0">
+      @if (patient.imageUrl) {
+        <img [src]="baseUrl + patient.imageUrl" alt="patientImg" class="w-full h-full object-cover" />
+      } @else {
+        {{ patient.name.charAt(0) }}
+      }
+    </div>
+    <h3 class="font-bold text-gray-800">
+      {{ patient.name }}
+    </h3>
+  </div>
+</td>
               <!-- Gender -->
               <td class="px-6 py-4 text-[#8275A0]">
                 {{ patient.gender }}
@@ -146,29 +151,27 @@
 
                    </div>
         
-        <div class="flex  text-[#44116D]   py-3">
-             
-          <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100">
-  <img
-    src="/images/07e6a7d0f800af63c08479eb7c82b751205733d1.jpg"
-    alt="patientImg"
-    class="w-full h-full object-cover"
-  />
+      <div class="flex text-[#44116D] py-3">
+  <!-- تعديل الصورة في الـ Drawer لتصبح ديناميكية[cite: 8] -->
+  <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100 flex justify-center items-center font-bold shrink-0">
+    @if (selectedPatient?.imageUrl) {
+      <img
+        [src]="baseUrl + selectedPatient.imageUrl"
+        alt="patientImg"
+        class="w-full h-full object-cover"
+      />
+    } @else {
+      <span class="text-xl">{{ selectedPatient?.name?.charAt(0) }}</span>
+    }
+  </div>
+  
+  <div>
+    <h2 class="text-xl font-bold">
+      {{ selectedPatient.name }}
+    </h2>
+    <span class="text-[9px] text-gray-400">{{ selectedPatient.lastAppointment | date:'dd/MM/yyyy' }}</span>
+  </div>
 </div>
-            <div>
-               <h2 class=" text-xl font-bold">
-            {{ selectedPatient.name }}
-          </h2>
-
-          <span  class="test-[9px] text-gray-400">{{selectedPatient.lastAppointment}}</span>
-            </div>
-
-
-         
-
-        
-
-        </div>
 
       </div>
 
@@ -246,7 +249,7 @@
                <a
               class=" block       text-[#53098D] text-center  left-0     "
               target="_blank"
-              [href]="baseUrl + file.fileUrl">
+              [href]="file.fileUrl">
 <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M10.5 18.8359C13.5 12.1693 22.5 12.1693 25.5 18.8359" stroke="#44116D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M18 22.1719C17.6717 22.1719 17.3466 22.1072 17.0433 21.9816C16.74 21.8559 16.4644 21.6718 16.2322 21.4396C16.0001 21.2075 15.8159 20.9319 15.6903 20.6286C15.5647 20.3253 15.5 20.0002 15.5 19.6719C15.5 19.3436 15.5647 19.0185 15.6903 18.7152C15.8159 18.4119 16.0001 18.1363 16.2322 17.9041C16.4644 17.672 16.74 17.4878 17.0433 17.3622C17.3466 17.2365 17.6717 17.1719 18 17.1719C18.663 17.1719 19.2989 17.4353 19.7678 17.9041C20.2366 18.3729 20.5 19.0088 20.5 19.6719C20.5 20.3349 20.2366 20.9708 19.7678 21.4396C19.2989 21.9085 18.663 22.1719 18 22.1719Z" stroke="#44116D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

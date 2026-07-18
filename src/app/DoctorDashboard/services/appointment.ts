@@ -200,7 +200,9 @@ getAvailabilityById(id: number) {
           lastStatus: appt.status,
           gender: '—',
           age: 0,
-          phone: '—'
+          phone: '—' ,
+          imageUrl: appt.PatientImageUrl , 
+
         });
       }
     }

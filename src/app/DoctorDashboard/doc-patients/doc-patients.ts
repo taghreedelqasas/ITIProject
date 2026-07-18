@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../services/appointment';
 import { MedicalFileService } from '../../core/services/medicalFile.service';
+
 @Component({
   selector: 'app-doc-patients',
   standalone: true,
@@ -13,17 +14,19 @@ import { MedicalFileService } from '../../core/services/medicalFile.service';
 export class DocPatients implements OnInit {
   protected appointmentService = inject(AppointmentService);
   searchQuery = signal<string>('');
-selectedPatient:any=null;
-patientFiles=signal<any[]>([]);
+  selectedPatient: any = null;
+  patientFiles = signal<any[]>([]);
 
-baseUrl="https://mawed.runasp.net";
-drawerOpen=false;
+  baseUrl = "https://mawed.runasp.net"; //[cite: 17]
+  drawerOpen = false;
+
   ngOnInit(): void {
-    this.appointmentService.getDoctorAppointments(); 
-    console.log(this.appointmentService.getDoctorAppointments());// بدل getPatientsData القديمة
+    this.appointmentService.getDoctorAppointments(); //[cite: 17]
+    console.log(this.appointmentService.getDoctorAppointments()); //[cite: 17]
   }
-medicalFileService=inject(MedicalFileService);
-  // فلترة بالاسم بس دلوقتي (فلترة رقم التليفون اتشالت لأنه وهمي حاليًا)
+
+  medicalFileService = inject(MedicalFileService);
+
   filteredPatients = computed(() => {
     const list = this.appointmentService.uniquePatients();
     const query = this.searchQuery().trim().toLowerCase();
@@ -31,30 +34,49 @@ medicalFileService=inject(MedicalFileService);
     return list.filter(p => p.name.toLowerCase().includes(query));
   });
 
+  openPatient(patient: any) {
+    this.selectedPatient = patient;
+    console.log(this.selectedPatient);
+    this.drawerOpen = true;
 
-openPatient(patient:any){
+    this.medicalFileService
+      .getDoctorFiles(patient.id)
+      .subscribe({
+        next: (res) => {
+          // ===== معالجة وتنظيف الروابط هنا قبل ما تتبعت للـ HTML =====
+          const sanitizedFiles = res.map((file: any) => {
+            let finalUrl = file.fileUrl || '';
 
-this.selectedPatient=patient;
-console.log(this.selectedPatient)
-this.drawerOpen=true;
+            // إذا كان المسار نسبي يبدأ بـ /uploads ندمج مع الـ baseUrl
+            if (finalUrl.startsWith('/uploads')) {
+              finalUrl = this.baseUrl + finalUrl;
+            }
+            // إذا حصل تكرار للدومين بسبب دمج قديم خاطئ نقوم بتنظيفه
+            else if (finalUrl.includes('https://mawed.runasp.nethttps')) {
+              finalUrl = finalUrl.replace('https://mawed.runasp.nethttps//', 'https://');
+            }
 
-this.medicalFileService
-.getDoctorFiles(patient.id)
-.subscribe({
+            return {
+              ...file,
+              fileUrl: finalUrl // الرابط المعدّن والنظيف
+            };
+          });
 
-next:(res)=>{
+          this.patientFiles.set(sanitizedFiles);
+        }
+      });
+  }
 
-this.patientFiles.set(res);
+  closeDrawer() {
+    this.drawerOpen = false;
+  }
 
-}
-
-});
-
-}
-
-closeDrawer(){
-
-this.drawerOpen=false;
-
-}
+  // دالة مساعدة لو بتفتح الملفات بـ click وجوه الـ TS مباشرة
+  viewFile(fileUrl: string) {
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    } else {
+      alert('رابط الملف غير متاح');
+    }
+  }
 }
