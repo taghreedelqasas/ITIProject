@@ -83,20 +83,23 @@ export class Doctors implements OnInit {
   }
 
   // كود المابينج الخاص بك من جيت هاب بدون أي تغيير
-  private mapDoctor(d: ApiDoctor): Doctor {
-    const name =
-      d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
-    
-    return {
-      id: d.id,
-      name: name.startsWith('د.') ? name : `د. ${name}`,
-      specialty: (d.departmentName || d.specialty || 'طبيب عام') as string,
-      detail: d.consultationFee ? `الكشف - ${d.consultationFee} جنيه` : 'الكشف - غير محدد',
-      rating: d.rating ?? 5, 
-      image: d.imageProfile ? d.imageProfile : FALLBACK_IMAGE,
-      isFavorite: false,
-    };
-  }
+private mapDoctor(d: ApiDoctor): Doctor {
+  const name =
+    d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
+  
+  // التعديل الجديد: التحقق من أن الصورة ليست null وليست نصاً فارغاً
+  const hasImage = d.imageProfile && d.imageProfile.trim() !== '';
+
+  return {
+    id: d.id,
+    name: name.startsWith('د.') ? name : `د. ${name}`,
+    specialty: (d.departmentName || d.specialty || 'طبيب عام') as string,
+    detail: d.consultationFee ? `الكشف - ${d.consultationFee} جنيه` : 'الكشف - غير محدد',
+    rating: d.rating ?? 5, 
+    image: hasImage ? d.imageProfile! : FALLBACK_IMAGE, // حماية كاملة هنا
+    isFavorite: false,
+  };
+}
 
   // الدالة بعد تعديلها بالكامل لتنفيذ الفلترة في الفرونت إند
   private fetchDoctors(): void {

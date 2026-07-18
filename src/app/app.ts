@@ -44,11 +44,13 @@ export class App {
 
         // هنا نحدد شروط إخفاء الفوتر فقط:
         // يختفي لو كانت الصفحة الأساسية مش ظاهرة (showChrome = false) أو لو كان المستخدم في صفحة الشات
-        if (!this.showChrome || cleanUrl === '/chat') {
-          this.showFooter = false;
-        } else {
-          this.showFooter = true;
-        }
+    // هنا نحدد شروط إخفاء الفوتر فقط:
+// يختفي لو كانت الصفحة الأساسية مش ظاهرة، أو في صفحة الشات، أو في صفحة بروفايل الدكتور
+if (!this.showChrome || cleanUrl === '/chat' || cleanUrl.startsWith('/doctor/')) {
+  this.showFooter = false;
+} else {
+  this.showFooter = true;
+}
       });
   }
 }

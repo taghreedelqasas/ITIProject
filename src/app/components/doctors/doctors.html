@@ -142,11 +142,19 @@
       <span class="text-slate-400 text-base font-normal">({{ totalDoctorsLabel }})</span>
     </h2>
 
-    <div *ngIf="isLoading" class="text-center text-slate-400 py-10">جاري تحميل الأطباء...</div>
-    <div *ngIf="errorMessage && !isLoading" class="text-center text-red-500 font-semibold py-10">
+<!-- ===================== 🔄 Loading Spinner ===================== -->
+<div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20 gap-4">
+  <!-- الـ Spinner المتحرك -->
+  <div class="relative w-16 h-16">
+    <div class="w-16 h-16 rounded-full border-4 border-slate-200 border-t-[#3a1560] animate-spin"></div>
+    <div class="absolute inset-2 w-12 h-12 rounded-full border-4 border-transparent border-b-[#23e0e0] animate-spin-reverse"></div>
+  </div>
+  <!-- نص التحميل -->
+  <p class="text-slate-500 font-bold text-lg animate-pulse">جاري تحميل الأطباء...</p>
+</div>    <div *ngIf="errorMessage && !isLoading" class="text-center text-red-500 font-semibold py-10">
       {{ errorMessage }}
     </div>
-    <div
+    <div  
       *ngIf="!isLoading && !errorMessage && doctors.length === 0"
       class="text-center text-slate-400 py-10"
     >

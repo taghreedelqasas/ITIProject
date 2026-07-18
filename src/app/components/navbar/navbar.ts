@@ -56,7 +56,7 @@ getProfile() {
 
 // 2. دالة getter اختيارية لتبسيط القراءة في الـ HTML ومراعاة الصورة الافتراضية إذا لم يرفع صورة بعد
 getUserAvatar(): string {
-  return this.userData.profilePictureUrl || '/images/22.jpg'; // إذا لم تكن هناك صورة حقيقية، تظهر الصورة الافتراضية 22.jpg
+  return this.userData.profilePictureUrl ; // إذا لم تكن هناك صورة حقيقية، تظهر الصورة الافتراضية 22.jpg
 }
   ngOnInit(): void {
    if (this.authService.isLoggedIn()) {
