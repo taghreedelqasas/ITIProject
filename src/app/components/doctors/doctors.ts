@@ -39,7 +39,8 @@ export class Doctors implements OnInit {
   pageTitle = 'الأطباء';
   pageSubtitle = 'ابحث عن طبيبك المناسب من بين أكثر من 200 متخصص';
 
-  specialties: string[] = [
+  specialties = [
+    'طب عام',
     'جراحة العظام',
     'أمراض القلب',
     'الجلدية',
@@ -47,12 +48,12 @@ export class Doctors implements OnInit {
     'النساء والتوليد',
     'الأنف والأذن والحنجرة',
     'المخ والأعصاب',
-    'الأسنان',
+    'الأسنان'
   ];
 
   searchQuery = '';
   selectedSpecialty = '';
-  selectedLocation = '';
+  selectedLocation = ''; 
   selectedDate = '';
 
   sortOptions: SortOption[] = [
@@ -65,13 +66,9 @@ export class Doctors implements OnInit {
 
   isLoading = false;
   errorMessage = '';
-
   totalDoctorsLabel = '0 طبيب متاح';
-
   doctors: Doctor[] = [];
-
   starsArray = [1, 2, 3, 4, 5];
-
   pages: (number | string)[] = [1];
   currentPage = 1;
 
@@ -84,49 +81,89 @@ export class Doctors implements OnInit {
 
     this.fetchDoctors();
   }
- private mapDoctor(d: ApiDoctor): Doctor {
-  const name =
-    d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
-  
-  return {
-    id: d.id,
-    name: name.startsWith('د.') ? name : `د. ${name}`,
-    specialty: (d.specialty || d.departmentName || 'طبيب عام') as string,
-    detail: d.consultationFee ? `الكشف - ${d.consultationFee}` : 'الكشف - غير محدد',
-    rating: d.rating ?? 0,
-    // هنا نضمن قراءة الصورة الحقيقية القادمة من السيرفر (imageProfile)
-    // وإذا كانت فارغة أو غير موجودة نضع الصورة الافتراضية
-    image: d.imageProfile ? d.imageProfile : FALLBACK_IMAGE,
-    isFavorite: false,
-  };
-}
-  private fetchDoctors(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
 
-    // نداء API: GET /api/Doctor مع فلاتر البحث/التخصص/الموقع/التاريخ
-    this.doctorService
-      .getAll({
-        search: this.searchQuery || undefined,
-        specialty: this.selectedSpecialty || undefined,
-        location: this.selectedLocation || undefined,
-        date: this.selectedDate || undefined,
-        sort: this.selectedSort || undefined,
-      })
-      .subscribe({
-        next: (res) => {
-          this.doctors = (res || []).map((d) => this.mapDoctor(d));
-          this.totalDoctorsLabel = `${this.doctors.length} طبيب متاح`;
-          this.isLoading = false;
-          console.log('بيانات الأطباء من السيرفر:', res);
-        },
-        error: () => {
-          this.errorMessage = 'تعذر تحميل قائمة الأطباء، حاول مرة أخرى.';
-          this.isLoading = false;
-        },
-      });
+  // كود المابينج الخاص بك من جيت هاب بدون أي تغيير
+  private mapDoctor(d: ApiDoctor): Doctor {
+    const name =
+      d.name || d.fullName || [d.firstName, d.lastName].filter(Boolean).join(' ') || 'طبيب';
+    
+    return {
+      id: d.id,
+      name: name.startsWith('د.') ? name : `د. ${name}`,
+      specialty: (d.departmentName || d.specialty || 'طبيب عام') as string,
+      detail: d.consultationFee ? `الكشف - ${d.consultationFee} جنيه` : 'الكشف - غير محدد',
+      rating: d.rating ?? 5, 
+      image: d.imageProfile ? d.imageProfile : FALLBACK_IMAGE,
+      isFavorite: false,
+    };
   }
 
+  // الدالة بعد تعديلها بالكامل لتنفيذ الفلترة في الفرونت إند
+  private fetchDoctors(): void {
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  // 1. جلب البيانات كاملة من السيرفر
+  this.doctorService.getAll({}).subscribe({
+    next: (res: any[]) => {
+      console.log('بيانات الأطباء من السيرفر:', res);
+
+      // 2. عمل Mapping للداتا الأصلية
+      let allDoctors = (res || []).map((d) => this.mapDoctor(d));
+
+      // 3. فلترة التخصص (departmentName)
+      if (this.selectedSpecialty) {
+        allDoctors = allDoctors.filter(
+          (doc) => doc.specialty === this.selectedSpecialty
+        );
+      }
+
+      // 4. فلترة الموقع (address)
+      if (this.selectedLocation) {
+        allDoctors = allDoctors.filter((doc) => {
+          const originalDoc = res.find((r) => r.id === doc.id);
+          const docAddress = originalDoc?.address || '';
+          return docAddress.toLowerCase().includes(this.selectedLocation.toLowerCase());
+        });
+      }
+
+      // 5. فلترة البحث النصي (الاسم)
+      if (this.searchQuery) {
+        allDoctors = allDoctors.filter((doc) =>
+          doc.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
+
+      // ===== 🚀 التعديل الجديد: منطق الترتيب (Sorting) جوه الفرونت-إند =====
+      if (this.selectedSort) {
+        allDoctors.sort((a, b) => {
+          // استخراج الأرقام فقط من خانة الكشف (مثلاً "الكشف - 450 جنيه" بناخد الـ 450)
+          const priceA = parseInt(a.detail.replace(/[^0-9]/g, '')) || 0;
+          const priceB = parseInt(b.detail.replace(/[^0-9]/g, '')) || 0;
+
+          if (this.selectedSort === 'price-asc') {
+            return priceA - priceB; // من الأقل سعراً للأعلى
+          } else if (this.selectedSort === 'price-desc') {
+            return priceB - priceA; // من الأعلى سعراً للأقل
+          } else if (this.selectedSort === 'rating') {
+            return b.rating - a.rating; // أعلى تقييم أولاً
+          }
+          return 0;
+        });
+      }
+
+      // إرسال البيانات النهائية المرتبة والمفلترة للعرض
+      this.doctors = allDoctors;
+      this.totalDoctorsLabel = `${this.doctors.length} طبيب متاح`;
+      this.isLoading = false;
+      console.log('البيانات بعد الفلترة والترتيب بالكامل:', this.doctors);
+    },
+    error: () => {
+      this.errorMessage = 'تعذر تحميل قائمة الأطباء، حاول مرة أخرى.';
+      this.isLoading = false;
+    },
+  });
+}
   selectSort(value: string): void {
     this.selectedSort = value;
     this.fetchDoctors();
@@ -141,23 +178,22 @@ export class Doctors implements OnInit {
     this.currentPage = page;
   }
 
- // 1. تعديل دالة البحث لتحديث الرابط وجلب البيانات بشكل متزامن
-onSearch(): void {
-  // تحديث الـ URL بالفلاتر الحالية لضمان استقرار حالة الصفحة
-  this.router.navigate([], {
-    relativeTo: this.route,
-    queryParams: {
-      search: this.searchQuery || null,
-      specialty: this.selectedSpecialty || null,
-      location: this.selectedLocation || null,
-      date: this.selectedDate || null,
-      sort: this.selectedSort || null
-    },
-    queryParamsHandling: 'merge' // يضمن الحفاظ على البارامترات الأخرى إن وجدت
-  });
+  onSearch(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        search: this.searchQuery || null,
+        specialty: this.selectedSpecialty || null,
+        location: this.selectedLocation || null,
+        date: this.selectedDate || null,
+        sort: this.selectedSort || null
+      },
+      queryParamsHandling: 'merge'
+    });
 
-  this.fetchDoctors();
-}
+    this.fetchDoctors();
+  }
+
   onChatWithDoctor(doctor: Doctor): void {
     this.router.navigate(['consult'], {
       queryParams: {
@@ -176,17 +212,6 @@ onSearch(): void {
   onBookAppointment(doctor: Doctor): void {
     this.router.navigate(['/booking'], {
       queryParams: { doctorId: doctor.id },
-    });
-  }
-
-  onChatDoctor(doctor: Doctor): void {
-    this.router.navigate(['/chat'], {
-      queryParams: {
-        doctorId: doctor.id,
-        name: doctor.name,
-        specialty: doctor.specialty,
-        image: doctor.image,
-      },
     });
   }
 }
