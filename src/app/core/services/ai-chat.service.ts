@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -14,23 +14,39 @@ export class AiChatService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/api/Chat`;
 
-  sendMessage(message: string): Observable<any> {
-    return this.http.post(this.baseUrl, { message });
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token'); 
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
   }
 
-  analyzePdf(file: File): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post(`${this.baseUrl}/analyze-pdf`, formData);
+  // تعديل الدالة لتستقبل الـ payload الكامل (الرسالة + الـ sessionId)
+  sendMessage(payload: { message: string; sessionId: string | null }): Observable<any> {
+    return this.http.post(this.baseUrl, payload, { headers: this.getAuthHeaders() });
   }
 
-  analyzeImage(file: File): Observable<any> {
+  // تعديل لتمرير الـ sessionId مع الـ PDF لو موجود
+  analyzePdf(file: File, sessionId: string | null): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.baseUrl}/analyze-image`, formData);
+    if (sessionId) {
+      formData.append('sessionId', sessionId);
+    }
+    return this.http.post(`${this.baseUrl}/analyze-pdf`, formData, { headers: this.getAuthHeaders() });
+  }
+
+  // تعديل لتمرير الـ sessionId مع الصورة لو موجود
+  analyzeImage(file: File, sessionId: string | null): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (sessionId) {
+      formData.append('sessionId', sessionId);
+    }
+    return this.http.post(`${this.baseUrl}/analyze-image`, formData, { headers: this.getAuthHeaders() });
   }
 
   getHistory(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/history`);
+    return this.http.get<any[]>(`${this.baseUrl}/history`, { headers: this.getAuthHeaders() });
   }
 }

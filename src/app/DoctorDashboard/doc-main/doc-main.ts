@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../services/appointment';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-doc-main',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './doc-main.html',
   styleUrl: './doc-main.css'
 })

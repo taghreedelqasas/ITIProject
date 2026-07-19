@@ -82,7 +82,7 @@ setStatusFilter(status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | nu
 
 filteredAppointments = computed(() => {
   const filter = this.activeStatusFilter();
-  const all = this.todayAppointments();
+  const all = this.todayAndFutureAppointments(); // تم التغيير هنا لتأخذ المواعيد الحالية والمستقبلية
   return filter ? all.filter(app => app.status === filter) : all;
 });
 
@@ -348,13 +348,17 @@ formatDateHeader(date: string) {
 }
 
 
-  todayAppointments() {
-    const today = new Date().toDateString();
-    return this.dashboardService.appointments().filter(
-      a => new Date(a.slotStart).toDateString() === today
-    );
-  }
+ todayAndFutureAppointments() {
+  const now = new Date();
+  
+  // ضبط الوقت على بداية اليوم الحالي (الساعة 12 بالليل) عشان نضمن ظهور مواعيد اليوم بالكامل والمستقبل
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+  return this.dashboardService.appointments().filter(a => {
+    const appDate = new Date(a.slotStart);
+    return appDate >= startOfToday; // يعرض مواعيد اليوم والمواعيد القادمة، ويستبعد أي يوم قديم
+  });
+}
 
   async markAsCompleted(app: any) {
 
