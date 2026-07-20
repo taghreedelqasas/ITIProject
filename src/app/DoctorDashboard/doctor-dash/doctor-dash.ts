@@ -18,6 +18,13 @@ export class DoctorDash implements OnInit {
 
 private router = inject(Router);
 
+
+isChatRoute(): boolean {
+    return  this.router.url.includes('/chat'); 
+    // ملحوظة: غيري الكلمات ('/chat' أو '/consultations') بناءً على اسم الـ route الحقيقي لشات الدكتور عندك
+  }
+
+
 onLogout(event: Event): void {
   event.preventDefault(); // يمنع الـ <a> من التنقل فورًا لـ "/"
 
