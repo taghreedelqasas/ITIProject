@@ -151,6 +151,7 @@ export interface ConversationApi {
   id: number;
   patientId: number;
   patientName: string;
+  patientImage: string | null;
   lastMessage: string | null;
   lastMessageAt: string | null;
   unreadCount: number;

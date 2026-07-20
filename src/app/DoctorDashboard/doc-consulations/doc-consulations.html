@@ -9,8 +9,7 @@
     @for (item of appointmentService.conversations(); track item.id) {
       <a
         routerLink="chat"
-        [queryParams]="{conversationId: item.id, patientId: item.patientId, name: item.patientName}"
-        class="group relative bg-white border border-gray-100 rounded-2xl p-5 cursor-pointer hover:shadow-lg hover:border-purple-200 hover:-translate-y-0.5 transition-all duration-200 flex flex-col items-center text-center gap-3"
+[queryParams]="{conversationId: item.id, patientId: item.patientId, name: item.patientName, image: item.patientImage}"        class="group relative bg-white border border-gray-100 rounded-2xl p-5 cursor-pointer hover:shadow-lg hover:border-purple-200 hover:-translate-y-0.5 transition-all duration-200 flex flex-col items-center text-center gap-3"
       >
         @if (item.unreadCount > 0) {
           <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold rounded-full px-2 py-0.5">
@@ -18,9 +17,13 @@
           </span>
         }
 
-        <div class="w-14 h-14 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xl group-hover:bg-purple-200 transition-colors">
-          {{ item.patientName ? item.patientName[0] : 'م' }}
-        </div>
+       <div class="w-14 h-14 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xl group-hover:bg-purple-200 transition-colors overflow-hidden">
+  @if (item.patientImage) {
+    <img [src]="item.patientImage" alt="صورة المريض" class="w-full h-full object-cover" />
+  } @else {
+    {{ item.patientName ? item.patientName[0] : 'م' }}
+  }
+</div>
 
         <div class="flex-1 min-w-0 w-full">
           <h4 class="text-sm font-bold text-gray-800 truncate group-hover:text-[#53098D] transition-colors">

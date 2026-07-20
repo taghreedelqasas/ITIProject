@@ -33,8 +33,12 @@
     <div class="flex items-center gap-3">
       <div class="relative shrink-0">
         @if (isDoctor) {
-          <div class="w-11 h-11 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-lg">
-            {{ otherParty.name[0] }}
+          <div class="w-11 h-11 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-lg overflow-hidden">
+            @if (otherParty.image) {
+              <img [src]="otherParty.image.startsWith('http') ? otherParty.image : 'https://mawed.runasp.net' + otherParty.image" [alt]="otherParty.name" class="w-full h-full object-cover" />
+            } @else {
+              {{ otherParty.name ? otherParty.name[0] : 'م' }}
+            }
           </div>
         } @else {
           <img [src]="doctorInfo.image" [alt]="doctorInfo.name" class="w-11 h-11 rounded-full object-cover" />
@@ -94,8 +98,12 @@
             <span class="block text-slate-400 text-[11px] mt-2">{{ msg.time }}</span>
           </div>
           @if (isDoctor) {
-            <div class="w-8 h-8 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xs shrink-0">
-              {{ otherParty.name[0] }}
+            <div class="w-8 h-8 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
+              @if (otherParty.image) {
+                <img [src]="otherParty.image.startsWith('http') ? otherParty.image : 'https://mawed.runasp.net' + otherParty.image" [alt]="otherParty.name" class="w-full h-full object-cover" />
+              } @else {
+                {{ otherParty.name ? otherParty.name[0] : 'م' }}
+              }
             </div>
           } @else {
             <img [src]="doctorInfo.image" [alt]="doctorInfo.name" class="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -148,8 +156,12 @@
           <span class="w-1.5 h-1.5 bg-slate-400 rounded-full typing-dot"></span>
         </div>
         @if (isDoctor) {
-          <div class="w-8 h-8 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xs shrink-0">
-            {{ otherParty.name[0] }}
+          <div class="w-8 h-8 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
+            @if (otherParty.image) {
+              <img [src]="otherParty.image.startsWith('http') ? otherParty.image : 'https://mawed.runasp.net' + otherParty.image" [alt]="otherParty.name" class="w-full h-full object-cover" />
+            } @else {
+              {{ otherParty.name ? otherParty.name[0] : 'م' }}
+            }
           </div>
         } @else {
           <img [src]="doctorInfo.image" [alt]="doctorInfo.name" class="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -161,20 +173,20 @@
   </div>
 
   <!-- Quick actions (patient only) -->
- <!-- Quick actions (patient only) -->
-@if (!isDoctor && quickActions.length > 0) {
-  <div class="px-4 md:px-10 pb-3">
-    <div class="max-w-4xl mx-auto flex items-center justify-end gap-3 overflow-x-auto">
-      <button
-        *ngFor="let action of quickActions"
-        (click)="onQuickAction(action)"
-        class="whitespace-nowrap bg-white border border-slate-200 text-[#3a1560] text-sm font-bold rounded-full px-5 py-2.5 hover:bg-purple-50 transition-colors shrink-0"
-      >
-        {{ action.label }}
-      </button>
+  @if (!isDoctor && quickActions.length > 0) {
+    <div class="px-4 md:px-10 pb-3">
+      <div class="max-w-4xl mx-auto flex items-center justify-end gap-3 overflow-x-auto">
+        <button
+          *ngFor="let action of quickActions"
+          (click)="onQuickAction(action)"
+          class="whitespace-nowrap bg-white border border-slate-200 text-[#3a1560] text-sm font-bold rounded-full px-5 py-2.5 hover:bg-purple-50 transition-colors shrink-0"
+        >
+          {{ action.label }}
+        </button>
+      </div>
     </div>
-  </div>
-}
+  }
+
   <!-- Input bar -->
   <div class="bg-white border-t border-slate-100 px-4 md:px-10 py-4">
     <div class="max-w-4xl mx-auto flex items-center gap-3">
