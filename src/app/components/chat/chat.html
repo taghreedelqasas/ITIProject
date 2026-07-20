@@ -77,11 +77,16 @@
       </div>
 
       <ng-container *ngFor="let msg of messages()">
-        <!-- Doctor message (received by patient, or sent by doctor) -->
-        <div *ngIf="msg.sender === 'doctor'" class="flex items-end justify-end gap-2.5">
+        
+        <!-- 1️⃣ رسائل الطرف الآخر (تظهر على الشمال باللون الرمادي وبجوارها صورته) -->
+        <!-- تظهر هنا لو أنا (دكتور) والرسالة جاية من (مريض)، أو لو أنا (مريض) والرسالة جاية من (دكتور) -->
+        <div *ngIf="(isDoctor && msg.sender === 'patient') || (!isDoctor && msg.sender === 'doctor')" class="flex items-end justify-end gap-2.5">
           <div class="max-w-[75%] md:max-w-[65%] bg-slate-100 rounded-2xl rounded-tl-none px-5 py-3.5">
-            <p class="text-slate-700 text-sm md:text-base leading-relaxed">{{ msg.text }}</p>
+            
+            <!-- لو الرسالة نصية -->
+            <p *ngIf="msg.type === 'text'" class="text-slate-700 text-sm md:text-base leading-relaxed">{{ msg.text }}</p>
 
+            <!-- لو الرسالة ملف -->
             <div *ngIf="msg.type === 'file' && msg.fileName" class="flex items-center justify-between gap-3 bg-white rounded-xl px-4 py-3 mb-2 mt-2">
               <div class="text-right">
                 <p class="text-slate-700 text-sm font-bold truncate max-w-[180px]">{{ msg.fileName }}</p>
@@ -97,6 +102,8 @@
 
             <span class="block text-slate-400 text-[11px] mt-2">{{ msg.time }}</span>
           </div>
+
+          <!-- صورة الطرف الآخر المتحدث -->
           @if (isDoctor) {
             <div class="w-8 h-8 rounded-full bg-purple-100 text-[#53098D] flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
               @if (otherParty.image) {
@@ -110,23 +117,16 @@
           }
         </div>
 
-        <!-- Patient message (text) -->
-        <div *ngIf="msg.sender === 'patient' && msg.type === 'text'" class="flex justify-start">
+        <!-- 2️⃣ رسائلي أنا الشخصية الصادرة (تظهر على اليمين باللون البنفسجي) -->
+        <!-- تظهر هنا لو أنا (دكتور) والرسالة من (دكتور)، أو لو أنا (مريض) والرسالة من (مريض) -->
+        <div *ngIf="(isDoctor && msg.sender === 'doctor') || (!isDoctor && msg.sender === 'patient')" class="flex justify-start">
           <div class="max-w-[75%] md:max-w-[65%] bg-[#3a1560] rounded-2xl rounded-tr-none px-5 py-3.5">
-            <p class="text-white text-sm md:text-base leading-relaxed">{{ msg.text }}</p>
-            <div class="flex items-center gap-1.5 mt-2">
-              <svg *ngIf="msg.read" class="w-3.5 h-3.5 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2 12l5 5L18 6M9 17l1 1L21 7" />
-              </svg>
-              <span class="text-purple-200 text-[11px]">{{ msg.time }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Patient message (file) -->
-        <div *ngIf="msg.sender === 'patient' && msg.type === 'file'" class="flex justify-start">
-          <div class="max-w-[75%] md:max-w-[65%] bg-[#3a1560] rounded-2xl rounded-tr-none px-5 py-4">
-            <div class="flex items-center justify-between gap-3 bg-white/10 rounded-xl px-4 py-3 mb-3">
+            
+            <!-- لو الرسالة نصية -->
+            <p *ngIf="msg.type === 'text'" class="text-white text-sm md:text-base leading-relaxed">{{ msg.text }}</p>
+            
+            <!-- لو الرسالة ملف -->
+            <div *ngIf="msg.type === 'file'" class="flex items-center justify-between gap-3 bg-white/10 rounded-xl px-4 py-3 mb-3">
               <div class="text-right">
                 <p class="text-white text-sm font-bold truncate max-w-[180px]">{{ msg.fileName }}</p>
                 <p class="text-purple-200 text-xs mt-0.5">{{ msg.fileSize }}</p>
@@ -137,7 +137,8 @@
                 </svg>
               </span>
             </div>
-            <p *ngIf="msg.fileNote" class="text-white text-sm leading-relaxed">{{ msg.fileNote }}</p>
+            <p *ngIf="msg.type === 'file' && msg.fileNote" class="text-white text-sm leading-relaxed">{{ msg.fileNote }}</p>
+
             <div class="flex items-center gap-1.5 mt-2">
               <svg *ngIf="msg.read" class="w-3.5 h-3.5 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2 12l5 5L18 6M9 17l1 1L21 7" />
@@ -148,7 +149,7 @@
         </div>
       </ng-container>
 
-      <!-- Typing indicator -->
+      <!-- Typing indicator (مؤشر الكتابة للطرف الآخر) -->
       <div *ngIf="isTyping()" class="flex items-end justify-end gap-2.5">
         <div class="bg-slate-100 rounded-2xl rounded-tl-none px-5 py-3.5 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 bg-slate-400 rounded-full typing-dot"></span>
