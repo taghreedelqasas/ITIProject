@@ -90,17 +90,42 @@ export class RegisterComponent implements OnInit {
 
     const payload = { ...basicInfo, ssn: '00000000000000' };
 
-    this.authService.register(payload).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/auth/confirm-email-notice'], { queryParams: { email } });
-      },
-      error: (err) => {
-        this.isLoading = false;
-        // السيرفر بيبعت الإيميل فعلياً حتى لو رجّع 400، فبنكمل الـ flow عادي
-        this.router.navigate(['/auth/confirm-email-notice'], { queryParams: { email } });
-        this.apiError = err?.error?.message || '';
-      }
-    });
+   this.authService.register(payload).subscribe({
+  next: () => {
+    this.isLoading = false;
+    this.router.navigate(['/auth/confirm-email-notice'], { queryParams: { email } });
+  },
+  error: (err) => {
+    this.isLoading = false;
+    
+    // استخراج الرسالة من array
+    let errorMessage = '';
+    if (Array.isArray(err.error)) {
+      errorMessage = err.error[0] || '';
+    } else if (typeof err.error === 'string') {
+      errorMessage = err.error;
+    } else {
+      errorMessage = err?.error?.message || err?.message || '';
+    }
+    
+    this.apiError = errorMessage;
+    
+    // التحقق من الـ duplicate
+    const isDuplicateEmail = err.status === 400 && 
+                            Array.isArray(err.error) && 
+                            err.error.length > 0 &&
+                            err.error[0] === 'Email is already registered.';
+    
+    // منع الانتقال لو duplicate
+    if (!isDuplicateEmail) {
+      this.router.navigate(['/auth/confirm-email-notice'], { queryParams: { email } });
+    }
+    // لو duplicate، متنتقلش وخالص
+  }
+});
+
+
+
+    
   }
 }
