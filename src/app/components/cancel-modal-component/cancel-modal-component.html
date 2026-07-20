@@ -10,18 +10,9 @@
 
     <h3 class="modal-title">إلغاء الموعد</h3>
 
-    <p class="modal-text">
-      متأكدة إنك عايزة تلغي الموعد
-      @if (appointment.doctorName) {
-        مع <strong>{{ appointment.doctorName }}</strong>
-      }
-      @if (appointment.slotStart) {
-        بتاريخ <strong>{{ appointment.slotStart | date: 'd MMM y - h:mm a' }}</strong>؟
-      } @else {
-        ؟
-      }
-      مش هتقدري ترجعي فيه بعد كده.
-    </p>
+  <p class="modal-text">
+  هل  تريد إلغاء الموعد؟
+</p>
 
     @if (errorMsg()) {
       <p class="modal-error">{{ errorMsg() }}</p>

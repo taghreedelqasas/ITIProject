@@ -288,27 +288,39 @@ export class MedicalHistory implements OnInit {
     return 'PDF';
   }
 
+fileToDelete: MedicalFileItem | null = null;
+
   deleteFile(file: MedicalFileItem) {
-    if (!confirm('متأكد من حذف الملف؟')) return;
+    this.fileToDelete = file;
+  }
+
+  cancelDeleteFile() {
+    this.fileToDelete = null;
+  }
+
+  confirmDeleteFile() {
+    if (!this.fileToDelete) return;
+    const file = this.fileToDelete;
 
     this.medicalService.delete(file.id).subscribe({
       next: () => {
         this.files = this.files.filter(x => x.id !== file.id);
         this.loadSummary();
-        this.cdr.detectChanges(); 
+        this.fileToDelete = null;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         if (err.status === 200 || err.status === 204 || err.statusText === 'OK') {
           this.files = this.files.filter(x => x.id !== file.id);
           this.loadSummary();
-          this.cdr.detectChanges();
         } else {
           alert('حدث خطأ أثناء حذف الملف');
         }
+        this.fileToDelete = null;
+        this.cdr.detectChanges();
       }
     });
   }
-
   // ===== دالة العرض أصبحت تفتح الرابط النظيف بعد معالجته فوراً =====
   viewFile(file: MedicalFileItem) {
     if (file && file.fileUrl) {

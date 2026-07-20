@@ -24,18 +24,27 @@
     } @else {
       <!-- المواعيد القادمة -->
       <div class="section">
-        <button type="button" class="section-header" (click)="toggleUpcoming()">
-          <span class="chevron" [class.chevron--open]="expandedUpcoming()">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 10L8 6L12 10" stroke="#44116D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <div class="header-title-container">
-            <span class="status-dot status-dot--upcoming"></span>
-            <span class="section-title">المواعيد القادمة</span>
-            <span class="section-count">{{ upcoming().length }}</span>
-          </div>
-        </button>
+  <button type="button" class="section-header" (click)="toggleUpcoming()">
+
+  <div class="header-title-container">
+    <span class="status-dot status-dot--upcoming"></span>
+    <span class="section-title">المواعيد القادمة</span>
+    <span class="section-count">{{ upcoming().length }}</span>
+  </div>
+
+  <span class="chevron" [class.chevron--open]="expandedUpcoming()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path
+        d="M4 10L8 6L12 10"
+        stroke="#44116D"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+
+</button>
 
         @if (expandedUpcoming()) {
           @if (upcoming().length === 0) {
@@ -142,18 +151,27 @@
 
       <!-- المواعيد السابقة -->
       <div class="section">
-        <button type="button" class="section-header" (click)="togglePast()">
-          <span class="chevron" [class.chevron--open]="expandedPast()">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 10L8 6L12 10" stroke="#44116D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <div class="header-title-container">
-            <span class="status-dot status-dot--past"></span>
-            <span class="section-title">المواعيد السابقة</span>
-            <span class="section-count section-count--past">{{ past().length }}</span>
-          </div>
-        </button>
+<button type="button" class="section-header" (click)="togglePast()">
+
+  <div class="header-title-container">
+    <span class="status-dot status-dot--past"></span>
+    <span class="section-title">المواعيد السابقة</span>
+    <span class="section-count section-count--past">{{ past().length }}</span>
+  </div>
+
+  <span class="chevron" [class.chevron--open]="expandedPast()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path
+        d="M4 10L8 6L12 10"
+        stroke="#44116D"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+
+</button>
 
         @if (expandedPast()) {
           @if (past().length === 0) {

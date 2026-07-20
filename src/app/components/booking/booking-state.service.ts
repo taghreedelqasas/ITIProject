@@ -4,6 +4,7 @@ import { DoctorService } from '../../core/services/doctor.service';
 import { DoctorAvailabilityService } from '../../core/services/doctor-availability.service';
 import { AppointmentService } from '../../core/services/appointment.service';
 import { PaymentService } from '../../core/services/payment.service';
+import { ReviewService } from '../../core/services/review.service';
 import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
 import { DoctorAvailability } from '../../core/models/availability.model';
 
@@ -154,7 +155,9 @@ export class BookingStateService {
     private doctorService: DoctorService,
     private availabilityService: DoctorAvailabilityService,
     private appointmentService: AppointmentService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private reviewService: ReviewService
+
   ) {
     this.restore();
   }
@@ -225,6 +228,8 @@ export class BookingStateService {
       this.save();
       this.loadDoctor(this.doctorId);
       this.loadAvailability(this.doctorId);
+      this.loadRatingDistribution(this.doctorId);
+
     } else if (!rebookDoctorName) {
       this.doctorLoaded.set(true);
       this.errorMessage.set('لم يتم اختيار طبيب. الرجاء العودة واختيار طبيب أولاً.');
@@ -256,7 +261,20 @@ export class BookingStateService {
       },
     });
   }
-
+private loadRatingDistribution(doctorId: number): void {
+  this.reviewService.getDistribution(doctorId).subscribe({
+    next: (res: any) => {
+      const dist = res?.data ?? res;
+      if (!dist || typeof dist !== 'object') return;
+      this.doctor.update((doc) => ({
+        ...doc,
+        rating: dist.averageRating ?? doc.rating,
+        reviewsCount: dist.totalReviews ?? doc.reviewsCount,
+      }));
+    },
+    error: () => {},
+  });
+}
   private loadAvailability(doctorId: number): void {
     this.isLoading.set(true);
     this.availabilityService.getAvailableByDoctor(doctorId).subscribe({

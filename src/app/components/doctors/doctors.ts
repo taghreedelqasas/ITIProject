@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DoctorService } from '../../core/services/doctor.service';
 import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
+import { ReviewService } from '../../core/services/review.service';
 
 interface Doctor {
   id: number;
@@ -34,6 +35,7 @@ export class Doctors implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private doctorService: DoctorService,
+    private reviewService: ReviewService
   ) {}
 
   pageTitle = 'الأطباء';
@@ -95,7 +97,7 @@ private mapDoctor(d: ApiDoctor): Doctor {
     name: name.startsWith('د.') ? name : `د. ${name}`,
     specialty: (d.departmentName || d.specialty || 'طبيب عام') as string,
     detail: d.consultationFee ? `الكشف - ${d.consultationFee} جنيه` : 'الكشف - غير محدد',
-    rating: d.rating ?? 5, 
+    rating: d.rating ?? 0,
     image: hasImage ? d.imageProfile! : FALLBACK_IMAGE, // حماية كاملة هنا
     isFavorite: false,
   };
@@ -113,6 +115,7 @@ private mapDoctor(d: ApiDoctor): Doctor {
 
       // 2. عمل Mapping للداتا الأصلية
       let allDoctors = (res || []).map((d) => this.mapDoctor(d));
+      this.enrichWithRealRatings(allDoctors);
 
       // 3. فلترة التخصص (departmentName)
       if (this.selectedSpecialty) {
@@ -217,4 +220,17 @@ private mapDoctor(d: ApiDoctor): Doctor {
       queryParams: { doctorId: doctor.id },
     });
   }
+  private enrichWithRealRatings(doctors: Doctor[]): void {
+  doctors.forEach((doc) => {
+    this.reviewService.getDistribution(doc.id).subscribe({
+      next: (res: any) => {
+        const dist = res?.data ?? res;
+        if (dist && typeof dist === 'object' && dist.averageRating != null) {
+          doc.rating = dist.averageRating;
+        }
+      },
+      error: () => {},
+    });
+  });
+}
 }
