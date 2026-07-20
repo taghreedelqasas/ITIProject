@@ -66,6 +66,8 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
 
     const conversationIdParam = params.get('conversationId');
     this.conversationId = conversationIdParam ? Number(conversationIdParam) : null;
+
+
   }
 
   ngOnInit(): void {
@@ -90,6 +92,7 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
         if (conversationId !== this.conversationId) return;
         this.isDoctorTyping = true;
       }),
+      // --------
       this.signalr.userStoppedTyping$.subscribe(({ conversationId }) => {
         if (conversationId !== this.conversationId) return;
         this.isDoctorTyping = false;

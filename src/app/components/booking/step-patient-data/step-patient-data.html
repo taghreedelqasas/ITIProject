@@ -23,36 +23,7 @@
       رقم الهاتف<span class="text-red-500">*</span>
     </label>
     <div class="flex items-center rounded-[6px] border border-[#abb5b9] bg-white/50 h-[48px] relative focus-within:ring-1 focus-within:ring-cyan-400" dir="ltr">
-      <!-- Country selector -->
-      <button
-        type="button"
-        (click)="state.toggleCountryMenu()"
-        class="flex items-center gap-1 px-4 py-3 border-r border-[#abb5b9] shrink-0 h-full cursor-pointer"
-      >
-        <span class="text-lg leading-none">{{ state.selectedCountry().flag }}</span>
-        <svg class="w-4 h-4 text-[#82609d]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
 
-      <!-- Country dropdown -->
-      @if (state.isCountryMenuOpen()) {
-        <ul class="absolute top-full left-0 mt-1 w-40 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-10" dir="rtl">
-          @for (country of countries; track country.code) {
-            <li>
-              <button
-                type="button"
-                (click)="state.selectCountry(country)"
-                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-[#ece7f0]"
-              >
-                <span class="text-lg leading-none">{{ country.flag }}</span>
-                <span>{{ country.name }}</span>
-                <span class="text-slate-400 mr-auto">{{ country.code }}</span>
-              </button>
-            </li>
-          }
-        </ul>
-      }
 
       <span class="px-2 text-sm text-slate-500 shrink-0 font-['Tajawal']">{{ state.selectedCountry().code }}</span>
 

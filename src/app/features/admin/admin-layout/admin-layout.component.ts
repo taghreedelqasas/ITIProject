@@ -33,7 +33,7 @@ export class AdminLayoutComponent {
     { label: 'إدارة الأطباء', route: '/admin/doctors', icon: 'doctors' },
     { label: 'إدارة المواعيد', route: '/admin/appointments', icon: 'appointments' },
     { label: 'المدفوعات و العمولات', route: '/admin/payments', icon: 'payments' },
-    { label: 'الإعدادات', route: '/admin/settings', icon: 'settings' },
+    { label: 'طلبات السحب', route: '/admin/withdrawals', icon: 'withdrawals' },
   ];
 
   // ---------------- صورة البروفايل ----------------

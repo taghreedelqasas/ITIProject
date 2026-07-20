@@ -48,66 +48,71 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isSendingTyping = false;
-// 1. تأكدي أن المتغير معرّف هكذا في البداية خارج الـ constructor
-quickActions: QuickAction[] = [];
+  quickActions: QuickAction[] = [];
 
-constructor(
-  private router: Router,
-  private route: ActivatedRoute,
-  private location: Location,
-  private conversationService: ConversationService,
-  private authService: AuthService 
-) {
-  // جلب الرتب من الـ authService وطباعتها في المتصفح للتأكد منها
-  const roles = this.authService.getUserRoles() || [];
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location,
+    private conversationService: ConversationService,
+    private authService: AuthService 
+  ) {
+    const roles = this.authService.getUserRoles() || [];
 
-  console.log('المستخدم لديه الرتب التالية:', roles);
-  const localDoctorId = this.authService.getDoctorId() ; 
-this.isDoctor = !!localDoctorId;
-  // التأكد من وجود كلمة doctor بأي شكل (Doctor, doctor, DOCTOR)
-  // this.isDoctor = roles.some(r => r && r.toLowerCase().trim() === 'doctor');
+    console.log('المستخدم لديه الرتب التالية:', roles);
+    const localDoctorId = this.authService.getDoctorId(); 
+    this.isDoctor = !!localDoctorId;
+      
+    console.log('هل تم تحديد المستخدم كطبيب؟', this.isDoctor);
+
+    if (!this.isDoctor) {
+      this.quickActions = [
+        { label: 'حجز موعد' },
+        { label: 'إرسال تقرير' },
+        { label: 'مشاركة نتائج التحاليل' },
+      ];
+    } else {
+      this.quickActions = []; 
+    }
+
+    const params = this.route.snapshot.queryParamMap;
+
+    if (!this.conversationId) {
+      const cid = params.get('conversationId');
+      this.conversationId = cid ? Number(cid) : null;
+    }
+    if (!this.doctorId) {
+      const did = params.get('doctorId');
+      this.doctorId = did ? Number(did) : null;
+    }
+    if (!this.patientId) {
+      this.patientId = params.get('patientId');
+    }
+
+    const name = params.get('name');
+    const specialty = params.get('specialty');
     
-  console.log('هل تم تحديد المستخدم كطبيب؟', this.isDoctor);
+    // 🎯 التقاط الرابط وفك الترميز (Decoding) لحل مشكلة الرموز المشوهة مثل %2F
+    const rawImage = params.get('image') || params.get('patientImage') || params.get('imagePatient') || params.get('avatar');
+    const image = rawImage ? decodeURIComponent(rawImage) : null;
 
-  // بناءً على النتيجة السابقة، نحدد الأزرار
-  if (!this.isDoctor) {
-    this.quickActions = [
-      { label: 'حجز موعد' },
-      { label: 'إرسال تقرير' },
-      { label: 'مشاركة نتائج التحاليل' },
-    ];
-  } else {
-    this.quickActions = []; // إذا كان طبيب، نضمن أن المصفوفة فارغة تماماً
+    if (this.isDoctor) {
+      if (name) this.otherParty.name = name;
+      if (image) this.otherParty.image = image;
+    } else {
+      if (name) this.doctorInfo.name = name;
+      if (specialty) this.doctorInfo.specialty = specialty;
+      if (image) this.doctorInfo.image = image;
+    }
+
+    // 🔍 طباعة القيم في الـ Console للتأكد والتشخيص
+    console.log('--- فحص رابط الصورة قيد التحميل ---');
+    console.log('1. الرابط بعد فك الترميز مباشرة:', image);
+    console.log('2. القيمة المعتمدة للمريض (otherParty):', this.otherParty.image);
+    console.log('3. القيمة المعتمدة للطبيب (doctorInfo):', this.doctorInfo.image);
+    console.log('------------------------------------');
   }
 
-  // باقي الكود القديم الخاص بالـ constructor كما هو دون تعديل:
-  const params = this.route.snapshot.queryParamMap;
-
-  if (!this.conversationId) {
-    const cid = params.get('conversationId');
-    this.conversationId = cid ? Number(cid) : null;
-  }
-  if (!this.doctorId) {
-    const did = params.get('doctorId');
-    this.doctorId = did ? Number(did) : null;
-  }
-  if (!this.patientId) {
-    this.patientId = params.get('patientId');
-  }
-
-  const name = params.get('name');
-  const specialty = params.get('specialty');
-  const image = params.get('image');
-
-  if (this.isDoctor) {
-    if (name) this.otherParty.name = name;
-    if (image) this.otherParty.image = image;
-  } else {
-    if (name) this.doctorInfo.name = name;
-    if (specialty) this.doctorInfo.specialty = specialty;
-    if (image) this.doctorInfo.image = image;
-  }
-}
   ngOnInit(): void {
     this.signalr.startConnection().then(() => {
       if (this.conversationId) {
@@ -121,7 +126,6 @@ this.isDoctor = !!localDoctorId;
         const isMyMessage = this.isMessageMine(msg);
         if (isMyMessage) return;
 
-        
         const mapped = this.mapMessage(msg);
         this.messages.update((prev) => [...prev, mapped]);
         if (this.conversationId) {
@@ -176,13 +180,6 @@ this.isDoctor = !!localDoctorId;
   messages = signal<ChatMessage[]>([]);
   isTyping = signal(false);
   messageText = '';
-
-  // quickActions: QuickAction[] = this.isDoctor ? [] : [
-  //   { label: 'حجز موعد' },
-  //   { label: 'إرسال تقرير' },
-  //   { label: 'مشاركة نتائج التحاليل' },
-  // ];
-
   
   pendingFileAction: 'report' | 'results' | 'attachment' | 'image' | null = null;
 
@@ -226,9 +223,14 @@ this.isDoctor = !!localDoctorId;
   private startAsDoctor(patientId: string): void {
     this.isLoading.set(true);
     this.conversationService.startAsDoctor(patientId).subscribe({
-      next: (conversation) => {
+      next: (conversation: any) => {
         this.conversationId = (conversation?.id as number) ?? null;
         this.isLoading.set(false);
+        
+        if (conversation?.patientImage && !this.otherParty.image) {
+          this.otherParty.image = conversation.patientImage;
+        }
+
         if (this.conversationId) {
           this.loadMessages(true);
           this.signalr.joinConversation(this.conversationId);
@@ -241,9 +243,9 @@ this.isDoctor = !!localDoctorId;
     });
   }
 
-private isMessageMine(m: ApiChatMessage): boolean {
-  return m.senderUserId === this.signalr.currentUserId;
-}
+  private isMessageMine(m: ApiChatMessage): boolean {
+    return m.senderUserId === this.signalr.currentUserId;
+  }
 
   private mapMessage(m: ApiChatMessage): ChatMessage {
     const isMyMessage = this.isMessageMine(m);

@@ -11,6 +11,7 @@ import { DoctorAvailability } from '../../core/models/availability.model';
 export interface CalendarDay {
   date: number;
   isCurrentMonth: boolean;
+  isPast: boolean;
 }
 
 export interface TimeSlot {
@@ -102,27 +103,32 @@ export class BookingStateService {
 
   monthLabel = computed(() => `${MONTH_NAMES[this.currentMonthIndex()]} ${this.currentYear()}`);
 
-  calendarDays = computed(() => {
+ calendarDays = computed(() => {
     const firstOfMonth = new Date(this.currentYear(), this.currentMonthIndex(), 1);
     const daysInMonth = new Date(this.currentYear(), this.currentMonthIndex() + 1, 0).getDate();
     const startWeekday = firstOfMonth.getDay();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const cells: (CalendarDay | null)[] = [];
     for (let i = 0; i < startWeekday; i++) {
       cells.push(null);
     }
     for (let d = 1; d <= daysInMonth; d++) {
-      cells.push({ date: d, isCurrentMonth: true });
+      const cellDate = new Date(this.currentYear(), this.currentMonthIndex(), d);
+      cells.push({ date: d, isCurrentMonth: true, isPast: cellDate < today });
     }
     return cells;
   });
 
-  timeSlots = computed(() => {
+timeSlots = computed(() => {
+    const now = Date.now();
     const slotsForDay = this.allSlots().filter((s) => {
       const d = new Date(s.startTime);
       return (
         d.getFullYear() === this.currentYear() &&
         d.getMonth() === this.currentMonthIndex() &&
-        d.getDate() === this.selectedDate()
+        d.getDate() === this.selectedDate() &&
+      d.getTime() > now
       );
     });
     const mapped: TimeSlot[] = slotsForDay.map((s) => ({ id: s.id, label: this.formatTime(s.startTime) }));
@@ -336,7 +342,7 @@ private loadRatingDistribution(doctorId: number): void {
   }
 
   selectDate(day: CalendarDay | null): void {
-    if (!day) return;
+    if (!day || day.isPast) return;
     this.selectedDate.set(day.date);
     this.selectedTime.set('');
     this.selectedSlotId.set(null);

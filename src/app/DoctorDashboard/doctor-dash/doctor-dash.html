@@ -105,12 +105,12 @@
           <span class="text-sm  group-hover:scale-110 transition-transform"><i class="fas fa-user"></i></span>
           <span class="text-sm">الملف الشخصي</span>
         </a>
-
+<!-- 
         <a routerLink="settings" routerLinkActive="bg-white text-[#4A148C] font-bold shadow-md" 
            class="flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 group hover:bg-white/10">
           <span class="text-sm  group-hover:scale-110 transition-transform"><i class="fas fa-cog"></i></span>
           <span class="text-sm">الإعدادات</span>
-        </a>
+        </a> -->
      <a href="/" (click)="onLogout($event)" routerLinkActive="bg-white text-[#4A148C] font-bold shadow-md"
    class="flex items-center gap-3 px-4 py-2 w-full absolute bottom-0 rounded-xl transition-all duration-200 group hover:bg-white/10">
   <span class="text-sm group-hover:scale-110 transition-transform"><i class="fas fa-sign-out-alt"></i></span>
@@ -131,7 +131,7 @@
 
   <div class="flex-1 flex flex-col overflow-hidden     "   >
     
-    <header class="bg-[#FCFCFC]  py-4  rounded-xl  border-b border-gray-100  flex       px-8 shadow-sm">
+    <header   *ngIf="!isChatRoute()"  class="bg-[#FCFCFC]  py-4  rounded-xl  border-b border-gray-100  flex       px-8 shadow-sm">
       
       <!-- <div class="relative w-80 " >
         <input type="text" placeholder="البحث عن..." 
@@ -153,7 +153,7 @@
      alt="User Avatar">
           <div class="text-right">
             <span class="text-sm font-bold    text-[#4A148C]">
-                د. {{ dashService.userProfile()?.fullName }} 
+                 {{ dashService.userProfile()?.fullName }} 
             </span>
           </div>
         </div>

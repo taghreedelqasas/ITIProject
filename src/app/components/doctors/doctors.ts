@@ -60,7 +60,6 @@ export class Doctors implements OnInit {
 
   sortOptions: SortOption[] = [
     { label: 'أعلى تقييم', value: 'rating' },
-    { label: 'أقرب موعد', value: 'soonest' },
     { label: 'أعلى سعر', value: 'price-desc' },
     { label: 'أدنى سعر', value: 'price-asc' },
   ];

@@ -151,7 +151,7 @@
 
                    </div>
         
-<div class="flex text-[#44116D] py-3">
+<div class="flex text-[#44116D] py-3  border-b border-gray-200">
   <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100 flex justify-center items-center font-bold shrink-0">
     <!-- التعديل هنا أيضاً للرابط المباشر -->
     @if (selectedPatient?.imageUrl) {
@@ -174,7 +174,52 @@
 </div>
 
       </div>
+<!-- كروت تفاصيل المريض (مثل تصميم فيجما) -->
+ <!-- كروت تفاصيل المريض (مثل تصميم فيجما) -->
+  <!-- كروت تفاصيل المريض (مثل تصميم فيجما) -->
+      <div class="px-6 py-4 ">
+        <div class="grid grid-cols-2 gap-4">
+          <!-- كارت العمر -->
+          <div class="bg-[#F3F4F5]   rounded-2xl p-4 text-center shadow-sm">
+            <p class="text-xs text-[#A992BC]  mb-1">العمر</p>
+            <p class="text-sm font-semibold  ">{{ patientDetails?.age || '—' }}</p>
+          </div>
 
+          <!-- كارت الجنس -->
+          <div class="bg-[#F3F4F5]   rounded-2xl p-4 text-center shadow-sm">
+            <p class="text-xs text-[#A992BC]  mb-1">الجنس</p>
+            <p class="text-sm font-semibold  ">{{ patientDetails?.gender || '—' }}</p>
+          </div>
+
+          <!-- كارت عدد الزيارات -->
+          <div class="bg-[#F3F4F5]   rounded-2xl p-4 text-center shadow-sm">
+            <p class="text-xs text-[#A992BC]  mb-1">عدد الزيارات</p>
+            <p class="text-sm font-semibold  ">
+              {{ selectedPatient?.appointmentsCount || 1 }} زيارة
+            </p>
+          </div>
+
+          <!-- كارت رقم الهاتف (بقى جنبهم في الـ Grid مش واخد السطر كله) -->
+          <div class="bg-[#F3F4F5]   rounded-2xl px-2 py-4 text-center shadow-sm">
+            <p class="text-xs text-[#A992BC]  mb-1">رقم الهاتف</p>
+            <p class="text-[14px] font-semibold    overflow-hidden whitespace-nowrap" dir="ltr">
+              {{ patientDetails?.phone || '—' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- سكشن الأمراض المزمنة -->
+      <div class="px-6 mb-4">
+        <h3 class="font-bold text-lg py-2   text-[#44116D] mb-3">
+          الأمراض المزمنة
+        </h3>
+        
+        <span class="text-center p-2   bg-[#FCFCFC] border border-gray-100 rounded-2xl text-gray-400 text-sm shadow-sm">
+          لا يوجد أمراض مزمنة
+        </span>
+      </div>
       <!-- Files -->
       <div class="p-6">
 
@@ -201,7 +246,7 @@
                    @case(1){
                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect width="48" height="48" rx="14" fill="#ECE7F0"/>
-<path d="M29.25 20.0488L23.3445 14.3203H15.75V30.6853H29.25V20.0488ZM23.3445 14.3203V20.0488H29.25M18.75 33.7528H32.25V23.2528M18 23.2528H27M18 19.5028H21M18 27.0028H27" stroke="#44116D" stroke-linejoin="round"/>
+<path d="M29.25 20.0488L23.3445 14.3203H15.75V30.6853H29.25V20.0488ZM23.3445 14.3203V20.0488H29.25M18.75 33.7528H32.25V23.2528M18 23.2528H27M18 19.5028H21M18 27.0028H27" stroke="#A992BC" stroke-linejoin="round"/>
 </svg>
 
                    }
@@ -237,7 +282,7 @@
                     Pdf
                    }
                    @case(2){
-                    XRay
+                    png
                    }
                    @case(3){
                      folder
