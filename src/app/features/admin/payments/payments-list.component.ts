@@ -139,57 +139,73 @@ export class PaymentsListComponent implements OnInit {
   // ============ تحليل الإيرادات والعمولات ============
   // ملحوظة: بيانات ثابتة (static) مؤقتًا لحد ما نتأكد إن الـ endpoint بتاع الباك بيرجّع بيانات فعلية.
   loadTrend(): void {
-    this.loadingTrend = true;
-    this.trendError = false;
+  this.loadingTrend = true;
+  this.trendError = false;
 
-    const staticTrend: RevenueCommissionTrendDto = {
-      points: [
-        { year: 2026, month: 2, label: 'فبراير', revenue: 1800, commission: 180 },
-        { year: 2026, month: 3, label: 'مارس', revenue: 2100, commission: 210 },
-        { year: 2026, month: 4, label: 'أبريل', revenue: 1650, commission: 165 },
-        { year: 2026, month: 5, label: 'مايو', revenue: 2400, commission: 240 },
-        { year: 2026, month: 6, label: 'يونيو', revenue: 2200, commission: 220 },
-        { year: 2026, month: 7, label: 'يوليو', revenue: 2850, commission: 285 },
-      ],
-    };
+  const staticTrend: RevenueCommissionTrendDto = {
+    points: [
+      { year: 2026, month: 2, label: 'فبراير', revenue: 1800, commission: 180 },
+      { year: 2026, month: 3, label: 'مارس', revenue: 2100, commission: 210 },
+      { year: 2026, month: 4, label: 'أبريل', revenue: 1650, commission: 165 },
+      { year: 2026, month: 5, label: 'مايو', revenue: 2400, commission: 240 },
+      { year: 2026, month: 6, label: 'يونيو', revenue: 2200, commission: 220 },
+      { year: 2026, month: 7, label: 'يوليو', revenue: 2850, commission: 285 },
+    ],
+  };
 
-    this.trendChart = this.buildTrendOptions(staticTrend);
-    this.loadingTrend = false;
+  // تحويل جميع الشهور إلى صفر ماعدا شهر يوليو (month === 7)
+  const juneOnlyTrend: RevenueCommissionTrendDto = {
+    ...staticTrend,
+    points: staticTrend.points.map((p) =>
+      p.month === 7 ? p : { ...p, revenue: 0, commission: 0 }
+    ),
+  };
 
-    // الكود الأصلي اللي بيجيب البيانات من الباك - هنرجعله لما الـ API يبقى جاهز:
-    // this.paymentsService
-    //   .getRevenueCommissionTrend(6)
-    //   .pipe(finalize(() => (this.loadingTrend = false)))
-    //   .subscribe({
-    //     next: (trend) => (this.trendChart = this.buildTrendOptions(trend)),
-    //     error: () => (this.trendError = true),
-    //   });
-  }
+  this.trendChart = this.buildTrendOptions(juneOnlyTrend);
+  this.loadingTrend = false;
 
-  private buildTrendOptions(trend: RevenueCommissionTrendDto): ApexOptions {
-    return {
-      chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: 'Cairo, sans-serif' },
-      series: [
-        { name: 'الإيرادات', data: trend.points.map((p) => p.revenue) },
-        { name: 'العمولة', data: trend.points.map((p) => p.commission) },
-      ],
-      xaxis: {
-        categories: trend.points.map((p) => p.label),
-        labels: { style: { colors: '#94a3b8' } },
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-      },
-      yaxis: { labels: { style: { colors: '#94a3b8' } } },
-      colors: ['#2DD4BF', '#4C1D95'],
-      plotOptions: {
-        bar: { columnWidth: '55%', borderRadius: 4, borderRadiusApplication: 'end' },
-      },
-      dataLabels: { enabled: false },
-      grid: { borderColor: '#f1f5f9' },
-      legend: { show: false },
-      tooltip: { theme: 'light' },
-    };
-  }
+  // الكود الأصلي اللي بيجيب البيانات من الباك - هنرجعله لما الـ API يبقى جاهز:
+  // this.paymentsService
+  //   .getRevenueCommissionTrend(6)
+  //   .pipe(
+  //     map((trend) => ({
+  //       ...trend,
+  //       points: trend.points.map((p) =>
+  //         p.month === 7 ? p : { ...p, revenue: 0, commission: 0 }
+  //       ),
+  //     })),
+  //     finalize(() => (this.loadingTrend = false))
+  //   )
+  //   .subscribe({
+  //     next: (trend) => (this.trendChart = this.buildTrendOptions(trend)),
+  //     error: () => (this.trendError = true),
+  //   });
+}
+
+private buildTrendOptions(trend: RevenueCommissionTrendDto): ApexOptions {
+  return {
+    chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: 'Cairo, sans-serif' },
+    series: [
+      { name: 'الإيرادات', data: trend.points.map((p) => p.revenue) },
+      { name: 'العمولة', data: trend.points.map((p) => p.commission) },
+    ],
+    xaxis: {
+      categories: trend.points.map((p) => p.label),
+      labels: { style: { colors: '#94a3b8' } },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+    },
+    yaxis: { labels: { style: { colors: '#94a3b8' } } },
+    colors: ['#2DD4BF', '#4C1D95'],
+    plotOptions: {
+      bar: { columnWidth: '55%', borderRadius: 4, borderRadiusApplication: 'end' },
+    },
+    dataLabels: { enabled: false },
+    grid: { borderColor: '#f1f5f9' },
+    legend: { show: false },
+    tooltip: { theme: 'light' },
+  };
+}
 
   // ============ جدول المعاملات ============
   loadTransactions(): void {
