@@ -79,91 +79,93 @@
 
     @for (app of filteredAppointments(); track app.id) {
 
-      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+     <!-- حاوية الكارت بالكامل -->
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 relative overflow-hidden">
 
-        <!-- Status -->
-        <div class="flex justify-between items-start">
-
-          <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 rounded-full bg-[#F4ECFF] text-[#53098D]
-              flex items-center justify-center font-bold">
-
-              {{app.patientName.charAt(0)}}
-
-            </div>
-
-            <div>
-              <h3 class="font-bold text-gray-800 text-sm">
-                {{app.patientName}}
-              </h3>
-
-              <p class="text-xs text-[#8C6AAE]">
-                كشف عام
-              </p>
-
-              <div class="flex items-center gap-1 mt-2 text-xs text-[#7A579D]">
-
-                <i class="pi pi-calendar text-[11px]"></i>
-
-                <span>اليوم</span>
-
-                <span>{{app.slotStart | date:'shortTime'}}</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <span
-            class="text-[11px] px-3 py-1 rounded-full font-medium whitespace-nowrap"
-            [ngClass]="{
-              'bg-red-100 text-red-600': app.status=='Cancelled',
-              'bg-green-100 text-green-600': app.status=='Confirmed',
-              'bg-yellow-100 text-yellow-600': app.status=='Pending',
-              'bg-purple-100 text-purple-600': app.status=='Completed'
-            }">
-
-            {{
-              app.status=='Confirmed' ? 'تم الحجز'
-              : app.status=='Pending' ? 'بانتظار الحضور'
-              : app.status=='Cancelled' ? 'ملغي'
-              : 'قادم'
-            }}
-
-          </span>
-
-        </div>
-
-        <!-- Buttons -->
-        <div class="flex justify-between mt-5 gap-3">
-
-          <button
-            class="w-full h-10 rounded-full text-white text-sm font-semibold transition"
-            [disabled]="app.status === 'Completed'"
-            [ngClass]="{
-              'bg-cyan-400 hover:bg-cyan-500': app.status !== 'Completed',
-              'bg-green-500 cursor-not-allowed': app.status === 'Completed'
-            }"
-            (click)="markAsCompleted(app)">
-
-            {{
-              app.status === 'Completed' ? 'تم الحضور'
-              : app.status === 'Pending' ? 'تأكيد الموعد'
-              : 'تسجيل الحضور'
-            }}
-
-          </button>
-
-        </div>
-
+  <!-- الصف العلوي: يحتوي على الصورة، الاسم، والبادج -->
+  <div class="flex justify-between items-start gap-3 w-full">
+    
+    <!-- جهة اليمين: الصورة والبيانات -->
+    <div class="flex items-center gap-3 min-w-0 flex-1">
+      <!-- دائرة الصورة -->
+      <div class="w-10 h-10 rounded-full bg-[#F4ECFF] text-[#53098D] flex items-center justify-center font-bold overflow-hidden shrink-0">
+        @if (app.patientImageUrl) {
+          <img [src]="app.patientImageUrl" alt="patientImg" class="w-full h-full object-cover" />
+        } @else {
+          {{ app.patientName.charAt(0) }}
+        }
       </div>
+
+      <!-- الاسم والتخصص والوقت -->
+      <div class="min-w-0 flex-1 text-right">
+        <h3 class="font-bold text-gray-800 text-sm truncate">
+          {{ app.patientName }}
+        </h3>
+        
+        <p class="text-xs text-[#8C6AAE] mt-0.5">
+          كشف عام
+        </p>
+
+        <!-- سطر الوقت والتاريخ المنظم جوه حاوية الاسم عشان يفضل تحتها بالظبط وميفردش الكارت بره -->
+        <div class="flex items-center gap-1.5 mt-2 text-xs text-[#7A579D] whitespace-nowrap">
+          <i class="pi pi-calendar text-[11px] shrink-0"></i>
+          <span class="font-medium">{{ app.slotStart | date:'shortTime' }}</span>
+          <span class="text-gray-300 mx-0.5">|</span>
+          <span class="font-medium">{{ app.slotStart | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- جهة اليسار: بادج الحالة مستقل بذاته ومفهوش ضغط -->
+    <span
+      class="text-[11px] px-3 py-1 rounded-full font-medium whitespace-nowrap shrink-0"
+      [ngClass]="{
+        'bg-red-100 text-red-600': app.status=='Cancelled',
+        'bg-green-100 text-green-600': app.status=='Confirmed',
+        'bg-yellow-100 text-yellow-600': app.status=='Pending',
+        'bg-purple-100 text-purple-600': app.status=='Completed'
+      }">
+      {{
+        app.status=='Confirmed' ? 'تم الحجز'
+        : app.status=='Pending' ? 'بانتظار الحضور'
+        : app.status=='Cancelled' ? 'ملغي'
+        : 'قادم'
+      }}
+    </span>
+
+  </div>
+
+  <!-- زرار الحضور والـ Actions -->
+ <!-- Buttons: هيظهر فقط لو الموعد مش ملغي -->
+@if (app.status !== 'Cancelled') {
+  <div class="flex justify-between mt-5 gap-3">
+
+    <button
+      class="w-full h-10 rounded-full text-white   cursor-pointer   text-sm font-semibold transition"
+      [disabled]="app.status === 'Completed'"
+      [ngClass]="{
+        'bg-cyan-400 hover:bg-cyan-500': app.status !== 'Completed',
+        'bg-green-500 cursor-not-allowed': app.status === 'Completed'
+      }"
+      (click)="markAsCompleted(app)">
+
+      {{
+        app.status === 'Completed' ? 'تم الحضور'
+        : app.status === 'Pending' ? 'تأكيد الموعد'
+        : 'تسجيل الحضور'
+      }}
+
+    </button>
+
+  </div>
+}
+
+</div>
 
     } @empty {
 
       <div class="col-span-3 text-center py-12 text-gray-400 text-sm">
-        لا توجد مواعيد مسجلة اليوم.
+        لا توجد مواعيد مسجلة .
       </div>
 
     }

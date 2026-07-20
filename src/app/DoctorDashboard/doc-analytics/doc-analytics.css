@@ -9,3 +9,18 @@
 h2, h3, h4, span, p {
   font-family: 'Cairo', 'Segoe UI', sans-serif;
 }
+
+/* تخصيص السكرول بار لقائمة المراجعات داخل الديف */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ECE7F0;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #53098D;
+}

@@ -1,9 +1,14 @@
 <div dir="rtl" class="min-h-screen bg-[#fcfcfc] font-[Tajawal] pb-28 pt-20">
-
   <!-- ===================== Hero ===================== -->
   <section class="relative h-[420px] md:h-[702px] overflow-hidden mb-8">
-    <img [src]="doctor.image" [alt]="doctor.name" class="absolute inset-0 w-full h-full object-cover" />
-    <div class="absolute inset-0 bg-gradient-to-b from-[rgba(255,255,255,0.03)] to-[rgba(105,65,138,0.56)]"></div>
+    <img
+      [src]="doctor.image"
+      [alt]="doctor.name"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-[rgba(255,255,255,0.03)] to-[rgba(105,65,138,0.56)]"
+    ></div>
 
     <!-- Back button -->
     <button
@@ -11,14 +16,24 @@
       class="absolute top-[16px] right-[16px] backdrop-blur-[4px] bg-[#abb5b9]/50 text-[#fcfcfc] text-[14px] font-bold py-2 px-4 rounded-[14px] flex items-center gap-[6px] hover:bg-[#abb5b9]/75 transition-colors cursor-pointer"
     >
       <span>الأطباء</span>
-      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <svg
+        class="w-4 h-4 text-white"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        viewBox="0 0 24 24"
+      >
         <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7-7 7M21 12H3" />
       </svg>
     </button>
 
     <!-- Name & specialty overlay -->
-    <div class="absolute bottom-[40px] right-6 md:right-[100px] left-6 max-w-[768px] text-right flex flex-col gap-1 items-end">
-      <div class="bg-[#4fe6e6] text-[#fcfcfc] text-[12px] font-bold px-[10px] py-[4px] rounded-[10px] shadow-sm">
+    <div
+      class="absolute bottom-[40px] right-6 md:right-[100px] left-6 max-w-[768px] text-right flex flex-col gap-1 items-end"
+    >
+      <div
+        class="bg-[#4fe6e6] text-[#fcfcfc] text-[12px] font-bold px-[10px] py-[4px] rounded-[10px] shadow-sm"
+      >
         {{ doctor.badge || 'طب الأطفال' }}
       </div>
       <h1 class="text-[#fcfcfc] text-[36px] md:text-[48px] font-extrabold mt-2 leading-none">
@@ -32,14 +47,16 @@
 
   <!-- ===================== Main Container ===================== -->
   <div class="max-w-[718px] mx-auto px-4 md:px-0 -mt-16 relative z-10 flex flex-col gap-6">
-
     <!-- ===================== Stats card ===================== -->
-    <div class="bg-white border border-[#f0ebfa] border-solid rounded-[16px] p-[21px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] w-full grid grid-cols-4 divide-x divide-x-reverse divide-[#f0ebfa]">
-      
+    <div
+      class="bg-white border border-[#f0ebfa] border-solid rounded-[16px] p-[21px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] w-full grid grid-cols-4 divide-x divide-x-reverse divide-[#f0ebfa]"
+    >
       <!-- 1: Rating -->
       <div class="flex flex-col items-center justify-center text-center">
         <svg class="w-6 h-6 text-[#E8B006] mb-1" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+          <path
+            d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+          />
         </svg>
         <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{ stats.rating || '4.8' }}</span>
         <span class="text-[#9b8cbf] text-[12px] mt-0.5">التقييم</span>
@@ -47,59 +64,118 @@
 
       <!-- 2: Comments -->
       <div class="flex flex-col items-center justify-center text-center">
-        <svg class="w-6 h-6 text-[#82609d] mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        <svg
+          class="w-6 h-6 text-[#82609d] mb-1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+          />
         </svg>
-        <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{ stats.reviewsCount || '100' }}</span>
+        <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{
+          stats.reviewsCount || '100'
+        }}</span>
         <span class="text-[#9b8cbf] text-[12px] mt-0.5">التعليقات</span>
       </div>
 
       <!-- 3: Experience -->
       <div class="flex flex-col items-center justify-center text-center">
-        <svg class="w-6 h-6 text-[#20cccc] mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        <svg
+          class="w-6 h-6 text-[#20cccc] mb-1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+          />
         </svg>
-        <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{ stats.yearsExperience || '12+' }}</span>
+        <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{
+          stats.yearsExperience || '12+'
+        }}</span>
         <span class="text-[#9b8cbf] text-[12px] mt-0.5">سنة خبرة</span>
       </div>
 
       <!-- 4: Next Appointment -->
       <div class="flex flex-col items-center justify-center text-center">
-        <svg class="w-6 h-6 text-[#20cccc] mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          class="w-6 h-6 text-[#20cccc] mb-1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
-        <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{ stats.nextAppointment || 'اليوم 10:00 ص' }}</span>
+        <span class="text-[#1a1033] text-[15.2px] font-extrabold">{{
+          stats.nextAppointment || 'اليوم 10:00 ص'
+        }}</span>
         <span class="text-[#9b8cbf] text-[12px] mt-0.5">أقرب موعد</span>
       </div>
     </div>
 
     <!-- ===================== Location ===================== -->
     <div class="flex justify-start w-full">
-      <div class="bg-[#fcfcfc] border border-[#c5b5d2] border-solid rounded-[14px] px-[17px] py-[11px] flex items-center gap-[8px] text-[#82609d] text-[14px]">
+      <div
+        class="bg-[#fcfcfc] border border-[#c5b5d2] border-solid rounded-[14px] px-[17px] py-[11px] flex items-center gap-[8px] text-[#82609d] text-[14px]"
+      >
         <span>{{ doctor.location || 'المنصورة، حي الجامعة' }}</span>
-        <svg class="w-[20px] h-[20px] text-[#82609d]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        <svg
+          class="w-[20px] h-[20px] text-[#82609d]"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
         </svg>
       </div>
     </div>
 
     <!-- ===================== Tabs ===================== -->
-    <div class="border-b border-[#c5b5d2] border-solid flex justify-start items-center w-full" dir="rtl">
+    <div
+      class="border-b border-[#c5b5d2] border-solid flex justify-start items-center w-full"
+      dir="rtl"
+    >
       <button
         (click)="setActiveTab('about')"
-        [ngClass]="activeTab === 'about'
-          ? 'text-[#53098d] border-b-2 border-[#53098d] font-bold'
-          : 'text-[#a992bc] border-b-2 border-transparent'"
+        [ngClass]="
+          activeTab === 'about'
+            ? 'text-[#53098d] border-b-2 border-[#53098d] font-bold'
+            : 'text-[#a992bc] border-b-2 border-transparent'
+        "
         class="pb-[18px] pt-[16px] px-[20px] text-[14px] transition-all cursor-pointer"
       >
         عن الطبيب
       </button>
       <button
         (click)="setActiveTab('reviews')"
-        [ngClass]="activeTab === 'reviews'
-          ? 'text-[#53098d] border-b-2 border-[#53098d] font-bold'
-          : 'text-[#a992bc] border-b-2 border-transparent'"
+        [ngClass]="
+          activeTab === 'reviews'
+            ? 'text-[#53098d] border-b-2 border-[#53098d] font-bold'
+            : 'text-[#a992bc] border-b-2 border-transparent'
+        "
         class="pb-[18px] pt-[16px] px-[20px] text-[14px] transition-all cursor-pointer"
       >
         أحدث التقييمات ({{ reviews.length }})
@@ -108,23 +184,41 @@
 
     <!-- ===================== Tab: عن الطبيب ===================== -->
     <ng-container *ngIf="activeTab === 'about'">
-
       <!-- نبذة عن الطبيب -->
-      <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[11px] text-right">
+      <div
+        class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[11px] text-right"
+      >
         <h3 class="text-[#1c1c1c] text-[18px] font-bold">نبذة عن الطبيب</h3>
         <p class="text-[#82609d] text-[14px] leading-relaxed">
-          {{ doctor.about || 'دكتورة سارة استشارية جراحة العظام والعمود الفقري بخبرة 20 عاماً، حاصلة على زمالات من ألمانيا وأمريكا.' }}
+          {{
+            doctor.about ||
+              'دكتورة سارة استشارية جراحة العظام والعمود الفقري بخبرة 20 عاماً، حاصلة على زمالات من ألمانيا وأمريكا.'
+          }}
         </p>
       </div>
 
       <!-- المؤهلات العلمية -->
-      <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[12px] text-right">
+      <div
+        class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[12px] text-right"
+      >
         <h3 class="text-[#1c1c1c] text-[18px] font-bold">المؤهلات العلمية</h3>
         <div class="flex flex-col gap-[12px]">
           <div *ngFor="let q of qualifications" class="flex items-center gap-[12px] justify-start">
-            <span class="w-[28px] h-[28px] rounded-[10px] bg-[#e9fcfc] flex items-center justify-center shrink-0">
-              <svg class="w-4 h-4 text-[#20cccc]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0112 20.5a12.083 12.083 0 01-6.16-9.922L12 14z" />
+            <span
+              class="w-[28px] h-[28px] rounded-[10px] bg-[#e9fcfc] flex items-center justify-center shrink-0"
+            >
+              <svg
+                class="w-4 h-4 text-[#20cccc]"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0112 20.5a12.083 12.083 0 01-6.16-9.922L12 14z"
+                />
               </svg>
             </span>
             <span class="text-[#82609d] text-[12px]">{{ q.label }}</span>
@@ -133,63 +227,88 @@
       </div>
 
       <!-- الخدمات -->
-      <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[12px] text-right">
+      <div
+        class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[12px] text-right"
+      >
         <h3 class="text-[#1c1c1c] text-[18px] font-bold">الخدمات</h3>
         <div class="flex flex-wrap gap-[8px] justify-start">
-          <span class="border border-[#23e0e0] border-solid text-[#20cccc] text-[14px] font-bold rounded-[40px] px-[16px] py-[6px]">
+          <span
+            class="border border-[#23e0e0] border-solid text-[#20cccc] text-[14px] font-bold rounded-[40px] px-[16px] py-[6px]"
+          >
             {{ stats.yearsExperience }} سنة خبرة
           </span>
-          <span *ngFor="let s of services" class="bg-[#a992bc]/40 text-[#69418a] text-[14px] font-bold rounded-[40px] px-[16px] py-[6px]">
+          <span
+            *ngFor="let s of services"
+            class="bg-[#a992bc]/40 text-[#69418a] text-[14px] font-bold rounded-[40px] px-[16px] py-[6px]"
+          >
             {{ s }}
           </span>
         </div>
       </div>
 
       <!-- المواعيد المتاحة اليوم -->
-      <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[12px] text-right">
+      <div
+        class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-[25px] flex flex-col gap-[12px] text-right"
+      >
         <h3 class="text-[#1c1c1c] text-[18px] font-bold">المواعيد المتاحة اليوم</h3>
         <div class="flex flex-wrap gap-[8px] justify-start">
           <button
             *ngFor="let time of availableTimes"
             (click)="selectTime(time)"
-            [ngClass]="selectedTime === time
-              ? 'bg-[#53098d] text-white'
-              : 'bg-[#a992bc]/40 text-[#69418a] hover:bg-[#a992bc]/60'"
+            [ngClass]="
+              selectedTime === time
+                ? 'bg-[#53098d] text-white'
+                : 'bg-[#a992bc]/40 text-[#69418a] hover:bg-[#a992bc]/60'
+            "
             class="px-[16px] py-[8px] rounded-[14px] text-[14px] font-bold transition-all cursor-pointer"
           >
             {{ time }}
           </button>
         </div>
       </div>
-
     </ng-container>
 
-    <!-- ===================== Tab: أحدث التقييمات ===================== -->
+    <!-- ===================== Tab: Ratings===================== -->
     <ng-container *ngIf="activeTab === 'reviews'">
-
       <!-- ملخص التقييمات -->
       <div class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-6 mb-5">
         <div class="flex items-center gap-8">
-
           <!-- الرقم الإجمالي -->
           <div class="text-center shrink-0">
-            <p class="text-4xl font-extrabold text-[#23e0e0] mb-2">{{ stats.rating }}</p>
+            <p class="text-4xl font-extrabold text-[#23e0e0] mb-2">{{ averageRating }}</p>
             <div class="flex justify-center items-center gap-1 mb-2">
-              <svg *ngFor="let s of [1,2,3,4]" class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+              <svg
+                *ngFor="let s of [1, 2, 3, 4]"
+                class="w-4 h-4 text-amber-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
               </svg>
               <span class="relative w-4 h-4 inline-block">
-                <svg class="absolute inset-0 w-4 h-4 text-slate-200" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                <svg
+                  class="absolute inset-0 w-4 h-4 text-slate-200"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                  />
                 </svg>
                 <span class="absolute inset-0 overflow-hidden" style="width: 50%">
                   <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                    <path
+                      d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                    />
                   </svg>
                 </span>
               </span>
             </div>
-            <p class="text-slate-400 text-sm whitespace-nowrap">بناءً على {{ ratingBasedOnCount }} تقييم</p>
+            <p class="text-slate-400 text-sm whitespace-nowrap">
+              بناءً على {{ ratingBasedOnCount }} تقييم
+            </p>
           </div>
 
           <!-- توزيع النجوم -->
@@ -198,7 +317,9 @@
               <span class="flex items-center gap-1 text-xs text-slate-500 w-8 shrink-0 justify-end">
                 {{ bar.stars }}
                 <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                  <path
+                    d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                  />
                 </svg>
               </span>
               <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -211,13 +332,19 @@
 
       <!-- قائمة التقييمات -->
       <div class="flex flex-col gap-4">
-        <div *ngFor="let review of reviews" class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-6 shadow-sm">
+        <div
+          *ngFor="let review of reviews"
+          class="bg-white border border-[#c5b5d2] border-solid rounded-[16px] p-6 shadow-sm"
+        >
           <div class="flex items-start justify-between mb-3">
-
             <div class="flex items-center gap-3">
               <span
                 class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
-                [ngClass]="review.avatarColor === 'purple' ? 'bg-[#ece7f0] text-[#53098d]' : 'bg-[#e9fcfc] text-[#20cccc]'"
+                [ngClass]="
+                  review.avatarColor === 'purple'
+                    ? 'bg-[#ece7f0] text-[#53098d]'
+                    : 'bg-[#e9fcfc] text-[#20cccc]'
+                "
               >
                 {{ review.avatarLetter }}
               </span>
@@ -229,13 +356,15 @@
 
             <div class="flex items-center gap-0.5 mt-1">
               <svg
-                *ngFor="let s of [1,2,3,4,5]"
+                *ngFor="let s of [1, 2, 3, 4, 5]"
                 class="w-3.5 h-3.5"
                 [ngClass]="s <= review.rating ? 'text-amber-400' : 'text-slate-200'"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
-                <path d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z" />
+                <path
+                  d="M10 1.5l2.6 5.27 5.82.85-4.21 4.1 1 5.8L10 14.9l-5.21 2.62 1-5.8-4.21-4.1 5.82-.85z"
+                />
               </svg>
             </div>
           </div>
@@ -247,7 +376,9 @@
   </div>
 
   <!-- ===================== Sticky bottom action bar ===================== -->
-  <div class="fixed bottom-0 inset-x-0 bg-[#fcfcfc] border-t border-[#c5b5d2] shadow-[0px_-4px_10px_rgba(107,63,160,0.1)] py-4 px-6 z-20">
+  <div
+    class="fixed bottom-0 inset-x-0 bg-[#fcfcfc] border-t border-[#c5b5d2] shadow-[0px_-4px_10px_rgba(107,63,160,0.1)] py-4 px-6 z-20"
+  >
     <div class="max-w-[718px] mx-auto flex gap-4 items-center">
       <!-- Right Button: Book (renders on the right in RTL) -->
       <button

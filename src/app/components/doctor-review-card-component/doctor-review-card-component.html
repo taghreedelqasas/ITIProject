@@ -1,1 +1,100 @@
-<p>doctor-review-card-component works!</p>
+<div class="review-card">
+  <!-- Doctor Profile Details (RTL: avatar on the right, details left) -->
+  <div class="doctor-profile-header">
+    <div class="doctor-avatar">
+      <img
+        [src]="appointment.doctorImage || 'assets/images/doctor-placeholder.png'"
+        [alt]="appointment.doctorName || 'الطبيب'"
+      />
+    </div>
+
+    <div class="doctor-info-column">
+      <h3 class="doctor-name">{{ appointment.doctorName || 'الطبيب' }}</h3>
+      <p class="doctor-specialty">{{ appointment.doctorSpecialty || 'أخصائي' }}</p>
+      
+      @if (appointment.slotStart) {
+        <div class="doctor-date-time" dir="ltr">
+          <span>{{ formatDate(appointment.slotStart) }} {{ formatTime(appointment.slotStart) }}</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.6667 2.33333H2.33333C1.59695 2.33333 1 2.93029 1 3.66667V11.6667C1 12.403 1.59695 13 2.33333 13H11.6667C12.403 13 13 12.403 13 11.6667V3.66667C13 2.93029 12.403 2.33333 11.6667 2.33333Z" stroke="#9B8CBF" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M1 5H13" stroke="#9B8CBF" stroke-width="1.2"/>
+            <path d="M4.33333 1V3" stroke="#9B8CBF" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M9.66667 1V3" stroke="#9B8CBF" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card-separator"></div>
+
+  <!-- Rating stars form -->
+  <div class="rating-section">
+    <span class="section-label">تقييمك للطبيب</span>
+    
+    <div class="stars-row">
+      @for (star of [1, 2, 3, 4, 5]; track star) {
+        <button
+          type="button"
+          class="star-btn"
+          [class.star-btn--filled]="star <= displayedStars()"
+          (click)="setRating(star)"
+          (mouseenter)="setHover(star)"
+          (mouseleave)="clearHover()"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/>
+          </svg>
+        </button>
+      }
+    </div>
+
+    <!-- Review comments -->
+    <span class="section-label">أكتب تجربتك (إختياري)</span>
+    <div class="textarea-wrap">
+      <textarea
+        [value]="comment()"
+        (input)="onCommentChange($any($event.target).value)"
+        placeholder="شاركنا رأيك في الطبيب، خبرته، أسلوبه......"
+        rows="3"
+      ></textarea>
+      <svg class="textarea-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+    </div>
+
+    <!-- Feedback messages -->
+    @if (errorMsg()) {
+      <div class="feedback-msg error-msg">{{ errorMsg() }}</div>
+    }
+    @if (successMsg()) {
+      <div class="feedback-msg success-msg">{{ successMsg() }}</div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="actions-row">
+      @if (isEditMode) {
+        <button
+          type="button"
+          class="delete-btn"
+          [disabled]="submitting()"
+          (click)="removeReview()"
+        >
+          حذف التقييم
+        </button>
+      }
+      <button
+        type="button"
+        class="submit-btn"
+        [disabled]="submitting()"
+        (click)="submit()"
+      >
+        {{ submitting() ? 'جاري الإرسال...' : (isEditMode ? 'تعديل التقييم' : 'إرسال التقييم') }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@ import { Doctors } from './components/doctors/doctors';
 import { DoctorProfile } from './components/doctor-profile/doctor-profile';
 import { ConsultRequest } from './components/consult-request/consult-request';
 import { DoctorChat } from './components/doctor-chat/doctor-chat';
+import { ChatComponent } from './components/chat/chat';
 import { LoginComponent } from './features/auth/login/login.component';
 
 // Doctor dashboard components
@@ -32,6 +33,10 @@ import { DoctorAvailabilityComponent } from './DoctorDashboard/doctor-avaliabilt
 import { AppointmentsListComponent } from './components/appointments-list-component/appointments-list-component';
 import { DoctorReviewCardComponent } from './components/doctor-review-card-component/doctor-review-card-component';
 import { RatingsPageComponent } from './components/ratings-page-component/ratings-page-component';
+
+import { AiChat } from './components/ai-chat/ai-chat';
+
+
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
@@ -47,6 +52,8 @@ export const routes: Routes = [
   {
     path: 'booking',
     component: Booking,
+    canActivate: [authGuard],
+    data: { roles: ['Patient'] },
     children: [
       { path: '', redirectTo: 'date-time', pathMatch: 'full' },
       { path: 'date-time', component: StepDateTime },
@@ -60,28 +67,41 @@ export const routes: Routes = [
   {
     path: 'profile', 
     component: NavbarPatient,
+    canActivate:[authGuard] , 
+    data :{
+      roles :['Patient']
+    } , 
     children: [
       { path: '', redirectTo: 'patientProfile', pathMatch: 'full' },
       { path: 'patientProfile', component: UserProfileComponent },
       { path: 'medicalHistory', component: MedicalHistory },
       { path: 'appointment', component: AppointmentsListComponent },
+      { path: 'docReview', component: RatingsPageComponent },
       { path: 'PatientSetting', component: DocSettings },
     ]
   },
 
   { path: 'consult', component: ConsultRequest },
-  { path: 'doctor-dashboard/consultations/chat', component: DoctorChat },
+  { path: 'chat', component: ChatComponent },
+  { path: 'ai-pulse', component: AiChat , canActivate: [authGuard], },
 
   // Doctor Dashboard sub-routes
   {
     path: 'doctor-dashboard',
     component: DoctorDash,
+   canActivate: [authGuard],
+     data:{
+      roles :['Doctor']
+     } , 
     children: [
       { path: '', redirectTo: 'main', pathMatch: 'full' },
       { path: 'main', component: DocMain },
       { path: 'docSlots', component: DoctorAvailabilityComponent },
       { path: 'patients', component: DocPatients },
       { path: 'consultations', component: DocConsultations },
+
+      { path: 'consultations/chat', component: ChatComponent },
+
       { path: 'analytics', component: DocAnalytics },
       { path: 'finance', component: DocPayments },
       { path: 'profile', component: DocProfile },
@@ -91,16 +111,8 @@ export const routes: Routes = [
 
   // Admin routes (Lazy-loaded)
   {
-    path: 'admin/dashboard',
-    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.AdminDashboardComponent),
-  },
-  {
-    path: 'admin/patients',
-    loadComponent: () => import('./components/features/patients-management/patients-management.component').then(m => m.PatientsManagementComponent),
-  },
-  {
-    path: 'admin/doctors',
-    loadComponent: () => import('./components/features/doctors-management/doctors-management.component').then(m => m.DoctorsManagementComponent),
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
   },
 
   // Authentication & Verification paths

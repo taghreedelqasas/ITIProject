@@ -1,0 +1,117 @@
+
+
+
+<div dir="rtl" class="flex min-h-screen bg-slate-50 font-[Cairo,sans-serif]">
+  <!-- Sidebar: أول عنصر في الـ DOM عشان في RTL يظهر على اليمين -->
+  <aside class="w-72 shrink-0 sticky top-0 h-screen overflow-y-auto bg-[#53098D] text-white flex flex-col py-6 px-4">
+    <!-- شعار Maw3ed موعد -->
+    <div class="flex items-center px-2 pb-6 mb-2">
+      <img src="/images/logoImage.png" alt="Maw3ed Logo" class="h-12 w-auto" />
+    </div>
+
+    <nav class="flex-1 flex flex-col gap-1">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="bg-white/15"
+        [routerLinkActiveOptions]="{ exact: item.route === '/admin' }"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
+      >
+        <ng-container [ngSwitch]="item.icon">
+          <svg *ngSwitchCase="'home'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg *ngSwitchCase="'patients'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6" stroke-linecap="round"/><path d="M16.5 4.5a3.2 3.2 0 010 6.4M20 20c0-2.8-1.9-5-4.8-5.8" stroke-linecap="round"/></svg>
+          <svg *ngSwitchCase="'doctors'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3v4a3 3 0 006 0V3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3v5a6 6 0 0012 0V3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="18" r="3"/></svg>
+          <svg *ngSwitchCase="'appointments'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 10h17" stroke-linecap="round"/><path d="M8 3v4M16 3v4" stroke-linecap="round"/><path d="M12 13.5v4M9.8 15.7h4.4" stroke-linecap="round"/></svg>
+          <svg *ngSwitchCase="'payments'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15 9.8c0-1.5-1.3-2.3-3-2.3s-3 .9-3 2.3 1.3 2 3 2.3c1.7.3 3 .8 3 2.3s-1.3 2.3-3 2.3-3-.8-3-2.3" stroke-linecap="round"/></svg>
+          <svg *ngSwitchCase="'withdrawals'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10.5h19" stroke-linecap="round"/><path d="M8 21l4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg *ngSwitchCase="'support'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1116 0v5a2.5 2.5 0 01-2.5 2.5H15" stroke-linecap="round" stroke-linejoin="round"/><rect x="2.5" y="12" width="4" height="5" rx="1"/><rect x="17.5" y="12" width="4" height="5" rx="1"/></svg>
+          <svg *ngSwitchCase="'analytics'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V9M9 21V3M15 21v-7M21 21V6" stroke-linecap="round"/></svg>
+          <svg *ngSwitchCase="'settings'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V19a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1h.1a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </ng-container>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <button
+      type="button"
+      (click)="openLogoutConfirm()"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-colors mt-2"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M15 17l5-5-5-5M20 12H9M12 3H5a2 2 0 00-2 2v14a2 2 0 002 2h7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span>تسجيل الخروج</span>
+    </button>
+  </aside>
+
+  <!-- المحتوى الرئيسي: تاني عنصر في الـ DOM عشان في RTL يظهر على الشمال -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Header -->
+    <header class="flex items-center justify-end gap-4 px-8 py-4 bg-white border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <!-- صورة البروفايل: قابلة للتغيير محليًا (مفيش endpoint رفع صور للأدمن في الباك لسه) -->
+        <button
+          type="button"
+          (click)="avatarInput.click()"
+          title="تغيير صورة البروفايل"
+          class="relative w-11 h-11 rounded-full bg-slate-200 bg-cover bg-center shrink-0 group overflow-hidden focus:outline-none"
+          [style.background-image]="currentUser.avatarUrl ? 'url(' + currentUser.avatarUrl + ')' : null"
+        >
+          <span class="absolute inset-0 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
+            <svg class="opacity-0 group-hover:opacity-100 transition-opacity" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8">
+              <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" stroke-linejoin="round" />
+              <circle cx="12" cy="13" r="3.2" />
+            </svg>
+          </span>
+        </button>
+        <input
+          #avatarInput
+          type="file"
+          accept="image/*"
+          class="hidden"
+          (change)="onAvatarSelected($event)"
+        />
+
+        <div class="leading-tight">
+          <p class="font-semibold text-slate-800 text-sm">{{ currentUser.name }}</p>
+          <p class="text-xs text-slate-400">{{ currentUser.role }}</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- محتوى الصفحة -->
+    <main class="flex-1 p-8">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<!-- ============ Modal: تأكيد تسجيل الخروج ============ -->
+<div
+  *ngIf="isLogoutConfirmOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+  dir="rtl"
+>
+  <div class="w-full max-w-lg rounded-3xl bg-white p-10 text-center shadow-2xl">
+    <h2 class="text-3xl font-extrabold text-red-500 mb-5">تسجيل الخروج</h2>
+    <p class="text-lg text-slate-700 mb-8">هل تريد بالتأكيد تسجيل الخروج من هذا الحساب؟</p>
+
+    <div class="flex items-center gap-4">
+      <button
+        type="button"
+        (click)="confirmLogout()"
+        class="flex-1 rounded-full bg-red-500 text-white font-semibold py-3.5 hover:bg-red-600 transition-colors"
+      >
+        تسجيل الخروج
+      </button>
+      <button
+        type="button"
+        (click)="closeLogoutConfirm()"
+        class="flex-1 rounded-full border-2 border-violet-700 text-violet-700 font-semibold py-3.5 hover:bg-violet-50 transition-colors"
+      >
+        إلغاء
+      </button>
+    </div>
+  </div>
+</div>
+

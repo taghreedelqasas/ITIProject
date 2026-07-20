@@ -43,17 +43,22 @@
             <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
 
               <!-- Patient -->
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-11 h-11 rounded-full bg-purple-100 text-[#53098D] flex justify-center items-center font-bold shrink-0">
-                    {{ patient.name.charAt(0) }}
-                  </div>
-                  <h3 class="font-bold text-gray-800">
-                    {{ patient.name }}
-                  </h3>
-                </div>
-              </td>
-
+           <!-- Patient -->
+<td class="px-6 py-4">
+  <div class="flex items-center gap-3">
+    <div class="w-11 h-11 rounded-full overflow-hidden bg-purple-100 text-[#53098D] flex justify-center items-center font-bold shrink-0">
+      <!-- التعديل هنا: عرض الرابط القادم مباشرة من السيرفر -->
+      @if (patient.imageUrl) {
+        <img [src]="patient.imageUrl" alt="patientImg" class="w-full h-full object-cover" />
+      } @else {
+        {{ patient.name.charAt(0) }}
+      }
+    </div>
+    <h3 class="font-bold text-gray-800">
+      {{ patient.name }}
+    </h3>
+  </div>
+</td>
               <!-- Gender -->
               <td class="px-6 py-4 text-[#8275A0]">
                 {{ patient.gender }}
@@ -136,7 +141,7 @@
       <!-- Header -->
 
       <div class="relative px-6  ">
-                   <div  class="border-b border-gray-200 py-8  flex  items-center  justify-between  ">
+                   <div  class="border-b border-gray-200 py-5  flex  items-center  justify-between  ">
         <p class="text-[#44116D]  text-lg font-bold ">ملف المريض</p>
         <button
           (click)="closeDrawer()"
@@ -146,29 +151,27 @@
 
                    </div>
         
-        <div class="flex  text-[#44116D]   py-3">
-             
-          <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100">
-  <img
-    src="/images/07e6a7d0f800af63c08479eb7c82b751205733d1.jpg"
-    alt="patientImg"
-    class="w-full h-full object-cover"
-  />
+<div class="flex text-[#44116D] py-3">
+  <div class="w-17 h-17 mx-3 rounded-full overflow-hidden bg-purple-100 flex justify-center items-center font-bold shrink-0">
+    <!-- التعديل هنا أيضاً للرابط المباشر -->
+    @if (selectedPatient?.imageUrl) {
+      <img
+        [src]="selectedPatient.imageUrl"
+        alt="patientImg"
+        class="w-full h-full object-cover"
+      />
+    } @else {
+      <span class="text-xl">{{ selectedPatient?.name?.charAt(0) }}</span>
+    }
+  </div>
+  
+  <div>
+    <h2 class="text-xl font-bold">
+      {{ selectedPatient.name }}
+    </h2>
+    <span class="text-[9px] text-gray-400">{{ selectedPatient.lastAppointment | date:'dd/MM/yyyy' }}</span>
+  </div>
 </div>
-            <div>
-               <h2 class=" text-xl font-bold">
-            {{ selectedPatient.name }}
-          </h2>
-
-          <span  class="test-[9px] text-gray-400">{{selectedPatient.lastAppointment}}</span>
-            </div>
-
-
-         
-
-        
-
-        </div>
 
       </div>
 
@@ -181,29 +184,44 @@
 
         @for (file of patientFiles(); track file.id) {
 
-          <div class="border border-gray-200 rounded-2xl px-2   py-4 mb-4 hover:bg-gray-50 transition">
+          <div class="border border-gray-200 rounded-2xl px-2     flex  justify-between   py-4 mb-4 hover:bg-gray-50 transition">
 
-            <div class="flex justify-between    items-center">
+            <div class="flex     items-center">
                
-                <span class=" rounded-lg  text-lg     px-3 py-1 ">
+                <span class=" mx-2 ">
                 @switch (file.category) {
                    @case(0){
-                    <i class="fa-regular fa-image   text-[#23E0E0]  bg-[#E9FCFC] "></i>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="14" fill="#E9FCFC"/>
+<path d="M31 15H17C15.8954 15 15 15.8954 15 17V31C15 32.1046 15.8954 33 17 33H31C32.1046 33 33 32.1046 33 31V17C33 15.8954 32.1046 15 31 15Z" stroke="#23E0E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M21 23C22.1046 23 23 22.1046 23 21C23 19.8954 22.1046 19 21 19C19.8954 19 19 19.8954 19 21C19 22.1046 19.8954 23 21 23Z" stroke="#23E0E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M33 26.9997L29.914 23.9137C29.5389 23.5388 29.0303 23.3281 28.5 23.3281C27.9697 23.3281 27.4611 23.5388 27.086 23.9137L18 32.9997" stroke="#23E0E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
                    }
                    @case(1){
-                   <i class="fa-solid fa-file "></i>
+                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="14" fill="#ECE7F0"/>
+<path d="M29.25 20.0488L23.3445 14.3203H15.75V30.6853H29.25V20.0488ZM23.3445 14.3203V20.0488H29.25M18.75 33.7528H32.25V23.2528M18 23.2528H27M18 19.5028H21M18 27.0028H27" stroke="#44116D" stroke-linejoin="round"/>
+</svg>
+
                    }
                    @case(2){
-             <i class="fa-regular  fa-x-ray"></i>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="14" fill="#EDF7ED"/>
+<path d="M17 31H18.425L28.2 21.225L26.775 19.8L17 29.575V31ZM15 33V28.75L28.2 15.575C28.4 15.3917 28.6208 15.25 28.8625 15.15C29.1042 15.05 29.3583 15 29.625 15C29.8917 15 30.15 15.05 30.4 15.15C30.65 15.25 30.8667 15.4 31.05 15.6L32.425 17C32.625 17.1833 32.7708 17.4 32.8625 17.65C32.9542 17.9 33 18.15 33 18.4C33 18.6667 32.9542 18.9208 32.8625 19.1625C32.7708 19.4042 32.625 19.625 32.425 19.825L19.25 33H15ZM27.475 20.525L26.775 19.8L28.2 21.225L27.475 20.525Z" fill="#4CAF4F"/>
+</svg>
                    }
                    @case(3){
-                   <i class="fa-regular  fa-folder   bg-[#FFEDED]  text-red-400  "></i>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="14" fill="#FFEDED"/>
+<path d="M16 32C15.45 32 14.9792 31.8042 14.5875 31.4125C14.1958 31.0208 14 30.55 14 30V18C14 17.45 14.1958 16.9792 14.5875 16.5875C14.9792 16.1958 15.45 16 16 16H22L24 18H32C32.55 18 33.0208 18.1958 33.4125 18.5875C33.8042 18.9792 34 19.45 34 20V30C34 30.55 33.8042 31.0208 33.4125 31.4125C33.0208 31.8042 32.55 32 32 32H16ZM16 30H32V20H23.175L21.175 18H16V30Z" fill="#FF4848"/>
+</svg>
                    }
                 }
               </span>
 
               <div>
-                <h4 class="font-semibold">
+                <h4 class="font-semibold  py-2">
                   {{ file.fileName }}
                 </h4>
                 <span class="text-xs text-[#A992BC] mt-1  ">
@@ -219,7 +237,7 @@
                     Pdf
                    }
                    @case(2){
-                    XRay
+                    png
                    }
                    @case(3){
                      folder
@@ -227,16 +245,16 @@
                 }
                 </span>
               </div>
-
-                <a
-              class=" block w-full    text-[#53098D] text-center  left-0     "
-              target="_blank"
-              [href]="baseUrl + file.fileUrl">
-              <i class="fa-solid fa-eye"></i> 
-            </a>
-
             </div>
-         
+               <a
+              class=" block       text-[#53098D] text-center  left-0     "
+              target="_blank"
+              [href]="file.fileUrl">
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.5 18.8359C13.5 12.1693 22.5 12.1693 25.5 18.8359" stroke="#44116D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18 22.1719C17.6717 22.1719 17.3466 22.1072 17.0433 21.9816C16.74 21.8559 16.4644 21.6718 16.2322 21.4396C16.0001 21.2075 15.8159 20.9319 15.6903 20.6286C15.5647 20.3253 15.5 20.0002 15.5 19.6719C15.5 19.3436 15.5647 19.0185 15.6903 18.7152C15.8159 18.4119 16.0001 18.1363 16.2322 17.9041C16.4644 17.672 16.74 17.4878 17.0433 17.3622C17.3466 17.2365 17.6717 17.1719 18 17.1719C18.663 17.1719 19.2989 17.4353 19.7678 17.9041C20.2366 18.3729 20.5 19.0088 20.5 19.6719C20.5 20.3349 20.2366 20.9708 19.7678 21.4396C19.2989 21.9085 18.663 22.1719 18 22.1719Z" stroke="#44116D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+            </a>
           </div>
 
         } @empty {

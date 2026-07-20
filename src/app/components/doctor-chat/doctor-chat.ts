@@ -1,8 +1,11 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ConversationService } from '../../core/services/conversation.service';
+import { AuthService } from '../../core/services/auth.service';
+import { SignalRService } from '../../core/services/signalr.service';
 import { ChatMessage as ApiChatMessage } from '../../core/models/conversation.model';
 
 type SenderType = 'doctor' | 'patient';
@@ -23,8 +26,6 @@ interface QuickAction {
   label: string;
 }
 
-const POLL_INTERVAL_MS = 6000;
-
 @Component({
   selector: 'app-doctor-chat',
   imports: [CommonModule, FormsModule],
@@ -40,7 +41,11 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
   isLoading = false;
   errorMessage = '';
 
-  private pollHandle: ReturnType<typeof setInterval> | null = null;
+  private signalr = inject(SignalRService);
+  private authService = inject(AuthService);
+  private subscriptions: Subscription[] = [];
+  private typingTimeout: ReturnType<typeof setTimeout> | null = null;
+  private isSendingTyping = false;
 
   constructor(
     private router: Router,
@@ -64,32 +69,61 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.signalr.startConnection().then(() => {
+      if (this.conversationId) {
+        this.signalr.joinConversation(this.conversationId);
+      }
+    });
+
+    this.subscriptions.push(
+      this.signalr.messageReceived$.subscribe((msg) => {
+        if (msg.conversationId && msg.conversationId !== this.conversationId) return;
+        const isMine = this.isMessageMine(msg);
+        if (isMine) return;
+        const mapped = this.mapMessage(msg);
+        this.messages.push(mapped);
+        if (this.conversationId) {
+          this.signalr.sendMarkAsRead(this.conversationId);
+        }
+      }),
+      this.signalr.userTyping$.subscribe(({ conversationId }) => {
+        if (conversationId !== this.conversationId) return;
+        this.isDoctorTyping = true;
+      }),
+      this.signalr.userStoppedTyping$.subscribe(({ conversationId }) => {
+        if (conversationId !== this.conversationId) return;
+        this.isDoctorTyping = false;
+      }),
+      this.signalr.messagesRead$.subscribe(({ conversationId }) => {
+        if (conversationId !== this.conversationId) return;
+        this.messages.forEach(m => m.read = true);
+      })
+    );
+
     if (this.conversationId) {
       this.loadMessages(true);
     } else if (this.doctorId) {
       this.startOrResumeConversation(this.doctorId);
     }
-
-    // بولينج بسيط لتحديث الرسائل بدل الاعتماد على WebSocket
-    this.pollHandle = setInterval(() => {
-      if (this.conversationId) this.loadMessages(false);
-    }, POLL_INTERVAL_MS);
   }
 
   ngOnDestroy(): void {
-    if (this.pollHandle) clearInterval(this.pollHandle);
+    this.subscriptions.forEach(s => s.unsubscribe());
+    if (this.typingTimeout) clearTimeout(this.typingTimeout);
+    if (this.conversationId) {
+      this.signalr.sendStopTyping(this.conversationId);
+    }
   }
 
   private startOrResumeConversation(doctorId: number): void {
     this.isLoading = true;
-    // نداء API: POST /api/Conversation/start/{doctorId}
-    // (السيرفر بيرجع نفس المحادثة القائمة لو موجودة بالفعل بدل ما ينشئ واحدة جديدة)
     this.conversationService.startAsPatient(doctorId).subscribe({
       next: (conversation) => {
         this.conversationId = (conversation?.id as number) ?? null;
         this.isLoading = false;
         if (this.conversationId) {
           this.loadMessages(true);
+          this.signalr.joinConversation(this.conversationId);
         }
       },
       error: () => {
@@ -99,12 +133,17 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     });
   }
 
+  private isMessageMine(m: ApiChatMessage): boolean {
+    return !!m.isMine;
+  }
+
   private mapMessage(m: ApiChatMessage): ChatMessage {
-    const isMine = m.senderType === 'Patient';
+    const isMine = this.isMessageMine(m);
     let time = '';
-    if (m.sentAt) {
+    const dateStr = m.createdAt;
+    if (dateStr) {
       try {
-        time = new Date(m.sentAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        time = new Date(dateStr).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
       } catch {
         time = '';
       }
@@ -122,15 +161,12 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     if (!this.conversationId) return;
     if (showLoading) this.isLoading = true;
 
-    // نداء API: GET /api/Conversation/{conversationId}/messages
     this.conversationService.getMessages(this.conversationId).subscribe({
       next: (msgs) => {
         this.messages = (msgs || []).map((m) => this.mapMessage(m));
         this.isLoading = false;
-
-        // نداء API: PUT /api/Conversation/{conversationId}/read لتعليم الرسائل كمقروءة
         if (this.conversationId) {
-          this.conversationService.markAsRead(this.conversationId).subscribe({ error: () => {} });
+          this.signalr.sendMarkAsRead(this.conversationId);
         }
       },
       error: () => {
@@ -216,12 +252,25 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     this.messages.push(optimisticMessage);
     this.messageText = '';
 
-    // نداء API: POST /api/Conversation/{conversationId}/messages
+    this.signalr.sendStopTyping(this.conversationId);
+
     this.conversationService.sendMessage(this.conversationId, { content: trimmed }).subscribe({
       error: () => {
         this.errorMessage = 'تعذر إرسال الرسالة.';
       },
     });
+  }
+
+  onTyping(): void {
+    if (!this.conversationId || this.isSendingTyping) return;
+    this.isSendingTyping = true;
+    this.signalr.sendTyping(this.conversationId);
+
+    if (this.typingTimeout) clearTimeout(this.typingTimeout);
+    this.typingTimeout = setTimeout(() => {
+      this.signalr.sendStopTyping(this.conversationId!);
+      this.isSendingTyping = false;
+    }, 2000);
   }
 
   onQuickAction(action: QuickAction): void {
@@ -287,4 +336,7 @@ export class DoctorChat implements AfterViewChecked, OnInit, OnDestroy {
     input.value = '';
     this.pendingFileAction = null;
   }
+
+
+  
 }

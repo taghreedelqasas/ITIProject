@@ -190,6 +190,7 @@
           type="text"
           [(ngModel)]="messageText"
           (keydown.enter)="onSend()"
+          (input)="onTyping()"
           placeholder="اكتب رسالتك هنا..."
           class="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none min-w-0"
         />

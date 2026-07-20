@@ -1,0 +1,158 @@
+<div dir="rtl" class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-800">إدارة المرضى</h1>
+    <p class="text-sm text-slate-400 mt-1">عرض وإدارة حسابات المرضى المسجلين في المنصة.</p>
+  </div>
+
+  <!-- شريط الأدوات -->
+  <div class="rounded-2xl bg-white border border-slate-100 p-4 flex flex-wrap items-center gap-3">
+    <button
+      type="button"
+      (click)="load()"
+      title="تحديث"
+      class="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shrink-0"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M21 12a9 9 0 10-2.6 6.4M21 12v-5M21 12h-5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <div class="relative flex-1 min-w-[220px]">
+      <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3" stroke-linecap="round" />
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        placeholder="البحث بالاسم"
+        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pr-11 pl-4 text-sm text-slate-700 placeholder:text-slate-400"
+      />
+    </div>
+
+    <!--
+      ملحوظة: فلتر "البحث بالتخصص" وفلتر "حالة الحساب" اللي كانوا في التصميم الأصلي اتشالوا -
+      التخصص خاص بالأطباء مش المرضى، وحالة الحساب مش موجودة في AdminPatientDto حاليًا.
+    -->
+  </div>
+
+  <!-- الجدول -->
+  <div class="rounded-2xl bg-white border border-slate-100 overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <h3 class="font-bold text-slate-800">قائمة المرضى</h3>
+      <span class="text-sm text-slate-400">{{ totalCount }} مريض</span>
+    </div>
+
+    <!-- تحميل -->
+    <div *ngIf="loading" class="p-6 space-y-3">
+      <div *ngFor="let _ of [1,2,3,4,5]" class="h-12 rounded-xl bg-slate-100 animate-pulse"></div>
+    </div>
+
+    <!-- خطأ -->
+    <div *ngIf="!loading && error" class="p-6 text-sm text-red-500">
+      تعذر تحميل قائمة المرضى.
+      <button type="button" (click)="load()" class="text-violet-600 font-semibold underline mr-1">إعادة المحاولة</button>
+    </div>
+
+    <!-- فاضي -->
+    <div *ngIf="!loading && !error && totalCount === 0" class="p-10 text-center text-sm text-slate-400">
+      مفيش مرضى مطابقين لبحثك.
+    </div>
+
+    <!-- الجدول الفعلي -->
+    <div *ngIf="!loading && !error && totalCount > 0" class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-slate-400 border-b border-slate-100">
+            <th class="w-12 px-6 py-3">
+              <input type="checkbox" [checked]="isAllSelectedOnPage()" (change)="toggleSelectAllOnPage()" class="rounded border-slate-300" />
+            </th>
+            <th class="text-start px-3 py-3 font-semibold cursor-pointer select-none" (click)="toggleSort()">
+              <span class="inline-flex items-center gap-1">
+                اسم المريض
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" [class.rotate-180]="sortDirection === 'desc'">
+                  <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </th>
+            <th class="text-start px-3 py-3 font-semibold">البريد الإلكتروني</th>
+            <th class="text-start px-3 py-3 font-semibold">عدد الحجوزات</th>
+            <th class="text-start px-3 py-3 font-semibold">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let patient of pagedPatients" class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60">
+            <td class="px-6 py-3">
+              <input type="checkbox" [checked]="selectedIds.has(patient.id)" (change)="toggleSelect(patient.id)" class="rounded border-slate-300" />
+            </td>
+            <td class="px-3 py-3">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-full bg-violet-100 text-violet-600 text-xs font-bold flex items-center justify-center bg-cover bg-center shrink-0"
+                  [style.background-image]="patient.profilePictureUrl ? 'url(' + patient.profilePictureUrl + ')' : null"
+                >
+                  <span *ngIf="!patient.profilePictureUrl">{{ initials(patient.fullName) }}</span>
+                </div>
+                <span class="font-medium text-slate-700">{{ patient.fullName }}</span>
+              </div>
+            </td>
+            <td class="px-3 py-3 text-slate-500">{{ patient.email }}</td>
+            <td class="px-3 py-3 font-semibold text-slate-700">{{ formatCount(patient.totalAppointments) }}</td>
+            <td class="px-3 py-3">
+              <button
+                type="button"
+                (click)="openProfile(patient)"
+                class="text-violet-600 text-xs font-semibold hover:underline"
+              >
+                عرض الملف الشخصي
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && !error && totalCount > 0" class="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+      <span class="text-xs text-slate-400">عرض {{ rangeStart }}–{{ rangeEnd }} من {{ totalCount }} مريض</span>
+
+      <div class="flex items-center gap-1.5">
+        <button
+          type="button"
+          (click)="goToPage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 disabled:opacity-40"
+        >
+          ‹
+        </button>
+
+        <button
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          type="button"
+          (click)="goToPage(i + 1)"
+          class="w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center transition-colors"
+          [ngClass]="currentPage === i + 1 ? 'bg-violet-700 text-white' : 'text-slate-500 hover:bg-slate-100'"
+        >
+          {{ i + 1 }}
+        </button>
+
+        <button
+          type="button"
+          (click)="goToPage(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 disabled:opacity-40"
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- بروفايل المريض الكامل: Panel جانبي بيجيب البيانات من api/admin/patients/{id} -->
+<app-patient-profile-panel
+  *ngIf="selectedPatientId !== null"
+  [patientId]="selectedPatientId"
+  (closed)="closeProfile()"
+></app-patient-profile-panel>

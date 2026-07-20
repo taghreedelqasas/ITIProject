@@ -1,122 +1,194 @@
 :host {
-  --appt-primary: #6d3fe0;
-  --appt-primary-light: #efe9fd;
-  --appt-accent: #17b6a7;
-  --appt-danger: #ef4444;
-  --appt-text: #2b2440;
-  --appt-text-muted: #8b86a0;
-  --appt-border: #eee9f9;
-  --star-empty: #e4e0f0;
-
   display: block;
-  font-family: 'Cairo', 'Tajawal', sans-serif;
+  font-family: 'Tajawal', sans-serif;
 }
 
 .ratings-wrap {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 24px;
+  max-width: 848px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.page-title {
-  font-size: 18px;
+/* Page Headers (Doctor reviews / Platform reviews) */
+.ratings-header-banner, .platform-header-banner {
+  background: #FCFCFC;
+  border: 1px solid rgba(68, 17, 109, 0.08);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-indicator {
+  width: 4px;
+  height: 40px;
+  background-color: #23E0E0;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.platform-header-indicator {
+  width: 4px;
+  height: 24px;
+  background-color: #44116D;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.header-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: right;
+}
+
+.header-title {
+  font-family: 'Almarai', sans-serif;
   font-weight: 700;
-  color: var(--appt-text);
-  margin: 0 0 4px;
+  font-size: 18px;
+  color: #44116D;
+  margin: 0;
+}
+
+.header-subtitle {
+  font-family: 'Almarai', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #A992BC;
+  margin: 0;
+}
+
+.platform-header-title {
+  font-family: 'Almarai', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #44116D;
+  margin: 0;
+}
+
+.ratings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
 }
 
 .state-msg {
   text-align: center;
-  color: var(--appt-text-muted);
-  padding: 24px 0;
-  font-size: 14px;
+  color: #A992BC;
+  padding: 40px 0;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .state-msg--error {
-  color: var(--appt-danger);
+  color: #E84242;
 }
 
-/* كارت تقييم المنصة - نفس ستايل الكارت العادي بس بحالة disabled لحد ما يتوفر الـ API */
-.review-card {
-  background: #fff;
-  border: 1px solid var(--appt-border);
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.review-header {
+/* Platform Evaluation Card styling */
+.platform-review-section {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--appt-border);
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-top: 12px;
 }
 
-.review-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--appt-text);
+.platform-card {
+  background: #FCFCFC;
+  border: 1px solid rgba(68, 17, 109, 0.08);
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.review-title::before {
-  content: '|';
-  color: var(--appt-primary);
-  margin-left: 6px;
-}
-
-.section-label {
+.platform-section-label {
   display: block;
-  font-size: 12px;
-  color: var(--appt-text-muted);
-  margin-bottom: 8px;
-}
-
-.stars-row {
-  display: flex;
-  gap: 4px;
+  font-family: 'Almarai', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #44116D;
   margin-bottom: 12px;
 }
 
-.stars-row--disabled .star-btn {
-  cursor: not-allowed;
-  opacity: 0.6;
+.platform-stars-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-.star-btn {
-  width: 26px;
-  height: 26px;
-  color: var(--star-empty);
+.platform-star-outline {
+  width: 32px;
+  height: 32px;
+  color: #ECE7F0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.star-btn svg {
+.platform-star-outline svg {
   width: 100%;
   height: 100%;
+  stroke: #A992BC;
 }
 
-.comment-box {
+.platform-textarea-wrap {
+  position: relative;
   width: 100%;
-  border: 1px solid var(--appt-border);
-  border-radius: 12px;
-  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.platform-textarea-wrap textarea {
+  width: 100%;
+  border: 1px solid rgba(68, 17, 109, 0.08);
+  border-radius: 16px;
+  padding: 16px 48px 16px 16px;
+  font-family: 'Almarai', sans-serif;
   font-size: 13px;
-  font-family: inherit;
+  color: #A992BC;
   resize: vertical;
-  margin-bottom: 12px;
-  color: var(--appt-text-muted);
+  background-color: #FCFCFC;
   box-sizing: border-box;
-  background: #faf9fc;
+  outline: none;
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
-.submit-btn {
-  width: 100%;
-  padding: 11px;
-  border: none;
-  border-radius: 14px;
-  background: #d8d3e8;
-  color: #fff;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: not-allowed;
+.platform-textarea-icon {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  color: #A992BC;
+  pointer-events: none;
 }
+
+.platform-submit-btn {
+  background: #23E0E0;
+  border: none;
+  color: #44116D;
+  font-family: 'Almarai', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 40px;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  opacity: 0.5;
+}

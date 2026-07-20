@@ -94,25 +94,16 @@ export class AuthService {
       return false;
     }
   }
-
-  getUserRoles(): string[] {
-    const token = this.getAccessToken();
-    if (!token) return [];
-    try {
-      const decoded: any = jwtDecode(token);
-      return decoded.roles || decoded.role || [];
-    } catch {
-      return [];
-    }
-  }
-
+getUserRoles(): string[] {
+  return JSON.parse(localStorage.getItem('userRoles') || '[]');
+}
   getCurrentUser(): any {
     const token = this.getAccessToken();
     if (!token) return null;
     try {
       return jwtDecode(token);
     } catch {
-      return null;
+      return null; 
     }
   }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MedicalFileService } from '../../core/services/medicalFile.service';
 import { HttpEventType } from '@angular/common/http';
+
 type FileCategory = 'report' | 'prescription' | 'radiology' | 'lab';
 
 interface MedicalFileItem {
@@ -21,14 +22,13 @@ interface CategoryInfo {
   count: number;
 }
 
-// ===== عنصر جديد: بيمثل ملف في شاشة الرفع قبل ما يتبعت =====
 interface UploadItem {
   id: string;
   file: File;
   category: FileCategory | '';
   error: string | null;
   status: 'uploading' | 'done' | 'error';
-  progress: number; // 0 - 100
+  progress: number;
 }
 
 interface CategorySelectOption {
@@ -44,87 +44,67 @@ interface CategorySelectOption {
   styleUrl: './medical-history.css'
 })
 export class MedicalHistory implements OnInit {
- constructor(
-  private cdr: ChangeDetectorRef,
-  private medicalService: MedicalFileService
-) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private medicalService: MedicalFileService
+  ) {}
 
-
-ngOnInit(): void {
-  this.loadFiles();
-  this.loadSummary();
-}
-
-
-
-loadFiles() {
-
-  this.medicalService.getFiles().subscribe({
-
-    next: (res) => {
-
-      this.files = res.map(file => ({
-
-        id: file.id,
-
-        name: file.fileName,
-
-        date: file.uploadedAtUtc.split('T')[0],
-
-        type: this.getFileType(file.fileType),
-
-        size: this.formatSize(file.fileSizeInBytes),
-
-        category: this.mapCategory(file.category),
-
-        fileUrl: 'https://mawed.runasp.net' + file.fileUrl
-
-      }));
-this.cdr.detectChanges();
-    }
-
-  });
-
-}
-loadSummary() {
-
-  this.medicalService.getSummary().subscribe({
-
-    next: res => {
-
-      this.summary = res;
-      this.cdr.detectChanges();
-
-    }
-
-  });
-
-}
-mapCategory(category: number): FileCategory {
-
-  switch (category) {
-
-    case 0:
-      return 'lab';
-
-    case 1:
-      return 'radiology';
-
-    case 2:
-      return 'prescription';
-
-    case 3:
-      return 'report';
-
-    default:
-      return 'lab';
+  ngOnInit(): void {
+    this.loadFiles();
+    this.loadSummary();
   }
 
-}
+  // ===== تعديل دالة تحميل الملفات لمعالجة الروابط بشكل آمن =====
+  loadFiles() {
+    this.medicalService.getFiles().subscribe({
+      next: (res) => {
+        this.files = res.map(file => {
+          let finalUrl = file.fileUrl || '';
+
+          // إذا كان المسار نسبي يبدأ بـ /uploads ندمج مع الدومين
+          if (finalUrl.startsWith('/uploads')) {
+            finalUrl = 'https://mawed.runasp.net' + finalUrl;
+          }
+          // إذا كان مكرر وجاء على هيئة دمج خاطئ من الدومين مرتين نقوم بتنظيفه
+          else if (finalUrl.includes('https://mawed.runasp.nethttps')) {
+            finalUrl = finalUrl.replace('https://mawed.runasp.nethttps//', 'https://');
+          }
+
+          return {
+            id: file.id,
+            name: file.fileName,
+            date: file.uploadedAtUtc ? file.uploadedAtUtc.split('T')[0] : '',
+            type: this.getFileType(file.fileType),
+            size: this.formatSize(file.fileSizeInBytes),
+            category: this.mapCategory(file.category),
+            fileUrl: finalUrl // الرابط النظيف الجاهز للاستخدام
+          };
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadSummary() {
+    this.medicalService.getSummary().subscribe({
+      next: res => {
+        this.summary = res;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  mapCategory(category: number): FileCategory {
+    switch (category) {
+      case 0: return 'lab';
+      case 1: return 'radiology';
+      case 2: return 'prescription';
+      case 3: return 'report';
+      default: return 'lab';
+    }
+  }
 
   view: 'list' | 'upload' = 'list';
-
-  // ===== إعدادات شاشة الرفع =====
   readonly maxFiles = 5;
   readonly maxSizeMB = 5;
   readonly allowedExt = ['pdf', 'png', 'jpg', 'jpeg'];
@@ -137,52 +117,26 @@ mapCategory(category: number): FileCategory {
     { key: 'lab', label: 'تحليل طبي' }
   ];
 
-  // ===== الملفات المختارة في شاشة الرفع (قبل التأكيد) =====
   uploadItems: UploadItem[] = [];
   isDragging = false;
+  files: MedicalFileItem[] = [];
 
-files: MedicalFileItem[] = [];
+  summary = {
+    labResultCount: 0,
+    scanCount: 0,
+    prescriptionCount: 0,
+    medicalReportCount: 0,
+    totalCount: 0
+  };
 
-summary = {
-  labResultCount: 0,
-  scanCount: 0,
-  prescriptionCount: 0,
-  medicalReportCount: 0,
-  totalCount: 0
-};
-
-  // عدد الملفات لكل تصنيف بيتحسب أوتوماتيك من طول القائمة أعلاه
-get categories(): CategoryInfo[] {
-
-  return [
-
-    {
-      key: 'lab',
-      label: 'التحاليل الطبية',
-      count: this.summary.labResultCount
-    },
-
-    {
-      key: 'radiology',
-      label: 'الأشعة',
-      count: this.summary.scanCount
-    },
-
-    {
-      key: 'prescription',
-      label: 'الوصفات الطبية',
-      count: this.summary.prescriptionCount
-    },
-
-    {
-      key: 'report',
-      label: 'التقارير الطبية',
-      count: this.summary.medicalReportCount
-    }
-
-  ];
-
-}
+  get categories(): CategoryInfo[] {
+    return [
+      { key: 'lab', label: 'التحاليل الطبية', count: this.summary.labResultCount },
+      { key: 'radiology', label: 'الأشعة', count: this.summary.scanCount },
+      { key: 'prescription', label: 'الوصفات الطبية', count: this.summary.prescriptionCount },
+      { key: 'report', label: 'التقارير الطبية', count: this.summary.medicalReportCount }
+    ];
+  }
 
   goToUpload() {
     this.view = 'upload';
@@ -194,13 +148,12 @@ get categories(): CategoryInfo[] {
     this.uploadItems = [];
   }
 
-  // ===== اختيار الملفات (بقت بتقبل أكتر من ملف مرة واحدة) =====
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       this.addFiles(input.files);
     }
-    input.value = ''; // يسمح باختيار نفس الملف تاني لو اتشال من القائمة
+    input.value = '';
   }
 
   onDrop(event: DragEvent) {
@@ -249,16 +202,12 @@ get categories(): CategoryInfo[] {
 
       this.uploadItems.push(item);
 
-      // ===== محاكاة رفع الملف (لحد ما نربط الـ API الحقيقي) =====
-      // TODO: لما نربط الباك اند، هنستبدل الـ setInterval ده بمتابعة
-      // upload progress حقيقي من الـ HttpClient (reportProgress: true)
-     if (!error) {
-  item.status = 'done';
-  item.progress = 100;
-}
+      if (!error) {
+        item.status = 'done';
+        item.progress = 100;
+      }
     });
   }
-
 
   removeUploadItem(id: string) {
     this.uploadItems = this.uploadItems.filter(i => i.id !== id);
@@ -276,139 +225,96 @@ get categories(): CategoryInfo[] {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
-  // ===== تجميع الملفات لعرضها في قسمين: "تعذر الرفع" و "جاري الرفع / تم الرفع بنجاح" =====
-  get errorItems(): UploadItem[] {
-    return this.uploadItems.filter(i => i.status === 'error');
-  }
-
-  get validItems(): UploadItem[] {
-    return this.uploadItems.filter(i => i.status !== 'error');
-  }
-
-  get doneItems(): UploadItem[] {
-    return this.uploadItems.filter(i => i.status === 'done');
-  }
-
-  get isUploadingAny(): boolean {
-    return this.uploadItems.some(i => i.status === 'uploading');
-  }
-
+  get errorItems(): UploadItem[] { return this.uploadItems.filter(i => i.status === 'error'); }
+  get validItems(): UploadItem[] { return this.uploadItems.filter(i => i.status !== 'error'); }
+  get doneItems(): UploadItem[] { return this.uploadItems.filter(i => i.status === 'done'); }
+  get isUploadingAny(): boolean { return this.uploadItems.some(i => i.status === 'uploading'); }
   get canSubmitUpload(): boolean {
     return this.uploadItems.length > 0 && this.uploadItems.every(i => i.status === 'done' && !i.error && i.category !== '');
   }
 
-uploadFiles() {
-  if (!this.canSubmitUpload) return;
+  uploadFiles() {
+    if (!this.canSubmitUpload) return;
 
-  let completed = 0;
+    let completed = 0;
 
-  this.uploadItems.forEach(item => {
-    const formData = new FormData();
-    formData.append('File', item.file);
-    
-    if (item.category === '') return;
-    
-    formData.append('Category', this.getApiCategory(item.category).toString());
+    this.uploadItems.forEach(item => {
+      const formData = new FormData();
+      formData.append('File', item.file);
+      
+      if (item.category === '') return;
+      formData.append('Category', this.getApiCategory(item.category).toString());
 
-    this.medicalService.upload(formData).subscribe({
-      next: event => {
-        if (event.type === HttpEventType.UploadProgress) {
-          item.progress = Math.round(100 * event.loaded / (event.total ?? item.file.size));
-        }
-
-        if (event.type === HttpEventType.Response) {
-          completed++;
-
-          // عند اكتمال رفع جميع الملفات بنجاح
-          if (completed === this.uploadItems.length) {
-            this.loadFiles();
-            this.loadSummary();
-            this.goBack();
-            
-            // ===== السطر السحري لتحديث الشاشة فوراً وإظهار الملفات الجديدة =====
-            this.cdr.detectChanges(); 
+      this.medicalService.upload(formData).subscribe({
+        next: event => {
+          if (event.type === HttpEventType.UploadProgress) {
+            item.progress = Math.round(100 * event.loaded / (event.total ?? item.file.size));
           }
+
+          if (event.type === HttpEventType.Response) {
+            completed++;
+
+            if (completed === this.uploadItems.length) {
+              this.loadFiles();
+              this.loadSummary();
+              this.goBack();
+              this.cdr.detectChanges(); 
+            }
+          }
+        },
+        error: () => {
+          item.status = 'error';
+          item.error = 'فشل رفع الملف';
+          this.cdr.detectChanges();
         }
-      },
-      error: () => {
-        item.status = 'error';
-        item.error = 'فشل رفع الملف';
-        this.cdr.detectChanges(); // لتحديث حالة الخطأ على الواجهة أيضاً
-      }
+      });
     });
-  });
-}
-getApiCategory(category: FileCategory): number {
-
-  switch (category) {
-
-    case 'lab':
-      return 0;
-
-    case 'radiology':
-      return 1;
-
-    case 'prescription':
-      return 2;
-
-    case 'report':
-      return 3;
-
-    default:
-      return 0;
   }
 
-}
+  getApiCategory(category: FileCategory): number {
+    switch (category) {
+      case 'lab': return 0;
+      case 'radiology': return 1;
+      case 'prescription': return 2;
+      case 'report': return 3;
+      default: return 0;
+    }
+  }
 
-private getFileType(
-  ext: string
-): 'PDF' | 'JPEG' | 'PNG' {
+  private getFileType(ext: string): 'PDF' | 'JPEG' | 'PNG' {
+    ext = ext.toLowerCase();
+    if (ext.includes('png')) return 'PNG';
+    if (ext.includes('jpg') || ext.includes('jpeg')) return 'JPEG';
+    return 'PDF';
+  }
 
-  ext = ext.toLowerCase();
+  deleteFile(file: MedicalFileItem) {
+    if (!confirm('متأكد من حذف الملف؟')) return;
 
-  if (ext.includes('png'))
-    return 'PNG';
-
-  if (
-    ext.includes('jpg') ||
-    ext.includes('jpeg')
-  )
-    return 'JPEG';
-
-  return 'PDF';
-
-}
-
-  // بتحذف الملف من الليستة (Front-end بس دلوقتي)
-  // TODO: لما الـ API يخلص، هنضيف هنا استدعاء DELETE /api/MedicalFile/{id}
-  // ولو نجح الطلب، ساعتها بس نمسحه من الـ array
-deleteFile(file: MedicalFileItem) {
-  if (!confirm('متأكد من حذف الملف؟')) return;
-
-  this.medicalService.delete(file.id).subscribe({
-    next: () => {
-      // لو الباك اند رجع استجابة عادية
-      this.files = this.files.filter(x => x.id !== file.id);
-      this.loadSummary();
-      this.cdr.detectChanges(); 
-    },
-    error: (err) => {
-      // لو دخل هنا بسبب إن الرد فاضي (Parsing Error) بس الداتا اتحذفت فعلاً
-      // هنتأكد لو الخطأ بسبب الـ parsing والـ status بوجة عام نجاح (200 أو 204)
-      if (err.status === 200 || err.status === 204 || err.statusText === 'OK') {
+    this.medicalService.delete(file.id).subscribe({
+      next: () => {
         this.files = this.files.filter(x => x.id !== file.id);
         this.loadSummary();
-        this.cdr.detectChanges();
-      } else {
-        // لو فعلاً سيرفر واقع أو مشكلة حقيقية
-        alert('حدث خطأ أثناء حذف الملف');
+        this.cdr.detectChanges(); 
+      },
+      error: (err) => {
+        if (err.status === 200 || err.status === 204 || err.statusText === 'OK') {
+          this.files = this.files.filter(x => x.id !== file.id);
+          this.loadSummary();
+          this.cdr.detectChanges();
+        } else {
+          alert('حدث خطأ أثناء حذف الملف');
+        }
       }
+    });
+  }
+
+  // ===== دالة العرض أصبحت تفتح الرابط النظيف بعد معالجته فوراً =====
+  viewFile(file: MedicalFileItem) {
+    if (file && file.fileUrl) {
+      window.open(file.fileUrl, '_blank');
+    } else {
+      alert('رابط الملف غير متاح');
     }
-  });
-}
-viewFile(file: MedicalFileItem) {
-
-  window.open(file.fileUrl, '_blank');
-
-}
+  }
 }

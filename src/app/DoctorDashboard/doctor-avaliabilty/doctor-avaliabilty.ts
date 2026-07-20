@@ -82,7 +82,7 @@ setStatusFilter(status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | nu
 
 filteredAppointments = computed(() => {
   const filter = this.activeStatusFilter();
-  const all = this.todayAppointments();
+  const all = this.todayAndFutureAppointments(); // تم التغيير هنا لتأخذ المواعيد الحالية والمستقبلية
   return filter ? all.filter(app => app.status === filter) : all;
 });
 
@@ -348,25 +348,29 @@ formatDateHeader(date: string) {
 }
 
 
-  todayAppointments() {
-    const today = new Date().toDateString();
-    return this.dashboardService.appointments().filter(
-      a => new Date(a.slotStart).toDateString() === today
-    );
-  }
+ todayAndFutureAppointments() {
+  const now = new Date();
+  
+  // ضبط الوقت على بداية اليوم الحالي (الساعة 12 بالليل) عشان نضمن ظهور مواعيد اليوم بالكامل والمستقبل
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+  return this.dashboardService.appointments().filter(a => {
+    const appDate = new Date(a.slotStart);
+    return appDate >= startOfToday; // يعرض مواعيد اليوم والمواعيد القادمة، ويستبعد أي يوم قديم
+  });
+}
 
-  async markAsCompleted(app: any) {
+async markAsCompleted(app: any) {
 
   if (app.status === 'Completed') return;
 
-  // الباك إند بيرفض إتمام موعد لسه Pending، لازم يتأكد الأول
+  // 1. خطوة تأكيد الموعد (لو كان Pending): بتشتغل في أي وقت عادي ومفيش عليها قيود
   if (app.status === 'Pending') {
 
     const confirmResult = await Swal.fire({
       title: 'تأكيد الموعد؟',
-      text: 'الموعد لسه بانتظار الحضور، هل تريد تأكيده أولاً؟',
-      icon: 'question',
+      text: 'الموعد  بانتظار الحضور، هل تريد تأكيده أولاً؟',
+      // icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'نعم، أكد الموعد',
       cancelButtonText: 'إلغاء',
@@ -383,14 +387,14 @@ formatDateHeader(date: string) {
         Swal.fire({
           icon: 'success',
           title: 'تم بنجاح',
-          text: 'تم تأكيد الموعد، اضغطي تسجيل الحضور مرة أخرى لإتمامه',
+          text: 'تم تأكيد الموعد، اضغط تسجيل الحضور مرة أخرى لإتمامه',
           timer: 2200,
           showConfirmButton: false
         });
       },
       error: (err) => {
         Swal.fire({
-          icon: 'error',
+          // icon: 'error',
           title: 'حدث خطأ',
           text: err.error?.message ?? 'تعذر تأكيد الموعد',
           confirmButtonColor: '#4A148C'
@@ -401,10 +405,26 @@ formatDateHeader(date: string) {
     return;
   }
 
+  // 2. خطوة تسجيل الحضور الفعلي: هنا بقى بنحط القفل! لو الميعاد لسه مجاش نمنعه
+  const now = new Date();
+  const appointmentTime = new Date(app.slotStart);
+
+  if (appointmentTime > now) {
+    Swal.fire({
+      // icon: 'warning',
+      title: 'عذراً، لا يمكن تسجيل الحضور!',
+      text: 'لا يمكنك إنهاء الموعد وتسجيل حضور المريض قبل حلول موعد الحجز الفعلي.',
+      confirmButtonColor: '#4A148C',
+      confirmButtonText: 'حسناً'
+    });
+    return; // بيوقف ومبيخليهوش يروح للـ completeAppointment
+  }
+
+  // لو الميعاد جه أو عدا.. يكمل عادي ويسجل حضور
   const result = await Swal.fire({
     title: 'تسجيل الحضور؟',
     text: 'هل تريد تسجيل حضور المريض لهذا الموعد؟',
-    icon: 'question',
+    // icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'نعم، سجل الحضور',
     cancelButtonText: 'إلغاء',
@@ -436,7 +456,6 @@ formatDateHeader(date: string) {
     }
   });
 }
-
 
 // للحصول على الوقت الحالي بالصيغة المطلوبة لـ datetime-local (YYYY-MM-DDTHH:mm)
 get minDateTime(): string {

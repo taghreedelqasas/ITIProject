@@ -19,8 +19,10 @@ import {
   ConversationApi,
   AnalyticsStats,
   DoctorSettings,
-  PatientDerived
+  PatientDerived ,
+  DoctorReviewsResponse
 } from './dashboard';
+import { AuthService } from '../../core/services/auth.service';
 
 const BASE = environment.apiBaseUrl;
 
@@ -39,6 +41,7 @@ export class AppointmentService {
 activeConversationId = signal<number | null>(null);
 activeMessages = signal<MessageApi[]>([]);
 newMessageText = signal<string>('');
+ protected  doctorService = inject(AuthService) ; 
 
   getDoctorById(id: number): void {
     this.http.get<DoctorReadDto>(`${BASE}/api/Doctor/${id}`).subscribe({
@@ -51,9 +54,9 @@ newMessageText = signal<string>('');
     });
   }
 
-  updateDoctorProfile(payload: DoctorUpdateDto) {
-    return this.http.put<ServiceResult<null>>(`${BASE}/api/Doctor/${payload.id}`, payload);
-  }
+updateDoctorProfile(payload: DoctorUpdateDto) {
+  return this.http.put<ServiceResult<null>>(`${BASE}/api/Doctor/me`, payload);
+}
 getUserProfile() {
   return this.http.get<UserProfile>(`${BASE}/api/UserProfile`);
 }
@@ -70,7 +73,9 @@ updateUserProfile(payload: UpdateProfileDto) {
     formData.append('file', file);
     return this.http.post<ServiceResult<null>>(`${BASE}/api/UserProfile/picture`, formData);
   }
-
+deleteProfilePicture() {
+    return this.http.delete<ServiceResult<null>>(`${BASE}/api/UserProfile/picture`);
+  }
   
 
   // ============================================================
@@ -195,7 +200,9 @@ getAvailabilityById(id: number) {
           lastStatus: appt.status,
           gender: '—',
           age: 0,
-          phone: '—'
+          phone: '—' ,
+          imageUrl: appt.patientImageUrl , 
+
         });
       }
     }
@@ -205,23 +212,42 @@ getAvailabilityById(id: number) {
   // ============================================================
   // 3) Reviews — على الأغلب حقيقي
   // ============================================================
-  reviews = signal<ReviewApi[]>([]);
 
- getMyReviews(): void {
-  this.http.get<ServiceResult<ReviewApi[]>>(`${BASE}/api/Reviews/my`).subscribe({
-    next: (res) => this.reviews.set(res.data ?? []),
-    error: (err) => {
-      console.error('Error fetching reviews:', err);
-      this.reviews.set([]);
-    }
-  });
+ 
+
+  reviews = signal<ReviewApi[]>([]);
+  doctorId = this.doctorService.getDoctorId() ; 
+  averageRating = signal<number>(0);
+totalReviews = signal<number>(0);
+getMyReviews(): void {
+  const doctorId = this.doctorService.getDoctorId();
+
+  if (!doctorId) return;
+
+  this.http
+    .get<ServiceResult<DoctorReviewsResponse>>(
+      `${BASE}/api/Reviews/doctors/${doctorId}`
+    )
+    .subscribe({
+      next: (res) => {
+        this.reviews.set(res.data.reviews);
+        this.averageRating.set(res.data.averageRating);
+        this.totalReviews.set(res.data.totalReviews);
+      },
+      error: (err) => {
+        console.error('Error fetching reviews:', err);
+        this.reviews.set([]);
+        this.averageRating.set(0);
+        this.totalReviews.set(0);
+      }
+    });
 }
-  averageRating = computed(() => {
-    const list = this.reviews();
-    if (list.length === 0) return '0.0';
-    const sum = list.reduce((acc, r) => acc + r.rating, 0);
-    return (sum / list.length).toFixed(1);
-  });
+  // averageRating = computed(() => {
+  //   const list = this.reviews();
+  //   if (list.length === 0) return '0.0';
+  //   const sum = list.reduce((acc, r) => acc + r.rating, 0);
+  //   return (sum / list.length).toFixed(1);
+  // });
 
   // ============================================================
   // 4) Wallet & Payments — حقيقي بالكامل

@@ -131,7 +131,7 @@
 
   <div class="flex-1 flex flex-col overflow-hidden     "   >
     
-    <header class="bg-white   py-2  rounded-lg  border-b border-gray-100 h-20 flex       justify-content-start    justify-between px-8 shadow-sm">
+    <header class="bg-[#FCFCFC]  py-4  rounded-xl  border-b border-gray-100  flex       px-8 shadow-sm">
       
       <!-- <div class="relative w-80 " >
         <input type="text" placeholder="البحث عن..." 
@@ -140,17 +140,17 @@
 
       </div> -->
 
-      <div class="flex items-center   justify-start      space-x-reverse space-x-4  "  >
+      <!-- <div class="flex items-center   justify-end      space-x-reverse space-x-4  "  > -->
 <!--         
         <button class="p-2.5   mx-3   text-gray-400 hover:text-purple-700 bg-gray-50 rounded-xl hover:bg-purple-50 transition-all relative">
           <span><i class="fas fa-bell"></i></span>
           <span class="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full"></span>
         </button> -->
 
-        <div class="flex items-center space-x-reverse space-x-2  bg-[#F3F4F5]   border border-gray-200   px-4 py-2 rounded-lg  ">
-          <img [src]="dashService.doctor()?.imageProfile || 'https://api.dicebear.com/7.x/adventurer/svg?seed=doctor'" 
-               class="w-8 h-8 rounded-full object-cover  bg-purple-300" 
-               alt="Doctor Avatar">
+        <div class="flex items-center   mr-auto   bg-[#F3F4F5]  justify-start  py-2  border border-gray-200   px-4  rounded-lg  "  >
+         <img [src]="dashService.userProfile()?.profilePictureUrl || 'https://api.dicebear.com/7.x/adventurer/svg?seed=doctor'" 
+     class="w-8 h-8 rounded-full object-cover bg-purple-300" 
+     alt="User Avatar">
           <div class="text-right">
             <span class="text-sm font-bold    text-[#4A148C]">
                 د. {{ dashService.userProfile()?.fullName }} 
@@ -158,7 +158,7 @@
           </div>
         </div>
 
-      </div>
+      
     </header>
 
     <main class="flex-1 overflow-y-auto    rounded-lg  p-5  bg-[#F6F4FB]">

@@ -77,6 +77,7 @@ export interface AppointmentApi {
   slotStart: string; // ISO date-time
   slotEnd: string;
   createdAt: string;
+  patientImageUrl: string;
 }
 
 export interface AvailableSlotApi {
@@ -105,6 +106,14 @@ export interface ReviewApi {
   comment: string | null;
   createdAt: string;
 }
+
+ export interface DoctorReviewsResponse {
+  doctorId: number;
+  doctorName: string;
+  averageRating: number;
+  totalReviews: number;
+  reviews: ReviewApi[];
+} 
 
 // ============================================================
 // 5) حقيقي 100% — Wallet & Payments
@@ -142,6 +151,7 @@ export interface ConversationApi {
   id: number;
   patientId: number;
   patientName: string;
+  patientImage: string | null;
   lastMessage: string | null;
   lastMessageAt: string | null;
   unreadCount: number;
@@ -150,9 +160,11 @@ export interface ConversationApi {
 export interface MessageApi {
   id: number;
   conversationId: number;
-  senderId: string;
+  senderUserId: string;
+  senderRole: string;
+  isMine: boolean;
   content: string;
-  sentAt: string;
+  createdAt: string;
   isRead: boolean;
 }
 
@@ -192,4 +204,5 @@ export interface PatientDerived {
   gender: string;  // ⚠️ وهمي
   age: number;     // ⚠️ وهمي
   phone: string;   // ⚠️ وهمي
+  imageUrl: string;
 }

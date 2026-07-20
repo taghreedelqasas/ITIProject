@@ -1,237 +1,470 @@
-/* عدّلي القيم دي لو مش نفس الدرجة بالظبط اللي في التصميم عندك */
-:host {
-  --appt-primary: #6d3fe0; /* بنفسجي */
-  --appt-primary-light: #efe9fd;
-  --appt-accent: #17b6a7; /* تركواز */
-  --appt-accent-light: #e3f8f6;
-  --appt-danger: #ef4444;
-  --appt-danger-light: #fdecec;
-  --appt-warning: #f5a524;
-  --appt-warning-light: #fef3e0;
-  --appt-muted-bg: #f1eef5;
-  --appt-text: #2b2440;
-  --appt-text-muted: #8b86a0;
-  --appt-border: #eee9f9;
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap');
 
-  font-family: 'Cairo', 'Tajawal', sans-serif;
+:host {
+  /* Colors from Figma */
+  --color-violet-500: #44116D;
+  --color-violet-300: #82609D;
+  --color-violet-200: #A992BC;
+  --color-violet-100: #C5B5D2;
+  --color-violet-50: #ECE7F0;
+  
+  --color-mentgreen-500: #23E0E0;
+  --color-mentgreen-light: #6ceaea;
+
+  --color-yellow-800: #8C6A04;
+  --color-yellow-700: #B58905;
+  --color-yellow-100: #FFECB2;
+  --color-yellow-50: #FFF9E6;
+
+  --color-red-600: #E84242;
+  --color-red-100: #FFC6C6;
+  --color-red-light: #fde8ea;
+
+  --color-success-500: #4CAF4F;
+  --color-success-600: #459F48;
+  --color-success-50: #EDF7ED;
+
+  --color-white: #FCFCFC;
+  --color-black: #1C1C1C;
+  --color-gray-border: rgba(68, 17, 109, 0.08);
+  --color-gray-sub-border: rgba(68, 17, 109, 0.06);
+
+  font-family: 'Tajawal', sans-serif;
+  display: block;
 }
 
 .appts-wrap {
-  padding: 16px;
+  width: 100%;
+  max-width: 848px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .appts-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 16px;
-  box-shadow: 0 4px 24px rgba(109, 63, 224, 0.08);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
+/* Policy/Warning Banner */
 .policy-banner {
-  background: var(--appt-warning-light);
-  color: #8a5a12;
-  font-size: 12px;
-  text-align: center;
-  padding: 8px 12px;
-  border-radius: 12px;
-  margin-bottom: 16px;
+  background-color: var(--color-yellow-50);
+  border: 1px solid var(--color-yellow-100);
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+.policy-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  color: var(--color-yellow-700);
+}
+
+.policy-text {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.policy-text strong {
+  font-weight: 700;
+}
+
+.policy-icon {
+  flex-shrink: 0;
+}
+
+/* State Messages */
 .state-msg {
   text-align: center;
-  color: var(--appt-text-muted);
-  padding: 32px 0;
-  font-size: 14px;
+  color: var(--color-violet-200);
+  padding: 40px 0;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .state-msg--small {
-  padding: 16px 0;
-  font-size: 13px;
+  padding: 20px 0;
+  font-size: 14px;
 }
 
 .state-msg--error {
-  color: var(--appt-danger);
+  color: var(--color-red-600);
 }
 
+/* Section container and Headers */
 .section {
-  margin-bottom: 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-border);
+  border-radius: 26px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px 24px 24px;
+  gap: 15px;
 }
 
 .section-header {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: none;
+  justify-content: space-between;
+  background: transparent;
   border: none;
   cursor: pointer;
-  padding: 8px 4px;
+  padding: 8px 0;
+  outline: none;
+}
+
+.header-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot--upcoming {
+  background-color: var(--color-mentgreen-500);
+}
+
+.status-dot--past {
+  background-color: var(--color-violet-200);
 }
 
 .section-title {
-  font-size: 15px;
+  font-family: 'Almarai', sans-serif;
   font-weight: 700;
-  color: var(--appt-text);
+  font-size: 20px;
+  color: var(--color-violet-500);
 }
 
 .section-count {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
   font-size: 12px;
-  color: var(--appt-primary);
-  background: var(--appt-primary-light);
+  color: var(--color-violet-500);
+  background-color: var(--color-violet-50);
   border-radius: 999px;
-  padding: 1px 8px;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+}
+
+.section-count--past {
+  color: var(--color-violet-300);
 }
 
 .chevron {
-  font-size: 14px;
-  color: var(--appt-text-muted);
-  transform: rotate(-90deg);
-  transition: transform 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+  transform: rotate(180deg);
 }
 
 .chevron--open {
   transform: rotate(0deg);
 }
 
+/* Appointment List and Items */
 .appt-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
-.appt-card {
+.appt-item {
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-sub-border);
+  border-radius: 16px;
+  padding: 20px;
   position: relative;
-  border: 1px solid var(--appt-border);
-  border-radius: 14px;
-  padding: 14px 14px 14px 18px;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: opacity 0.2s ease;
 }
 
-.appt-tag {
+.appt-item--disabled {
+  opacity: 0.9;
+}
+
+.appt-item--past {
+  opacity: 0.9;
+}
+
+.appt-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Disabled/Warning Styles */
+.disabled-tag {
   position: absolute;
-  top: 12px;
-  left: -1px;
-  font-size: 10px;
+  top: 15px;
+  left: 15px;
+  background-color: var(--color-yellow-100);
+  color: var(--color-yellow-800);
+  font-family: 'Almarai', sans-serif;
   font-weight: 700;
-  padding: 3px 10px 3px 8px;
-  border-radius: 0 999px 999px 0;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
 }
 
-.status--pending {
-  background: var(--appt-warning-light);
-  color: var(--appt-warning);
+.disabled-warning-banner {
+  background-color: var(--color-yellow-50);
+  border: 1px solid var(--color-yellow-100);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.status--confirmed {
-  background: var(--appt-accent-light);
-  color: var(--appt-accent);
+.warning-banner-text {
+  font-family: 'Almarai', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--color-yellow-700);
 }
 
-.status--completed {
-  background: var(--appt-accent-light);
-  color: var(--appt-accent);
-}
-
-.status--cancelled {
-  background: var(--appt-muted-bg);
-  color: var(--appt-text-muted);
-}
-
-.appt-row {
+/* Right Side: Doctor Info Group */
+.appt-content-group {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 15px;
+  flex: 1;
 }
 
-.appt-avatar {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+.doctor-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  text-align: right;
+}
+
+.doctor-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-name {
+  font-family: 'Almarai', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.doctor-specialty {
+  font-family: 'Almarai', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--color-violet-200);
+  margin: 0;
+}
+
+.doctor-avatar {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--color-mentgreen-500);
+  border-radius: 16px;
   overflow: hidden;
-  background: var(--appt-primary-light);
+  flex-shrink: 0;
 }
 
-.appt-avatar img {
+.doctor-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.appt-info {
-  flex: 1;
-  min-width: 0;
+/* Meta info row */
+.meta-row {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.appt-doctor {
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--appt-text);
-}
-
-.appt-specialty {
-  font-size: 11px;
-  color: var(--appt-text-muted);
-}
-
-.appt-meta {
-  display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.meta-item {
-  font-size: 11px;
-  color: var(--appt-text-muted);
-  unicode-bidi: isolate;
-}
-
-.appt-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  gap: 16px;
   margin-top: 10px;
 }
 
-.action-btn {
-  border: none;
-  cursor: pointer;
-  border-radius: 999px;
+.meta-icon-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Almarai', sans-serif;
+  font-weight: 400;
   font-size: 12px;
+  color: var(--color-violet-300);
+}
+
+.meta-icon-item span {
+  unicode-bidi: isolate;
+}
+
+/* Left Side: Buttons & Actions */
+.appt-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-top: 16px;
+}
+
+/* Edit Button Style */
+.action-btn-edit {
+  background: transparent;
+  border: 2px solid var(--color-mentgreen-light);
+  color: var(--color-violet-500);
+  font-family: 'Almarai', sans-serif;
   font-weight: 700;
-}
-
-.action-btn--outline {
-  padding: 6px 18px;
-  background: #fff;
-  border: 1px solid var(--appt-accent);
-  color: var(--appt-accent);
-}
-
-.action-btn--outline:hover {
-  background: var(--appt-accent-light);
-}
-
-.action-btn--icon-danger {
-  width: 28px;
-  height: 28px;
+  font-size: 12px;
+  width: 80px;
+  height: 34px;
+  border-radius: 40px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--appt-danger-light);
-  color: var(--appt-danger);
-  border-radius: 8px;
-  padding: 0;
+  transition: all 0.2s ease;
 }
 
-.action-btn--icon-danger svg {
-  width: 14px;
-  height: 14px;
+.action-btn-edit:hover:not(:disabled) {
+  background-color: rgba(35, 224, 224, 0.05);
+}
+
+.action-btn-edit--disabled {
+  color: var(--color-violet-100);
+  cursor: not-allowed;
+}
+
+/* Cancel Button Style */
+.action-btn-cancel {
+  background: transparent;
+  border: 2px solid var(--color-red-light);
+  color: var(--color-red-600);
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  width: 76.8px;
+  height: 34px;
+  border-radius: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.action-btn-cancel:hover:not(:disabled) {
+  background-color: rgba(232, 66, 66, 0.05);
+}
+
+.action-btn-cancel--disabled {
+  color: var(--color-red-100);
+  cursor: not-allowed;
+}
+
+/* Past Appointment Action Buttons */
+.action-btn-rebook {
+  background-color: var(--color-mentgreen-500);
+  border: none;
+  color: var(--color-violet-500);
+  font-family: 'Almarai', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  width: 110px;
+  height: 34px;
+  border-radius: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+}
+
+.action-btn-rebook:hover {
+  opacity: 0.9;
+}
+
+.action-btn-rate {
+  background: transparent;
+  border: 2px solid var(--color-mentgreen-light);
+  color: var(--color-violet-500);
+  font-family: 'Almarai', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  width: 110px;
+  height: 34px;
+  border-radius: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.action-btn-rate:hover {
+  background-color: rgba(35, 224, 224, 0.05);
+}
+
+/* Reviewed Badge */
+.reviewed-badge {
+  background-color: var(--color-success-50);
+  color: var(--color-success-600);
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  width: 91.6px;
+  height: 32px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* Completed Status Tag */
+.status-tag {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-tag--completed {
+  background-color: var(--color-success-50);
+  color: var(--color-success-500);
 }

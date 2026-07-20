@@ -1,0 +1,276 @@
+<div dir="rtl" class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-800">إدارة الأطباء</h1>
+    <p class="text-sm text-slate-400 mt-1">إدارة ومراقبة جميع الأطباء المسجلين على منصة موعد</p>
+  </div>
+
+  <!-- ============ كروت الـ KPI (6) ============ -->
+  <div *ngIf="loadingOverview" class="grid grid-cols-2 lg:grid-cols-6 gap-4">
+    <div *ngFor="let _ of [1,2,3,4,5,6]" class="h-32 rounded-2xl bg-slate-100 animate-pulse"></div>
+  </div>
+
+  <!-- الـ endpoint (GET api/admin/doctors/overview) لسه مش موجود في الباك، فبنخفي القسم بهدوء
+       بدل ما نوريله شريط خطأ - هيظهر تلقائيًا أول ما الـ endpoint يتضاف ويرجع بيانات صح -->
+  <div *ngIf="!loadingOverview && !overviewError" class="grid grid-cols-2 lg:grid-cols-6 gap-4">
+    <div *ngFor="let card of kpiCards" class="rounded-2xl bg-white border border-slate-100 p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold flex items-center gap-1" [ngClass]="card.changePercentage >= 0 ? 'text-emerald-600' : 'text-red-500'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" [class.rotate-180]="card.changePercentage < 0">
+            <path d="M6 18L18 6M18 6H9M18 6v9" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+
+        <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+          <ng-container [ngSwitch]="card.icon">
+            <svg *ngSwitchCase="'calendar'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke-linecap="round"/></svg>
+            <svg *ngSwitchCase="'star'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2.5l3 6.5 7 .8-5.2 4.8 1.4 6.9L12 17.9l-6.2 3.6 1.4-6.9L2 9.8l7-.8 3-6.5z" stroke-linejoin="round"/></svg>
+            <svg *ngSwitchCase="'suspended'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14" stroke-linecap="round"/></svg>
+            <svg *ngSwitchCase="'clock'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg *ngSwitchCase="'check'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3 4.7-5.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg *ngSwitchCase="'doctors'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6" stroke-linecap="round"/></svg>
+          </ng-container>
+        </div>
+      </div>
+
+      <p class="text-2xl font-extrabold text-slate-800 mt-4">{{ card.valueText }}</p>
+      <p class="text-sm text-slate-400">{{ card.title }}</p>
+      <p class="text-xs mt-1" [ngClass]="card.changePercentage >= 0 ? 'text-emerald-600' : 'text-red-500'">{{ card.comparisonText }}</p>
+    </div>
+  </div>
+
+  <!-- ============ طلبات الاعتماد المعلقة ============ -->
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-extrabold text-slate-800 flex items-center gap-2">
+        طلبات الاعتماد المعلقة
+        <span *ngIf="pendingDoctors.length > 0" class="w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-bold flex items-center justify-center">
+          {{ pendingDoctors.length }}
+        </span>
+      </h2>
+      <button type="button" (click)="loadPending()" class="text-xs font-semibold text-violet-600 hover:underline">عرض الكل</button>
+    </div>
+
+    <div *ngIf="loadingPending" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div *ngFor="let _ of [1,2,3,4]" class="h-64 rounded-2xl bg-slate-100 animate-pulse"></div>
+    </div>
+
+    <div *ngIf="!loadingPending && pendingError" class="rounded-2xl border border-red-100 bg-red-50 text-red-600 text-sm p-4">
+      تعذر تحميل طلبات الاعتماد.
+    </div>
+
+    <div *ngIf="!loadingPending && !pendingError && pendingDoctors.length === 0" class="rounded-2xl border border-slate-100 bg-white p-6 text-sm text-slate-400 text-center">
+      مفيش طلبات اعتماد معلقة حاليًا.
+    </div>
+
+    <div *ngIf="!loadingPending && !pendingError && pendingDoctors.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div *ngFor="let doctor of pendingDoctors" class="rounded-2xl bg-white border border-slate-100 p-5 flex flex-col">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-violet-700 text-white text-sm font-bold flex items-center justify-center shrink-0">
+            {{ initials(doctor.fullName) }}
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-bold text-slate-800 truncate">د. {{ doctor.fullName }}</h3>
+            <p class="text-xs text-slate-400 flex items-center gap-1">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/></svg>
+              {{ doctor.address }} · {{ daysAgo(doctor.registeredAt) }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex-1">
+          <p class="text-xs font-semibold text-slate-500 mb-2">المستندات المرفوعة</p>
+          <div class="space-y-1.5">
+            <div *ngFor="let doc of documentsOf(doctor)" class="flex items-center justify-between gap-2 text-xs text-slate-600">
+              <span class="flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+                </span>
+                {{ doc.label }}
+              </span>
+              <a
+                *ngIf="doc.url"
+                [href]="doc.url"
+                target="_blank"
+                title="عرض {{ doc.label }}"
+                class="text-slate-400 hover:text-violet-600 shrink-0"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z" stroke-linejoin="round" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 mt-5">
+          <button
+            type="button"
+            (click)="openRejectModal(doctor)"
+            [disabled]="actioningUserId === doctor.userId"
+            class="flex-1 rounded-full border-2 border-violet-700 text-violet-700 text-sm font-bold py-2 hover:bg-violet-50 disabled:opacity-50 transition-colors"
+          >
+            رفض
+          </button>
+          <button
+            type="button"
+            (click)="approve(doctor)"
+            [disabled]="actioningUserId === doctor.userId"
+            class="flex-1 rounded-full bg-teal-400 text-white text-sm font-bold py-2 hover:bg-teal-500 disabled:opacity-50 transition-colors"
+          >
+            {{ actioningUserId === doctor.userId ? '...' : 'قبول' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ شريط الفلاتر ============ -->
+  <div class="rounded-2xl bg-white border border-slate-100 p-4 flex flex-wrap items-center gap-3">
+    <button type="button" (click)="loadDoctors()" title="تحديث" class="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 shrink-0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 10-2.6 6.4M21 12v-5M21 12h-5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </button>
+
+    <select [(ngModel)]="verificationFilter" (ngModelChange)="onFilterChange()" class="rounded-xl border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 min-w-[160px]">
+      <option *ngFor="let opt of verificationOptions" [value]="opt.value">{{ opt.label }}</option>
+    </select>
+
+    <div class="relative flex-1 min-w-[220px]">
+      <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" stroke-linecap="round" />
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onFilterChange()"
+        placeholder="البحث بالاسم"
+        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pr-11 pl-4 text-sm text-slate-700 placeholder:text-slate-400"
+      />
+    </div>
+  </div>
+
+  <!-- ============ جدول الأطباء ============ -->
+  <div class="rounded-2xl bg-white border border-slate-100 overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <h3 class="font-bold text-slate-800">قائمة الأطباء</h3>
+      <span class="text-sm text-slate-400">{{ totalCount }} طبيب</span>
+    </div>
+
+    <div *ngIf="loadingList" class="p-6 space-y-3">
+      <div *ngFor="let _ of [1,2,3,4,5]" class="h-12 rounded-xl bg-slate-100 animate-pulse"></div>
+    </div>
+
+    <div *ngIf="!loadingList && listError" class="p-6 text-sm text-red-500">
+      تعذر تحميل قائمة الأطباء.
+      <button type="button" (click)="loadDoctors()" class="text-violet-600 font-semibold underline mr-1">إعادة المحاولة</button>
+    </div>
+
+    <div *ngIf="!loadingList && !listError && totalCount === 0" class="p-10 text-center text-sm text-slate-400">
+      مفيش أطباء مطابقين لبحثك.
+    </div>
+
+    <div *ngIf="!loadingList && !listError && totalCount > 0" class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-slate-400 border-b border-slate-100">
+            <th class="w-12 px-6 py-3"><input type="checkbox" class="rounded border-slate-300" /></th>
+            <th class="text-start px-3 py-3 font-semibold cursor-pointer select-none" (click)="toggleSort()">
+              <span class="inline-flex items-center gap-1">
+                اسم الطبيب
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" [class.rotate-180]="sortDirection === 'desc'">
+                  <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </th>
+            <th class="text-start px-3 py-3 font-semibold">التخصص</th>
+            <th class="text-start px-3 py-3 font-semibold">المدينة</th>
+            <th class="text-start px-3 py-3 font-semibold">التقييم</th>
+            <th class="text-start px-3 py-3 font-semibold">الحجوزات</th>
+            <th class="text-start px-3 py-3 font-semibold">الإيرادات</th>
+            <th class="text-start px-3 py-3 font-semibold">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doctor of pagedDoctors" class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60">
+            <td class="px-6 py-3"><input type="checkbox" class="rounded border-slate-300" /></td>
+            <td class="px-3 py-3">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-full bg-violet-100 text-violet-600 text-xs font-bold flex items-center justify-center bg-cover bg-center shrink-0"
+                  [style.background-image]="doctor.profilePictureUrl ? 'url(' + doctor.profilePictureUrl + ')' : null"
+                >
+                  <span *ngIf="!doctor.profilePictureUrl">{{ initials(doctor.fullName) }}</span>
+                </div>
+                <span class="font-medium text-slate-700">د. {{ doctor.fullName }}</span>
+              </div>
+            </td>
+            <td class="px-3 py-3 text-slate-600">{{ doctor.department }}</td>
+            <td class="px-3 py-3 text-slate-500">{{ doctor.address }}</td>
+            <td class="px-3 py-3 font-semibold text-amber-500">{{ doctor.averageRating }} ★</td>
+            <td class="px-3 py-3 text-slate-600">{{ formatCount(doctor.totalAppointments) }}</td>
+            <td class="px-3 py-3 text-slate-600">{{ formatCurrencyCompact(doctor.revenue) }}</td>
+            <td class="px-3 py-3">
+              <button type="button" (click)="openProfile(doctor)" class="text-violet-600 text-xs font-semibold hover:underline">
+                عرض الملف الشخصي
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!loadingList && !listError && totalCount > 0" class="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+      <span class="text-xs text-slate-400">عرض {{ rangeStart }}–{{ rangeEnd }} من {{ totalCount }} طبيب</span>
+
+      <div class="flex items-center gap-1.5">
+        <button type="button" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 disabled:opacity-40">‹</button>
+        <button
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          type="button"
+          (click)="goToPage(i + 1)"
+          class="w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center transition-colors"
+          [ngClass]="currentPage === i + 1 ? 'bg-violet-700 text-white' : 'text-slate-500 hover:bg-slate-100'"
+        >
+          {{ i + 1 }}
+        </button>
+        <button type="button" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages" class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 disabled:opacity-40">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- مودال سبب الرفض -->
+<div *ngIf="rejectTarget" class="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 p-4" (click)="closeRejectModal()">
+  <div dir="rtl" class="bg-white rounded-2xl w-full max-w-sm p-6" (click)="$event.stopPropagation()">
+    <h3 class="font-bold text-slate-800 mb-1">رفض طلب د. {{ rejectTarget.fullName }}</h3>
+    <p class="text-xs text-slate-400 mb-4">سبب الرفض اختياري، وهيتحفظ مع الطلب.</p>
+
+    <textarea
+      [(ngModel)]="rejectReason"
+      rows="3"
+      placeholder="اكتبي سبب الرفض (اختياري)..."
+      class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 placeholder:text-slate-400 resize-none"
+    ></textarea>
+
+    <div class="flex items-center gap-3 mt-5">
+      <button type="button" (click)="closeRejectModal()" class="flex-1 rounded-full border-2 border-slate-200 text-slate-600 text-sm font-bold py-2.5 hover:bg-slate-50">
+        إلغاء
+      </button>
+      <button
+        type="button"
+        (click)="confirmReject()"
+        [disabled]="actioningUserId === rejectTarget.userId"
+        class="flex-1 rounded-full bg-red-500 text-white text-sm font-bold py-2.5 hover:bg-red-600 disabled:opacity-50"
+      >
+        {{ actioningUserId === rejectTarget.userId ? 'جاري الرفض...' : 'تأكيد الرفض' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- بروفايل الطبيب -->
+<app-doctor-profile-panel
+  *ngIf="selectedDoctorId !== null"
+  [doctorId]="selectedDoctorId"
+  (closed)="closeProfile()"
+></app-doctor-profile-panel>

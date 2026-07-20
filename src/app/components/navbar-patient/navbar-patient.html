@@ -7,8 +7,7 @@
 
     <div class="max-w-7xl mx-auto w-full px-6 flex items-center gap-5 relative z-10">
       <!-- زيادة سمك إطار الصورة وإضافة ظل -->
-      <img src="https://randomuser.me/api/portraits/men/22.jpg" class="w-18 h-18 rounded-full object-cover border-4 border-white shadow-lg" alt="profile" />
-      <div>
+     <img [src]="patientServices.userProfile()?.profilePictureUrl || '/images/22.jpg'" class="w-18 h-18 rounded-full object-cover border-4 border-white shadow-lg" alt="profile" />      <div>
         <!-- جعل الخط هنا سميكاً (font-bold) -->
         <p class="text-sm font-bold text-white/95">مرحبًا بعودتك</p>
         <!-- عنوان عريض جداً وواضح (font-black) -->
