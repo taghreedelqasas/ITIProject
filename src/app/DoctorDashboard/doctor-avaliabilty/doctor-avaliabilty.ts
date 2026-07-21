@@ -61,19 +61,14 @@ export class DoctorAvailabilityComponent implements OnInit {
     this.activeStatusFilter.set(status);
   }
 
-  // الدالة المعدلة بالكامل لفلترة وترتيب مواعيد اليوم والمستقبل فقط
-// الدالة بعد التعديل لمنع المواعيد المستقبلية من الظهور في "حضر"
-// الدالة بعد التعديل النهائي لمنع المواعيد المستقبلية المضروبة من الـ "الكل" أيضاً
   filteredAppointments = computed(() => {
     const filter = this.activeStatusFilter();
     const all = this.dashboardService.appointments(); 
     
     const now = new Date();
-    // بداية ونهاية اليوم الحالي تماماً
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).getTime();
 
-    // 1. لو الفلتر "قادم" (Confirmed)
     if (filter === 'Confirmed') {
       return all.filter(app => {
         const appDate = new Date(app.slotStart).getTime();
@@ -84,7 +79,6 @@ export class DoctorAvailabilityComponent implements OnInit {
       }).sort((a, b) => new Date(a.slotStart).getTime() - new Date(b.slotStart).getTime());
     }
 
-    // 2. لو الفلتر "حضر" (Completed)
     if (filter === 'Completed') {
       return all.filter(app => {
         const appDate = new Date(app.slotStart).getTime();
@@ -92,7 +86,6 @@ export class DoctorAvailabilityComponent implements OnInit {
       }).sort((a, b) => new Date(a.slotStart).getTime() - new Date(b.slotStart).getTime());
     }
 
-    // 3. لو الفلتر "ملغي" (Cancelled)
     if (filter === 'Cancelled') {
       return all.filter(app => {
         const appDate = new Date(app.slotStart).getTime();
@@ -100,16 +93,14 @@ export class DoctorAvailabilityComponent implements OnInit {
       }).sort((a, b) => new Date(a.slotStart).getTime() - new Date(b.slotStart).getTime());
     }
 
-    // 4. لو الفلتر "الكل" (null): يعرض مواعيد اليوم والمستقبل، لكن بـ "شرط ذكي"
     return all.filter(app => {
       const appDate = new Date(app.slotStart).getTime();
-      
-      // هل الموعد في المستقبل وحالته تم الحضور؟ لو آه، السطر ده هيرجع false ويخفيه تماماً
       const isInvalidFutureCompleted = appDate > endOfToday && app.status === 'Completed';
 
       return appDate >= startOfToday && !isInvalidFutureCompleted;
     }).sort((a, b) => new Date(a.slotStart).getTime() - new Date(b.slotStart).getTime());
   });
+
   loadSlots() {
     this.service.getDoctorSlots(this.doctorId);
   }
@@ -174,18 +165,13 @@ export class DoctorAvailabilityComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             title: 'تم بنجاح',
-            text: 'تمت تعديل الموعد',
+            text: 'تم تعديل الموعد بنجاح',
             timer: 1800,
             showConfirmButton: false
           });
         },
         error: (err) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'حدث خطأ',
-            text: err.error?.message ?? 'حدث خطأ',
-            confirmButtonColor: '#4A148C'
-          });
+          this.showErrorAlert(err, 'تعذر تعديل الموعد');
           this.saving.set(false);
         },
         complete: () => {
@@ -206,18 +192,13 @@ export class DoctorAvailabilityComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             title: 'تم بنجاح',
-            text: 'تمت إضافة الموعد',
+            text: 'تمت إضافة الموعد بنجاح',
             timer: 1800,
             showConfirmButton: false
           });
         },
         error: (err) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'حدث خطأ',
-            text: err.error?.message ?? 'حدث خطأ',
-            confirmButtonColor: '#4A148C'
-          });
+          this.showErrorAlert(err, 'تعذر إضافة الموعد');
           this.saving.set(false);
         },
         complete: () => {
@@ -231,6 +212,7 @@ export class DoctorAvailabilityComponent implements OnInit {
     const result = await Swal.fire({
       title: 'حذف الموعد؟',
       text: 'لن تتمكن من استرجاعه بعد الحذف',
+      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'نعم، احذف',
       cancelButtonText: 'إلغاء',
@@ -243,14 +225,16 @@ export class DoctorAvailabilityComponent implements OnInit {
     this.service.delete(slot.id).subscribe({
       next: () => {
         this.loadSlots();
+        Swal.fire({
+          icon: 'success',
+          title: 'تم الحذف',
+          text: 'تم حذف الموعد بنجاح',
+          timer: 1800,
+          showConfirmButton: false
+        });
       },
       error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'حدث خطأ',
-          text: err.error?.message ?? 'تعذر حذف الموعد',
-          confirmButtonColor: '#4A148C'
-        });
+        this.showErrorAlert(err, 'تعذر حذف الموعد المتاح');
       }
     });
   }
@@ -335,6 +319,7 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     if (appointmentTime > now) {
       Swal.fire({
+        icon: 'info',
         title: 'عذراً، لا يمكن تسجيل الحضور!',
         text: 'لا يمكنك تسجيل حضور المريض قبل حلول موعد الحجز الفعلي.',
         confirmButtonColor: '#4A148C',
@@ -346,6 +331,7 @@ export class DoctorAvailabilityComponent implements OnInit {
     const result = await Swal.fire({
       title: 'تسجيل حضور المريض؟',
       text: 'هل تريد تسجيل حضور المريض وتبديل حالة الموعد إلى (حضر)؟',
+      icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'نعم، سجل الحضور',
       cancelButtonText: 'إلغاء',
@@ -388,11 +374,27 @@ export class DoctorAvailabilityComponent implements OnInit {
     });
   }
 
+  // دالة موحدة ومعالجة لجميع رسائل الخطأ وترجمتها للعربية
   private showErrorAlert(err: any, defaultMsg: string) {
+    const serverMessage = err.error?.message || err.message || '';
+    let arabicMessage = defaultMsg;
+
+    // ترجمة الأخطاء الشائعة القادمة من الـ Backend
+    if (serverMessage.includes('Cannot delete a booked slot') || serverMessage.includes('booked slot')) {
+      arabicMessage = 'لا يمكن حذف هذا الموعد لأنه محجوز بالفعل من قبل مريض.';
+    } else if (serverMessage.includes('Slot not found')) {
+      arabicMessage = 'الموعد غير موجود أو تم حذفه سابقاً.';
+    } else if (serverMessage.includes('already booked')) {
+      arabicMessage = 'هذا الموعد محجوز بالكامل.';
+    } else if (serverMessage) {
+      arabicMessage = serverMessage;
+    }
+
     Swal.fire({
       icon: 'error',
       title: 'حدث خطأ',
-      text: err.error?.message ?? defaultMsg,
+      text: arabicMessage,
+      confirmButtonText: 'موافق',
       confirmButtonColor: '#4A148C'
     });
   }
@@ -415,14 +417,10 @@ export class DoctorAvailabilityComponent implements OnInit {
     });
   }
 
-  // الدالة الذكية لفحص المواعيد الفائتة بناءً على مهلة الـ Buffer (مثال: ساعتين 2)[cite: 5]
   isPastAppointment(slotStart: string | Date): boolean {
     const appointmentTime = new Date(slotStart).getTime();
     const now = new Date().getTime();
-    
-    // مهلة ساعتين (2 * 60 دقيقة * 60 ثانية * 1000 مللي ثانية) للدكتور ليسجل الحضور براحته
     const bufferTime = 2 * 60 * 60 * 1000; 
-    
     return now > (appointmentTime + bufferTime);
   }
 }

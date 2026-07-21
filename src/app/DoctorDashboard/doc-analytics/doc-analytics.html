@@ -204,7 +204,7 @@
             <span class="text-base font-bold text-red-500 block mt-0.5">{{ appointmentService.cancellationRateReal() }}%</span>
           </div>
           <div class="flex items-center justify-between border-t border-red-100/30 pt-1">
-            <span class="text-[9px] text-gray-400 whitespace-nowrap">أقل من الشهر الماضي</span>
+            <span class="text-[9px] text-gray-400 whitespace-nowrap">أكثر من الشهر الماضي</span>
             <span class="text-red-400 text-sm"><i class="fa-solid fa-circle-xmark"></i></span>
           </div>
         </div>
@@ -212,9 +212,9 @@
         <div class="bg-[#ECE7F0] rounded-xl p-3 flex flex-col justify-between border border-[#53098D]/5 h-24 shadow-sm">
           <div class="space-y-0.5">
             <span class="text-[10px] text-gray-400 block">وقت الذروة</span>
-            <span class="text-sm font-bold text-[#53098D] block mt-0.5 whitespace-nowrap" dir="ltr">
-              {{ '2026-01-01T' + appointmentService.mostActiveTimeReal() | date:'hh:mm a':'':'en-US' }}
-            </span>
+        <span class="text-sm font-bold text-[#53098D] block mt-0.5 whitespace-nowrap">
+  {{ appointmentService.mostActiveTimeReal() }}
+</span>
           </div>
           <div class="flex items-center justify-between border-t border-[#53098D]/10 pt-1">
             <span class="text-[9px] text-gray-400 whitespace-nowrap">الأعلى حجزاً وازدحاماً</span>

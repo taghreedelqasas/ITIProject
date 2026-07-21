@@ -18,6 +18,11 @@ interface ChatMessage {
   fileName?: string;
   fileSize?: string;
   fileNote?: string;
+  fileUrl?: string;
+  isImage?: boolean;
+  isAudio?: boolean;
+  isPlaying?: boolean;
+  audioProgress?: number;
   time: string;
   read?: boolean;
 }
@@ -161,6 +166,12 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
     if (this.conversationId) {
       this.signalr.sendStopTyping(this.conversationId);
     }
+    if (this.isRecording()) {
+      this.stopRecording();
+    }
+    if (this.pendingFilePreviewUrl) {
+      URL.revokeObjectURL(this.pendingFilePreviewUrl);
+    }
   }
 
   doctorInfo = {
@@ -182,6 +193,15 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
   messageText = '';
   
   pendingFileAction: 'report' | 'results' | 'attachment' | 'image' | null = null;
+
+  // مرفق تم اختياره لكن لسه متبعتش - بينتظر ضغطة زرار الإرسال
+  pendingFile: File | null = null;
+  pendingFilePreviewUrl: string | null = null;
+  pendingFileIsImage = false;
+
+  isRecording = signal(false);
+  private mediaRecorder: MediaRecorder | null = null;
+  private audioChunks: Blob[] = [];
 
   ngAfterViewChecked(): void {
     this.scrollToBottom();
@@ -253,9 +273,40 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
     const dateStr = m.createdAt;
     if (dateStr) {
       try {
-        time = new Date(dateStr).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        // الباك إند بيبعت الوقت بتوقيت UTC (DateTime.UtcNow) بس من غير علامة "Z" في الآخر،
+        // فالمتصفح كان بيفتكره توقيت محلي ومبيحولوش، فالوقت الظاهر كان بيبقى غلط.
+        // هنا بنضيف "Z" يدويًا عشان نجبر المتصفح يتعامل معاه كـ UTC ويحوّله صح للتوقيت المحلي.
+        const utcDateStr = dateStr.endsWith('Z') ? dateStr : dateStr + 'Z';
+        time = new Date(utcDateStr).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
       } catch { time = ''; }
     }
+
+    // رسائل المرفقات: الحقول دي مطابقة لـ MessageDto فعلياً
+    // (AttachmentUrl / AttachmentName / AttachmentType في الباك إند بيترجموا camelCase هنا)
+    // AttachmentUrl راجع بالفعل رابط كامل من ImageUrlHelper.ToFullUrl، مفيش داعي نضيف الدومين تاني
+    const anyMsg = m as any;
+    const attachmentUrl: string | undefined = anyMsg.attachmentUrl;
+
+    if (attachmentUrl) {
+      const fileName: string = anyMsg.attachmentName || 'ملف';
+      const attachmentType: string = anyMsg.attachmentType || '';
+      const isImage = attachmentType.startsWith('image/');
+      const isAudio = attachmentType.startsWith('audio/');
+
+      return {
+        sender: isMyMessage ? (this.isDoctor ? 'doctor' : 'patient') : (this.isDoctor ? 'patient' : 'doctor'),
+        type: 'file',
+        fileName,
+        fileSize: '',
+        fileNote: m.content || (isImage ? 'صورة مرفقة.' : isAudio ? 'رسالة صوتية.' : 'مرفق ملف.'),
+        fileUrl: attachmentUrl,
+        isImage,
+        isAudio,
+        time,
+        read: m.isRead,
+      };
+    }
+
     return {
       sender: isMyMessage ? (this.isDoctor ? 'doctor' : 'patient') : (this.isDoctor ? 'patient' : 'doctor'),
       type: 'text',
@@ -304,7 +355,8 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
 
   onSend(): void {
     const trimmed = this.messageText.trim();
-    if (!trimmed) return;
+    if (!trimmed && !this.pendingFile) return;
+
     if (!this.conversationId) {
       this.errorMessage.set('المحادثة لم تبدأ بعد. جاري المحاولة...');
       if (!this.isDoctor && this.doctorId) {
@@ -312,6 +364,22 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
       } else if (this.isDoctor && this.patientId) {
         this.startAsDoctor(this.patientId);
       }
+      return;
+    }
+
+    // فيه مرفق مستني الإرسال (صورة/ملف) - يتبعت هنا فقط لما تدوسي زرار الإرسال
+    if (this.pendingFile) {
+      let caption = trimmed;
+      if (!caption) {
+        if (this.pendingFileAction === 'report') caption = 'مرفق التقرير الطبي المطلوب.';
+        else if (this.pendingFileAction === 'results') caption = 'مرفق نتائج التحاليل.';
+        else if (this.pendingFileAction === 'image') caption = 'صورة مرفقة.';
+        else caption = 'مرفق ملف.';
+      }
+      const fileToSend = this.pendingFile;
+      this.cancelPendingFile();
+      this.messageText = '';
+      this.sendFileMessage(fileToSend, caption);
       return;
     }
 
@@ -333,6 +401,38 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
         this.errorMessage.set('تعذر إرسال الرسالة.');
       },
     });
+  }
+
+  cancelPendingFile(): void {
+    if (this.pendingFilePreviewUrl) {
+      URL.revokeObjectURL(this.pendingFilePreviewUrl);
+    }
+    this.pendingFile = null;
+    this.pendingFilePreviewUrl = null;
+    this.pendingFileIsImage = false;
+    this.pendingFileAction = null;
+  }
+
+  // مشغل الصوت المخصص لرسائل الفويس (بدل الـ controls الافتراضية للمتصفح)
+  toggleAudioPlay(msg: ChatMessage, audioEl: HTMLAudioElement): void {
+    if (audioEl.paused) {
+      audioEl.play();
+      msg.isPlaying = true;
+    } else {
+      audioEl.pause();
+      msg.isPlaying = false;
+    }
+  }
+
+  onAudioEnded(msg: ChatMessage): void {
+    msg.isPlaying = false;
+    msg.audioProgress = 0;
+  }
+
+  onAudioTimeUpdate(msg: ChatMessage, audioEl: HTMLAudioElement): void {
+    if (audioEl.duration) {
+      msg.audioProgress = (audioEl.currentTime / audioEl.duration) * 100;
+    }
   }
 
   onTyping(): void {
@@ -388,14 +488,27 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
     const file = input.files && input.files[0];
     if (!file) return;
 
+    // لو فيه مرفق قديم مستني، امسحيه الأول قبل ما تحطي الجديد
+    if (this.pendingFilePreviewUrl) {
+      URL.revokeObjectURL(this.pendingFilePreviewUrl);
+    }
+
+    this.pendingFile = file;
+    this.pendingFileIsImage = file.type.startsWith('image/');
+    this.pendingFilePreviewUrl = URL.createObjectURL(file);
+
+    input.value = '';
+  }
+  // مسار مشترك لإرسال أي مرفق (ملف / صورة / تسجيل صوتي) بنفس المنطق:
+  // معاينة محلية فورية + رفع للسيرفر + استبدال الرابط المحلي بالرابط الدائم
+  private sendFileMessage(file: File, caption: string): void {
     const sender: SenderType = this.isDoctor ? 'doctor' : 'patient';
     const sizeKb = file.size / 1024;
     const sizeLabel = sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb.toFixed(0)} KB`;
 
-    let caption = 'مرفق ملف.';
-    if (this.pendingFileAction === 'report') caption = 'مرفق التقرير الطبي المطلوب.';
-    if (this.pendingFileAction === 'results') caption = 'مرفق نتائج التحاليل.';
-    if (this.pendingFileAction === 'image') caption = 'صورة مرفقة.';
+    const isImage = file.type.startsWith('image/');
+    const isAudio = file.type.startsWith('audio/');
+    const localPreviewUrl = URL.createObjectURL(file);
 
     this.messages.update((prev) => [
       ...prev,
@@ -405,6 +518,9 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
         fileName: file.name,
         fileSize: sizeLabel,
         fileNote: caption,
+        fileUrl: localPreviewUrl,
+        isImage,
+        isAudio,
         time: this.currentTime(),
         read: true,
       }
@@ -412,13 +528,60 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
 
     if (this.conversationId) {
       this.conversationService.uploadAttachment(this.conversationId, file, caption).subscribe({
+        next: (res: any) => {
+          // uploadAttachment بيرجع MessageDto فيه attachmentUrl كرابط كامل جاهز
+          const realUrl = res?.attachmentUrl;
+          if (realUrl) {
+            this.messages.update((prev) =>
+              prev.map((msg) => (msg.fileUrl === localPreviewUrl ? { ...msg, fileUrl: realUrl } : msg))
+            );
+          }
+        },
         error: () => {
           this.errorMessage.set('تعذر رفع المرفق.');
         },
       });
     }
+  }
 
-    input.value = '';
-    this.pendingFileAction = null;
+  toggleVoiceRecording(): void {
+    if (this.isRecording()) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  }
+
+  private async startRecording(): Promise<void> {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.audioChunks = [];
+      this.mediaRecorder = new MediaRecorder(stream);
+
+      this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        if (e.data.size > 0) this.audioChunks.push(e.data);
+      };
+
+      this.mediaRecorder.onstop = () => {
+        // نقفل مايك المتصفح بعد ما نخلص تسجيل
+        stream.getTracks().forEach((track) => track.stop());
+
+        if (this.audioChunks.length === 0) return;
+
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], `رسالة-صوتية-${Date.now()}.webm`, { type: 'audio/webm' });
+        this.sendFileMessage(audioFile, 'رسالة صوتية.');
+      };
+
+      this.mediaRecorder.start();
+      this.isRecording.set(true);
+    } catch {
+      this.errorMessage.set('تعذر الوصول للمايك. تأكدي من إعطاء إذن استخدام الميكروفون للمتصفح.');
+    }
+  }
+
+  private stopRecording(): void {
+    this.mediaRecorder?.stop();
+    this.isRecording.set(false);
   }
 }

@@ -206,4 +206,7 @@ export interface AdminDoctorDetailDto {
   averageRating: number;
   totalReviews: number;
   totalAppointments: number;
+  licenseImage: string | null;
+  ssnImg: string | null;
+  certificateImage: string | null;
 }

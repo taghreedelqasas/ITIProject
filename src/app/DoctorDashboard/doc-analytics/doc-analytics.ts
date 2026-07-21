@@ -16,7 +16,7 @@ export class DocAnalytics implements OnInit {
   private authService = inject(AuthService);
   
   public chartOptions: any;        // تشارت الحضور والغياب (Donut)
-  public revenueChartOptions: any; // تشارت الإيرادات الجديد (Bar Chart)
+  public revenueChartOptions: any; // تشارت الإيرادات (Bar Chart)
 
   doctorId = this.authService.getDoctorId()!;
 
@@ -52,7 +52,7 @@ export class DocAnalytics implements OnInit {
 
   constructor() {
     effect(() => {
-      // 1. إعدادات تشارت معدل الحضور والغياب
+      // 1. إعدادات تشارت معدل الحضور والغياب (Donut Chart)
       this.chartOptions = {
         series: [
           this.appointmentService.attendanceRateReal() || 0,
@@ -60,7 +60,7 @@ export class DocAnalytics implements OnInit {
         ],
         chart: {
           type: "donut",
-          height: 150, // تقليل الارتفاع ليناسب التصميم المنخفض الجديد
+          height: 150,
           animations: {
             enabled: true,
             easing: 'easeout',
@@ -118,90 +118,89 @@ export class DocAnalytics implements OnInit {
         }
       };
 
-      // 2. إعدادات تشارت الإيرادات والأرباح (Bar Chart) مع معالجة الأشهر ديناميكياً
-      // نتحقق أولاً من وجود داتا الـ computed داخل السيرفيس
+      // 2. إعدادات تشارت الإيرادات والأرباح (Bar Chart) - ترتيب من اليمين لليسار (RTL)
       const analyticsData = this.appointmentService.analyticsDataComputed();
       const monthlyEarnings = analyticsData?.monthlyEarnings || [];
 
-      if (monthlyEarnings.length > 0) {
-        // قص آخر 6 أشهر فقط لضمان الوصول وعرض شهر 7 (Jul) الحالي وضبط الترتيب
-        const lastSixMonths = monthlyEarnings.slice(-6);
-        const categories = lastSixMonths.map(e => e.month);
-        const dataValues = lastSixMonths.map(e => e.amount);
+      // 🔁 عكس ترتيب البيانات لتبدأ من اليمين بالترتيب الزمني القديم إلى الأحدث
+      const reversedEarnings = [...monthlyEarnings].reverse();
 
-        this.revenueChartOptions = {
-          series: [
-            {
-              name: "الإيرادات",
-              data: dataValues
-            }
-          ],
-          chart: {
-            type: "bar",
-            height: 180,
-            toolbar: { show: false },
-            fontFamily: 'inherit'
-          },
-          colors: ["#23E0E0"],
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              columnWidth: "55%", // زيادة سُمك الأعمدة لتصبح واضحة وممتلئة ومطابقة للـ Figma
-              borderRadius: 6,
-              borderRadiusApplication: 'end'
-            }
-          },
-          dataLabels: {
-            enabled: false
-          },
-          stroke: {
-            show: true,
-            width: 2,
-            colors: ["transparent"]
-          },
-          xaxis: {
-            categories: categories,
-            axisBorder: { show: false },
-            axisTicks: { show: false },
-            labels: {
-              style: {
-                colors: "#9ca3af",
-                fontSize: "10px"
-              }
-            }
-          },
-          yaxis: {
-            labels: {
-              style: {
-                colors: "#9ca3af",
-                fontSize: "10px"
-              }
-            }
-          },
-          fill: {
-            opacity: 1
-          },
-          grid: {
-            borderColor: "#f3f4f6",
-            strokeDashArray: 4,
-            yaxis: {
-              lines: { show: true }
-            }
-          },
-          tooltip: {
-            theme: "dark",
+      const categories = reversedEarnings.map(e => e.month);
+      const dataValues = reversedEarnings.map(e => e.amount);
+
+      this.revenueChartOptions = {
+        series: [
+          {
+            name: "الإيرادات",
+            data: dataValues
+          }
+        ],
+        chart: {
+          type: "bar",
+          height: 180,
+          toolbar: { show: false },
+          fontFamily: 'inherit'
+        },
+        colors: ["#23E0E0"],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "45%",
+            borderRadius: 6,
+            borderRadiusApplication: 'end'
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ["transparent"]
+        },
+        xaxis: {
+          categories: categories,
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+          labels: {
             style: {
-              fontSize: '11px',
-              fontFamily: 'inherit'
-            },
-            y: {
-              formatter: function (val: number) {
-                return val + " ج.م";
-              }
+              colors: "#9ca3af",
+              fontSize: "11px"
             }
           }
-        };
-      }
+        },
+        yaxis: {
+          opposite: true, // نقل قيم المحور الرأسي للجهة المقابلة لتناسب العرض العربي
+          labels: {
+            style: {
+              colors: "#9ca3af",
+              fontSize: "10px"
+            }
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          borderColor: "#f3f4f6",
+          strokeDashArray: 4,
+          yaxis: {
+            lines: { show: true }
+          }
+        },
+        tooltip: {
+          theme: "dark",
+          style: {
+            fontSize: '11px',
+            fontFamily: 'inherit'
+          },
+          y: {
+            formatter: function (val: number) {
+              return val + " ج.م";
+            }
+          }
+        }
+      };
     });
   }
 }

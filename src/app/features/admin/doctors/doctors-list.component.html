@@ -59,7 +59,7 @@
     </div>
 
     <div *ngIf="!loadingPending && !pendingError && pendingDoctors.length === 0" class="rounded-2xl border border-slate-100 bg-white p-6 text-sm text-slate-400 text-center">
-      مفيش طلبات اعتماد معلقة حاليًا.
+      لا يوجد طلبات اعتماد معلقة حاليًا.
     </div>
 
     <div *ngIf="!loadingPending && !pendingError && pendingDoctors.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -72,7 +72,7 @@
             <h3 class="font-bold text-slate-800 truncate">د. {{ doctor.fullName }}</h3>
             <p class="text-xs text-slate-400 flex items-center gap-1">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/></svg>
-              {{ doctor.address }} · {{ daysAgo(doctor.registeredAt) }}
+              {{ doctor.address }} 
             </p>
           </div>
         </div>
@@ -87,10 +87,10 @@
                 </span>
                 {{ doc.label }}
               </span>
-              <a
+              <button
                 *ngIf="doc.url"
-                [href]="doc.url"
-                target="_blank"
+                type="button"
+                (click)="previewDoc(doc.label, doc.url!)"
                 title="عرض {{ doc.label }}"
                 class="text-slate-400 hover:text-violet-600 shrink-0"
               >
@@ -98,7 +98,7 @@
                   <path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z" stroke-linejoin="round" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -270,3 +270,18 @@
   [doctorId]="selectedDoctorId"
   (closed)="closeProfile()"
 ></app-doctor-profile-panel>
+
+<!-- معاينة المستند -->
+<div *ngIf="previewImage" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" (click)="closePreview()">
+  <div class="relative max-w-2xl w-full" (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-white font-bold text-sm">{{ previewImage.label }}</h3>
+      <button type="button" (click)="closePreview()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <img [src]="previewImage.src" [alt]="previewImage.label" class="w-full rounded-xl" />
+  </div>
+</div>
