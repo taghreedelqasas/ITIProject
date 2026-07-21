@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
  
 interface Doctor {
   name: string;
@@ -11,7 +12,7 @@ interface Doctor {
 }
 @Component({
   selector: 'app-landing-page-sec4',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './landing-page-sec4.html',
   styleUrl: './landing-page-sec4.css',
 })
