@@ -87,10 +87,10 @@
                 </span>
                 {{ doc.label }}
               </span>
-              <a
+              <button
                 *ngIf="doc.url"
-                [href]="doc.url"
-                target="_blank"
+                type="button"
+                (click)="previewDoc(doc.label, doc.url!)"
                 title="عرض {{ doc.label }}"
                 class="text-slate-400 hover:text-violet-600 shrink-0"
               >
@@ -98,7 +98,7 @@
                   <path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z" stroke-linejoin="round" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -274,3 +274,18 @@
   [doctorId]="selectedDoctorId"
   (closed)="closeProfile()"
 ></app-doctor-profile-panel>
+
+<!-- معاينة المستند -->
+<div *ngIf="previewImage" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" (click)="closePreview()">
+  <div class="relative max-w-2xl w-full" (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-white font-bold text-sm">{{ previewImage.label }}</h3>
+      <button type="button" (click)="closePreview()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <img [src]="previewImage.src" [alt]="previewImage.label" class="w-full rounded-xl" />
+  </div>
+</div>
