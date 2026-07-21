@@ -291,12 +291,20 @@ export class DoctorsListComponent implements OnInit {
   }
 
   documentsOf(doctor: DoctorPendingDto): { label: string; url: string | null }[] {
-    return [
-      { label: 'البطاقة', url: doctor.ssnImg },
-      { label: 'رخصة مزاولة المهنة', url: doctor.licenseImage },
-      { label: 'شهادة المؤهل', url: doctor.certificateImage },
-    ];
+  return [
+    { label: 'البطاقة', url: this.toDocumentUrl(doctor.ssnImg) },
+    { label: 'رخصة مزاولة المهنة', url: this.toDocumentUrl(doctor.licenseImage) },
+    { label: 'شهادة المؤهل', url: this.toDocumentUrl(doctor.certificateImage) },
+  ];
+}
+
+private toDocumentUrl(value: string | null | undefined): string | null {
+  if (!value) return null;
+  if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:')) {
+    return value;
   }
+  return `data:image/jpeg;base64,${value}`;
+}
 
   previewImage: { label: string; src: string } | null = null;
 

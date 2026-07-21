@@ -19,7 +19,11 @@ export class DoctorInfoComponent implements OnInit {
   apiError  = '';
 
   departments = [
-    { id: 1, name: 'طب عام' }
+    { id: 1, name: 'طب عام'},
+    {id: 2, name: 'طب اسنان'},
+    {id: 3, name : 'جراحة العيون'},
+    {id : 4, name :'عظام'},
+    {id :5, name:'مخ و اعصاب'}
   ];
 
   ssnImageFile: File | null = null;
