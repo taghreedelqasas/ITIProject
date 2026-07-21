@@ -12,17 +12,7 @@
       <h3 class="doctor-name">{{ appointment.doctorName || 'الطبيب' }}</h3>
       <p class="doctor-specialty">{{ appointment.doctorSpecialty || 'أخصائي' }}</p>
       
-      @if (appointment.slotStart) {
-        <div class="doctor-date-time" dir="ltr">
-          <span>{{ formatDate(appointment.slotStart) }} {{ formatTime(appointment.slotStart) }}</span>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.6667 2.33333H2.33333C1.59695 2.33333 1 2.93029 1 3.66667V11.6667C1 12.403 1.59695 13 2.33333 13H11.6667C12.403 13 13 12.403 13 11.6667V3.66667C13 2.93029 12.403 2.33333 11.6667 2.33333Z" stroke="#9B8CBF" stroke-width="1.2" stroke-linejoin="round"/>
-            <path d="M1 5H13" stroke="#9B8CBF" stroke-width="1.2"/>
-            <path d="M4.33333 1V3" stroke="#9B8CBF" stroke-width="1.2" stroke-linecap="round"/>
-            <path d="M9.66667 1V3" stroke="#9B8CBF" stroke-width="1.2" stroke-linecap="round"/>
-          </svg>
-        </div>
-      }
+      
     </div>
   </div>
 

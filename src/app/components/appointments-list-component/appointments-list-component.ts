@@ -41,13 +41,25 @@ export class AppointmentsListComponent implements OnInit {
   expandedUpcoming = signal(true);
   expandedPast = signal(true);
 
+  // upcoming = computed(() =>
+  //   this.appointments().filter((a) => this.canModify(a))
+  // );
+
+  // past = computed(() =>
+  //   this.appointments().filter((a) => !this.canModify(a))
+  // );
   upcoming = computed(() =>
-    this.appointments().filter((a) => this.canModify(a))
+    this.appointments().filter((a) => this.canModify(a) && !this.isPastAppointment(a))
   );
 
   past = computed(() =>
-    this.appointments().filter((a) => !this.canModify(a))
+    this.appointments().filter((a) => !this.canModify(a) || this.isPastAppointment(a))
   );
+
+  private isPastAppointment(appt: Appointment): boolean {
+    if (!appt.slotStart) return false;
+    return new Date(appt.slotStart).getTime() < Date.now();
+  }
 
   reviewByDoctorId = computed(() => {
     const map = new Map<number, Review>();

@@ -5,7 +5,7 @@
   </div>
 
   <!-- ============ كروت الملخص الأربعة ============ -->
-  <div *ngIf="loadingSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div *ngIf="loadingSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <div *ngFor="let _ of [1,2,3,4]" class="h-32 rounded-2xl bg-slate-100 animate-pulse"></div>
   </div>
 
@@ -14,7 +14,7 @@
     <button type="button" (click)="loadSummary()" class="text-red-700 font-semibold underline mr-1">إعادة المحاولة</button>
   </div>
 
-  <div *ngIf="!loadingSummary && !summaryError" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div *ngIf="!loadingSummary && !summaryError" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <div *ngFor="let card of kpiCards" class="rounded-2xl bg-white border border-slate-100 p-5">
       <div class="flex items-center justify-between">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-slate-300">
@@ -116,9 +116,7 @@
   <div class="rounded-2xl bg-white border border-slate-100 overflow-hidden">
     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
       <h3 class="font-bold text-slate-800">قائمة أحدث المعاملات المالية</h3>
-      <button type="button" (click)="resetFilters()" class="text-sm font-semibold text-violet-600 hover:underline">
-        عرض الكل
-      </button>
+      
     </div>
 
     <div *ngIf="loadingList" class="p-6 space-y-3">
@@ -138,31 +136,24 @@
       <table class="w-full text-sm">
         <thead>
           <tr class="text-slate-400 border-b border-slate-100">
-            <th class="w-12 px-6 py-3"><input type="checkbox" class="rounded border-slate-300" /></th>
-            <th class="text-start px-3 py-3 font-semibold">رقم العملية</th>
+<th class="text-start pr-10 pl-3 py-3 font-semibold">رقم العملية</th>
             <th class="text-start px-3 py-3 font-semibold">الطبيب</th>
             <th class="text-start px-3 py-3 font-semibold">المريض</th>
             <th class="text-start px-3 py-3 font-semibold">رسوم الكشف</th>
             <th class="text-start px-3 py-3 font-semibold">العمولة</th>
             <th class="text-start px-3 py-3 font-semibold">صافي الطبيب</th>
-            <th class="text-start px-3 py-3 font-semibold">الحالة</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let tx of transactions" class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60">
-            <td class="px-6 py-3"><input type="checkbox" class="rounded border-slate-300" /></td>
-            <td class="px-3 py-3 font-medium text-slate-700">{{ tx.transactionCode }}</td>
-            <td class="px-3 py-3 text-slate-700">{{ tx.doctorName }}</td>
+<td class="pr-10 pl-3 py-3 font-medium text-slate-700">
+  {{ tx.transactionCode }}
+</td>            <td class="px-3 py-3 text-slate-700">{{ tx.doctorName }}</td>
             <td class="px-3 py-3 text-slate-600">{{ tx.patientName }}</td>
             <td class="px-3 py-3 font-semibold text-slate-700">{{ tx.consultationFee }}</td>
             <td class="px-3 py-3 text-slate-600">{{ tx.commission }}</td>
             <td class="px-3 py-3 font-semibold text-slate-700">{{ tx.doctorNet }}</td>
-            <td class="px-3 py-3">
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1" [ngClass]="statusBadgeClasses(tx.status)">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                {{ tx.statusLabel }}
-              </span>
-            </td>
+           
           </tr>
         </tbody>
       </table>

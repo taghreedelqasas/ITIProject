@@ -30,12 +30,15 @@
     @for (day of state.calendarDays(); track $index) {
       <div class="flex justify-center">
         @if (day) {
-          <button
+         <button
             (click)="state.selectDate(day)"
-            class="w-[40px] h-[40px] rounded-[10px] flex items-center justify-center text-[16px] transition-colors cursor-pointer font-['Tajawal']"
-            [ngClass]="day.date === state.selectedDate()
-              ? 'bg-[rgba(197,181,210,0.62)] text-[#25093c] font-bold border border-[#23e0e0] border-solid'
-              : 'text-[#25093c] hover:bg-[#ece7f0]/80'"
+            [disabled]="day.isPast"
+            class="w-[40px] h-[40px] rounded-[10px] flex items-center justify-center text-[16px] transition-colors font-['Tajawal']"
+            [ngClass]="day.isPast
+              ? 'text-gray-300 cursor-not-allowed'
+              : day.date === state.selectedDate()
+                ? 'bg-[rgba(197,181,210,0.62)] text-[#25093c] font-bold border border-[#23e0e0] border-solid cursor-pointer'
+                : 'text-[#25093c] hover:bg-[#ece7f0]/80 cursor-pointer'"
           >
             {{ day.date }}
           </button>

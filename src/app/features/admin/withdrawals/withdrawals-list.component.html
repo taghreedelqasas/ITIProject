@@ -5,11 +5,11 @@
   </div>
 
   <!-- ============ كروت الملخص ============ -->
-  <div *ngIf="loadingList" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <div *ngFor="let _ of [1,2,3]" class="h-28 rounded-2xl bg-slate-100 animate-pulse"></div>
+  <div *ngIf="loadingList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div *ngFor="let _ of [1,2]" class="h-28 rounded-2xl bg-slate-100 animate-pulse"></div>
   </div>
 
-  <div *ngIf="!loadingList && !listError" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <div *ngIf="!loadingList && !listError" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div *ngFor="let card of kpiCards" class="rounded-2xl bg-white border border-slate-100 p-5">
       <div
         class="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -61,15 +61,14 @@
     </div>
 
     <div *ngIf="!loadingList && !listError && requests.length > 0" class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="w-full text-sm table-fixed">
         <thead>
-          <tr class="text-slate-400 border-b border-slate-100">
-            <th class="text-start px-6 py-3 font-semibold">الطبيب</th>
-            <th class="text-start px-3 py-3 font-semibold">المبلغ</th>
-            <th class="text-start px-3 py-3 font-semibold">طريقة السحب</th>
-            <th class="text-start px-3 py-3 font-semibold">رقم الحساب / المحفظة</th>
-            <th class="text-start px-3 py-3 font-semibold">تاريخ الطلب</th>
-            <th class="text-start px-3 py-3 font-semibold">الإجراء</th>
+       <tr class="text-slate-400 border-b border-slate-100">
+            <th class="text-start px-6 py-3 font-semibold w-[26%]">الطبيب</th>
+            <th class="text-start px-3 py-3 font-semibold w-[12%]">المبلغ</th>
+            <th class="text-start px-3 py-3 font-semibold w-[20%]">رقم الحساب / المحفظة</th>
+            <th class="text-start px-3 py-3 font-semibold w-[18%]">تاريخ الطلب</th>
+            <th class="text-start px-3 py-3 font-semibold w-[24%]">الإجراء</th>
           </tr>
         </thead>
         <tbody>
@@ -83,9 +82,7 @@
               </div>
             </td>
             <td class="px-3 py-3 font-semibold text-slate-800">{{ formatCurrencyFull(req.amount) }}</td>
-            <td class="px-3 py-3 text-slate-600">{{ methodLabel(req.method) }}</td>
-            <td class="px-3 py-3 text-slate-600" dir="ltr">{{ req.accountNumber }}</td>
-            <td class="px-3 py-3 text-slate-500">{{ formattedDate(req.createdAt) }}</td>
+<td class="px-3 py-3 text-slate-600 truncate" dir="ltr" [title]="req.accountNumber">{{ req.accountNumber }}</td>            <td class="px-3 py-3 text-slate-500">{{ formattedDate(req.createdAt) }}</td>
             <td class="px-3 py-3">
               <div class="flex items-center gap-2">
                 <button
@@ -102,7 +99,7 @@
                   [disabled]="actioningId === req.id"
                   class="rounded-full bg-teal-400 text-white text-xs font-bold px-4 py-1.5 hover:bg-teal-500 disabled:opacity-50 transition-colors"
                 >
-                  {{ actioningId === req.id ? '...' : 'موافقة وتحويل' }}
+                  {{ actioningId === req.id ? '...' : 'موافقة' }}
                 </button>
               </div>
             </td>

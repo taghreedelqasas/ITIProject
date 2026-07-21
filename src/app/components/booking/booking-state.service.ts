@@ -4,12 +4,14 @@ import { DoctorService } from '../../core/services/doctor.service';
 import { DoctorAvailabilityService } from '../../core/services/doctor-availability.service';
 import { AppointmentService } from '../../core/services/appointment.service';
 import { PaymentService } from '../../core/services/payment.service';
+import { ReviewService } from '../../core/services/review.service';
 import { Doctor as ApiDoctor } from '../../core/models/doctor.model';
 import { DoctorAvailability } from '../../core/models/availability.model';
 
 export interface CalendarDay {
   date: number;
   isCurrentMonth: boolean;
+  isPast: boolean;
 }
 
 export interface TimeSlot {
@@ -101,27 +103,32 @@ export class BookingStateService {
 
   monthLabel = computed(() => `${MONTH_NAMES[this.currentMonthIndex()]} ${this.currentYear()}`);
 
-  calendarDays = computed(() => {
+ calendarDays = computed(() => {
     const firstOfMonth = new Date(this.currentYear(), this.currentMonthIndex(), 1);
     const daysInMonth = new Date(this.currentYear(), this.currentMonthIndex() + 1, 0).getDate();
     const startWeekday = firstOfMonth.getDay();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const cells: (CalendarDay | null)[] = [];
     for (let i = 0; i < startWeekday; i++) {
       cells.push(null);
     }
     for (let d = 1; d <= daysInMonth; d++) {
-      cells.push({ date: d, isCurrentMonth: true });
+      const cellDate = new Date(this.currentYear(), this.currentMonthIndex(), d);
+      cells.push({ date: d, isCurrentMonth: true, isPast: cellDate < today });
     }
     return cells;
   });
 
-  timeSlots = computed(() => {
+timeSlots = computed(() => {
+    const now = Date.now();
     const slotsForDay = this.allSlots().filter((s) => {
       const d = new Date(s.startTime);
       return (
         d.getFullYear() === this.currentYear() &&
         d.getMonth() === this.currentMonthIndex() &&
-        d.getDate() === this.selectedDate()
+        d.getDate() === this.selectedDate() &&
+      d.getTime() > now
       );
     });
     const mapped: TimeSlot[] = slotsForDay.map((s) => ({ id: s.id, label: this.formatTime(s.startTime) }));
@@ -154,7 +161,9 @@ export class BookingStateService {
     private doctorService: DoctorService,
     private availabilityService: DoctorAvailabilityService,
     private appointmentService: AppointmentService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private reviewService: ReviewService
+
   ) {
     this.restore();
   }
@@ -225,6 +234,8 @@ export class BookingStateService {
       this.save();
       this.loadDoctor(this.doctorId);
       this.loadAvailability(this.doctorId);
+      this.loadRatingDistribution(this.doctorId);
+
     } else if (!rebookDoctorName) {
       this.doctorLoaded.set(true);
       this.errorMessage.set('لم يتم اختيار طبيب. الرجاء العودة واختيار طبيب أولاً.');
@@ -256,7 +267,20 @@ export class BookingStateService {
       },
     });
   }
-
+private loadRatingDistribution(doctorId: number): void {
+  this.reviewService.getDistribution(doctorId).subscribe({
+    next: (res: any) => {
+      const dist = res?.data ?? res;
+      if (!dist || typeof dist !== 'object') return;
+      this.doctor.update((doc) => ({
+        ...doc,
+        rating: dist.averageRating ?? doc.rating,
+        reviewsCount: dist.totalReviews ?? doc.reviewsCount,
+      }));
+    },
+    error: () => {},
+  });
+}
   private loadAvailability(doctorId: number): void {
     this.isLoading.set(true);
     this.availabilityService.getAvailableByDoctor(doctorId).subscribe({
@@ -318,7 +342,7 @@ export class BookingStateService {
   }
 
   selectDate(day: CalendarDay | null): void {
-    if (!day) return;
+    if (!day || day.isPast) return;
     this.selectedDate.set(day.date);
     this.selectedTime.set('');
     this.selectedSlotId.set(null);

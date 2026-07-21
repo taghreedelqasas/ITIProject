@@ -91,7 +91,7 @@ export class DoctorProfile implements OnInit {
   selectedSlotId: number | null = null;
 
   // ================== التابات ==================
-  activeTab: ProfileTab = 'about';
+  activeTab: ProfileTab = 'reviews';
 
   ratingBasedOnCount = 0;
   averageRating = 0;
@@ -178,6 +178,7 @@ export class DoctorProfile implements OnInit {
         this.stats.reviewsCount = total;
         this.ratingBasedOnCount = total;
         this.averageRating = dist.averageRating;
+        this.stats.rating = dist.averageRating ?? 0;
 
         if (total === 0) return;
 

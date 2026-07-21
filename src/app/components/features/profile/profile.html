@@ -75,10 +75,7 @@
                    [(ngModel)]="userData.phone" [disabled]="!isEditing"
                    required pattern="^01[0125][0-9]{8}$"
                    class="w-full p-3 bg-transparent text-sm font-semibold text-gray-800 focus:outline-none text-left">
-            <div class="bg-gray-100 px-3 flex items-center text-sm font-bold border-r border-gray-200 gap-1">
-              <span class="text-gray-400 text-xs">▼</span>
-              <span>🇪🇬</span>
-            </div>
+            
           </div>
         </div>
 
@@ -91,17 +88,21 @@
           </div>
         </div>
 
-        <div class="flex flex-col gap-1.5 md:col-span-2 text-right">
-          <label class="text-sm text-gray-700 font-bold">الجنس</label>
-          <select
-            name="gender"
-            [(ngModel)]="userData.gender"
-            [disabled]="!isEditing"
-            class="w-full border border-gray-300 rounded-xl p-3 bg-white text-sm font-semibold text-gray-800 focus:outline-none appearance-none">
-            <option [ngValue]="1">ذكر</option>
-            <option [ngValue]="2">أنثى</option>
-          </select>
-        </div>
+      <div class="flex flex-col gap-1.5 md:col-span-2 text-right">
+  <label class="text-sm text-gray-700 font-bold">
+    الجنس
+  </label>
+
+<select
+  name="gender"
+  [(ngModel)]="userData.gender"
+  disabled
+  class="w-full border border-gray-300 rounded-xl p-3 bg-white text-sm font-semibold text-gray-800 focus:outline-none appearance-none">
+
+  <option [ngValue]="1">ذكر</option>
+  <option [ngValue]="2">أنثى</option>
+</select>
+</div>
 
       </div>
 
@@ -113,32 +114,7 @@
       </div>
     </form>
 
-    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-      
-      <div class="border-r-4 border-[#23E0E0] pr-3 text-right">
-        <h3 class="font-bold text-base text-[#53098D]">الأمان والخصوصية</h3>
-      </div>
 
-      <div class="flex justify-between items-center rounded-2xl p-4 bg-[#ECE7F0]">
-        
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-gray-200/60 rounded-xl flex items-center justify-center text-lg">
-            🔒
-          </div>
-          <div class="text-right">
-            <p class="text-sm font-bold text-gray-800">كلمة المرور</p>
-           
-          </div>
-        </div>
-
-        <div class="p-[2px] bg-gradient-to-r from-[#6CEAEA] to-[#53098D] rounded-full">
-          <button class="bg-[#ECE7F0] text-[#53098D] px-8 py-2 rounded-full text-sm font-bold hover:bg-white/40 transition">
-            تغيير
-          </button>
-        </div>
-
-      </div>
-    </div>
 
   </main>
 

@@ -16,15 +16,7 @@
   <div *ngIf="!loadingOverview && !overviewError" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     <div *ngFor="let card of kpiCards; let i = index" class="rounded-2xl bg-white border border-slate-100 p-5">
       <div class="flex items-center justify-between">
-        <span
-          class="text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1"
-          [ngClass]="card.changePercentage >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" [class.rotate-180]="card.changePercentage < 0">
-            <path d="M6 18L18 6M18 6H9M18 6v9" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          {{ (card.changePercentage >= 0 ? '+' : '') + card.changePercentage.toFixed(1) }}%
-        </span>
+       
 
         <div
           class="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -46,10 +38,7 @@
       <p class="text-2xl font-extrabold text-slate-800 mt-4">{{ card.valueText }}</p>
       <p class="text-sm text-slate-400">{{ card.title }}</p>
 
-      <div class="flex items-center gap-1.5 text-xs text-slate-400 mt-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-violet-300"></span>
-        {{ card.comparisonValueText }} {{ card.comparisonLabel }}
-      </div>
+     
     </div>
   </div>
 
@@ -100,22 +89,15 @@
           </div>
 
           <div class="flex bg-slate-100 rounded-xl p-1 text-sm">
-            <!-- <button
+             <button
               type="button"
               (click)="onTrendTypeChange('appointments')"
               class="px-4 py-1.5 rounded-lg font-medium transition-colors"
               [ngClass]="trendType === 'appointments' ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500'"
             >
               المواعيد
-            </button> -->
-            <!-- <button
-              type="button"
-              (click)="onTrendTypeChange('revenue')"
-              class="px-4 py-1.5 rounded-lg font-medium transition-colors"
-              [ngClass]="trendType === 'revenue' ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500'"
-            >
-              الإيرادات
-            </button> -->
+            </button>
+           
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 <div class="container  bg-[#F3F4F5A3]  py-12.5  " dir="rtl">
 <div class=" md:w-[80%]   mx-auto p-6 bg-white    shadow-lg  rounded-lg text-right rtl">
-  <h2 class="text-center text-[#44116D] text-[29px] font-bold mb-6">ابحث عن طبيبك <span><i class="fas fa-search text-[#6CEAEA]"></i></span></h2>
+  <h2 class="text-center text-[#44116D] text-[29px] font-bold mb-6">ابحث عن طبيبك </h2>
 
    <section class="  pt-14 pb-16 px-6">
 <!-- 
@@ -43,31 +43,17 @@
           />
         </div>
 
-        <!-- التاريخ -->
-        <div>
-          <label class="block text-sm font-bold text-slate-600 mb-2">التاريخ</label>
-          <div class="relative">
-            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <input
-              type="text"
-              [(ngModel)]="selectedDate"
-              placeholder="يوم / شهر / سنة"
-              class="w-full border border-slate-200 rounded-xl pr-11 pl-4 py-3 text-slate-500 placeholder:text-slate-400 focus:outline-none focus:border-cyan-400"
-            />
-          </div>
-        </div>
+
       </div>
 
       <!-- إسم الطبيب أو العيادة -->
       <div class="mb-6">
-        <label class="block text-sm font-bold text-slate-600 mb-2">إسم الطبيب أو العيادة</label>
+        <label class="block text-sm font-bold text-slate-600 mb-2">إسم الطبيب</label>
         <div class="flex gap-3">
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            placeholder="ابحث بإسم الطبيب أو إسم العيادة"
+            placeholder="ابحث بإسم الطبيب"
             class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-500 placeholder:text-slate-400 focus:outline-none focus:border-cyan-400"
           />
           <button
