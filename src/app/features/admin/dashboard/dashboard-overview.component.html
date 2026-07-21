@@ -100,22 +100,22 @@
           </div>
 
           <div class="flex bg-slate-100 rounded-xl p-1 text-sm">
-            <button
+            <!-- <button
               type="button"
               (click)="onTrendTypeChange('appointments')"
               class="px-4 py-1.5 rounded-lg font-medium transition-colors"
               [ngClass]="trendType === 'appointments' ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500'"
             >
               المواعيد
-            </button>
-            <button
+            </button> -->
+            <!-- <button
               type="button"
               (click)="onTrendTypeChange('revenue')"
               class="px-4 py-1.5 rounded-lg font-medium transition-colors"
               [ngClass]="trendType === 'revenue' ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500'"
             >
               الإيرادات
-            </button>
+            </button> -->
           </div>
         </div>
 
@@ -139,75 +139,5 @@
     </div>
   </div>
 
-  <!-- ============ ملخص الأداء الذكي + آخر الأنشطة (Static - مفيش endpoint في الباك لسه) ============ -->
-  <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-6">
-    <!-- ملخص الأداء الذكي -->
-    <div class="rounded-2xl bg-white border border-slate-100 p-6">
-      <div class="flex items-center gap-3 mb-5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-teal-400 flex items-center justify-center text-white">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2l1.8 5.6L19 9l-5.2 1.4L12 16l-1.8-5.6L5 9l5.2-1.4L12 2z" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-800">ملخص الأداء الذكي</h3>
-          <p class="text-xs text-slate-400">مدعوم بـ AI</p>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <div
-          *ngFor="let insight of aiInsights"
-          class="rounded-xl p-4"
-          [ngClass]="insight.tone === 'violet' ? 'bg-violet-50/70' : 'bg-teal-50/70'"
-        >
-          <p class="text-xs text-slate-500 mb-1">{{ insight.label }}</p>
-          <p class="font-bold text-slate-800">{{ insight.value }}</p>
-          <p class="text-xs text-slate-400 mt-0.5">{{ insight.note }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- آخر الأنشطة -->
-    <div class="rounded-2xl bg-white border border-slate-100 p-6">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="font-bold text-slate-800">آخر الأنشطة</h3>
-        <button type="button" class="text-sm font-medium text-violet-600 hover:text-violet-700">عرض الكل</button>
-      </div>
-
-      <ol class="relative">
-        <li *ngFor="let activity of recentActivities; let last = last" class="relative pb-6 last:pb-0">
-          <span *ngIf="!last" class="absolute top-9 right-[15px] w-px h-full bg-slate-100"></span>
-
-          <div class="flex items-start gap-3">
-            <div
-              class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10"
-              [ngClass]="{
-                'bg-violet-50 text-violet-600': activity.icon === 'doctor',
-                'bg-teal-50 text-teal-600': activity.icon === 'patient',
-                'bg-blue-50 text-blue-600': activity.icon === 'appointment',
-                'bg-red-50 text-red-500': activity.icon === 'cancel',
-                'bg-amber-50 text-amber-500': activity.icon === 'review',
-                'bg-emerald-50 text-emerald-600': activity.icon === 'payment'
-              }"
-            >
-              <ng-container [ngSwitch]="activity.icon">
-                <svg *ngSwitchCase="'doctor'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3v4a3 3 0 006 0V3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3v5a6 6 0 0012 0V3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="18" r="3"/></svg>
-                <svg *ngSwitchCase="'patient'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6" stroke-linecap="round"/></svg>
-                <svg *ngSwitchCase="'appointment'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke-linecap="round"/></svg>
-                <svg *ngSwitchCase="'cancel'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6" stroke-linecap="round"/></svg>
-                <svg *ngSwitchCase="'review'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" fill-rule="evenodd"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.2 1 5.9L12 16.4 6.8 19.3l1-5.9L3.5 9.2l5.9-.8L12 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <svg *ngSwitchCase="'payment'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10.5h19" stroke-linecap="round"/></svg>
-              </ng-container>
-            </div>
-
-            <div>
-              <p class="text-sm text-slate-700">{{ activity.text }}</p>
-              <p class="text-xs text-slate-400 mt-0.5">{{ activity.timeAgo }}</p>
-            </div>
-          </div>
-        </li>
-      </ol>
-    </div>
-  </div>
+  
 </div>
