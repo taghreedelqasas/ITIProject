@@ -373,25 +373,42 @@ markConversationRead(conversationId: number) {
   });
 
   // 5) تحديث السجنال القديم تلقائياً لكي يقرأ القيم الحقيقية المحسوبة دون تعديل الـ HTML
-  analyticsDataComputed = computed(() => {
-    return {
-      averageRating: this.averageRatingComputed(),
-      totalPatients: this.totalPatientsComputed(),
-      totalAppointments: this.totalAppointmentsComputed(),
-      totalConsultations: this.totalConsultationsComputed(),
+ // 5) تحديث السجنال تلقائياً لكي يقرأ القيم المحسوبة
+analyticsDataComputed = computed(() => {
+  // حساب آخر 3 أشهر ديناميكياً بناءً على التاريخ الحالي
+  const now = new Date();
+  const dynamicMonthlyEarnings = [];
+
+  for (let i = 2; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    
+    // اسم الشهر بالعربية (مثلاً: مايو، يونيو، يوليو)
+    const monthName = d.toLocaleDateString('ar-EG', { month: 'long' });
+    
+    // حساب المبالغ: إذا كان الشهر هو الشهر الحالي نسند له رصيد المحفظة، وإلا 0
+    const isCurrentMonth = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    const amount = isCurrentMonth ? (this.wallet()?.balance || 0) : 0;
+
+    dynamicMonthlyEarnings.push({
+      month: monthName,
+      amount: amount
+    });
+  }
+
+  return {
+    averageRating: this.averageRatingComputed(),
+    totalPatients: this.totalPatientsComputed(),
+    totalAppointments: this.totalAppointmentsComputed(),
+    totalConsultations: this.totalConsultationsComputed(),
     attendanceRate: this.attendanceRateReal(),
-cancellationRate: this.cancellationRateReal(),
-      monthlyEarnings: [
-        { month: 'مايو', amount: this.wallet()?.balance || 0 }, // ربط ديناميكي مع المحفظة الحقيقية
-        { month: 'يونيو', amount: 0 },
-        { month: 'يوليو', amount: 0 }
-      ],
-      patientGrowth: this.patientGrowthComputed(),
-     mostActiveDay: this.mostActiveDayReal(),
-      mostActiveTime: this.mostActiveTimeReal() , 
-      attendanceChangeRate: '0%'
-    };
-  });
+    cancellationRate: this.cancellationRateReal(),
+    monthlyEarnings: dynamicMonthlyEarnings, // 👈 استخدام المصفوفة الديناميكية هنا
+    patientGrowth: this.patientGrowthComputed(),
+    mostActiveDay: this.mostActiveDayReal(),
+    mostActiveTime: this.mostActiveTimeReal(), 
+    attendanceChangeRate: '0%'
+  };
+});
 
  maxMonthlyEarning = computed(() => {
   const earnings = this.analyticsDataComputed().monthlyEarnings;
@@ -458,14 +475,24 @@ bookingsGrowthComputed = computed(() => {
   const now = new Date();
   const months: { month: string; count: number }[] = [];
 
-  for (let i = 5; i >= 0; i--) {
+  for (let i = 6; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const label = d.toLocaleDateString('ar-EG', { month: 'short' });
+
     const count = this.appointments().filter(a => {
       const ad = new Date(a.slotStart);
-      return ad.getFullYear() === d.getFullYear() && ad.getMonth() === d.getMonth();
+
+      return (
+        ad.getMonth() === d.getMonth() &&
+        ad.getFullYear() === d.getFullYear()
+      );
     }).length;
-    months.push({ month: label, count });
+
+    months.push({
+      month: d.toLocaleDateString('ar-EG', {
+        month: 'long'
+      }),
+      count
+    });
   }
 
   return months;

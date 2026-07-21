@@ -121,12 +121,15 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <!-- كارد المعاملات المالية الحقيقية (شغال علطول ومش معتمد على الـ User Profile) -->
+  <!-- كارد المعاملات المالية الحقيقية -->
+<!-- كارد المعاملات المالية الحقيقية -->
     <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm lg:col-span-3 space-y-4">
       <div class="flex justify-between items-center border-b border-gray-50 pb-2">
         <h3 class="font-bold text-gray-800 text-sm">آخر المعاملات المالية الحقيقية</h3>
       </div>
 
-      <div class="space-y-3">
+      <!-- تقليل الارتفاع إلى max-h-56 لجعل منطقة السكرول أصغر -->
+      <div class="space-y-3 max-h-56 overflow-y-auto pl-2 custom-scrollbar">
         @for (tx of appointmentService.walletTransactions(); track tx.id) {
           <div class="flex justify-between items-center p-2.5 bg-gray-50/50 rounded-xl hover:bg-gray-50 transition-colors">
             <div class="flex items-center gap-3">

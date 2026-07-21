@@ -16,6 +16,7 @@ export class UserProfileComponent implements OnInit {
   protected patientServices = inject(AppointmentService);
 
   isEditing = false;
+  isUploadingImage = false;
 
   userData: {
     fullName: string;
@@ -63,6 +64,26 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  // دالة اختيار الصورة ورفعها للسيرفر
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      this.isUploadingImage = true;
+      this.patientServices.uploadProfilePicture(file).subscribe({
+        next: () => {
+          this.isUploadingImage = false;
+          this.getProfile(); // إعادة جلب البيانات لتحديث الصورة في الواجهة
+        },
+        error: (err) => {
+          this.isUploadingImage = false;
+          console.error('حدث خطأ أثناء رفع الصورة:', err);
+        }
+      });
+    }
+  }
+
   toggleEdit() {
     this.isEditing = true;
   }
@@ -75,11 +96,11 @@ export class UserProfileComponent implements OnInit {
       lastName: names.slice(1).join(' ') || undefined,
       phoneNumber: this.userData.phone,
       birthDate: this.userData.birthDate,
-      gender: this.userData.gender // رقم فعلي (1 أو 2)، مطابق للـ enum بتاع الباك إند
+      gender: this.userData.gender
     };
 
     this.patientServices.updateUserProfile(body).subscribe({
-      next: (res) => {
+      next: () => {
         this.isEditing = false;
         this.getProfile();
       },

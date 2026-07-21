@@ -298,6 +298,16 @@ export class DoctorsListComponent implements OnInit {
     ];
   }
 
+  previewImage: { label: string; src: string } | null = null;
+
+  previewDoc(label: string, base64: string): void {
+    this.previewImage = { label, src: 'data:image/jpeg;base64,' + base64 };
+  }
+
+  closePreview(): void {
+    this.previewImage = null;
+  }
+
   initials(fullName: string): string {
     const parts = fullName.trim().split(/\s+/);
     return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase();

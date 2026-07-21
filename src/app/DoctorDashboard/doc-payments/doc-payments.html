@@ -289,9 +289,19 @@
                 <td class="py-3.5 text-gray-500">{{ tx.type === 'Credit' ? 'إيداع' : tx.type }}</td>
                 <td class="py-3.5 text-[#82609D] font-mono">{{ tx.createdAt | date:'dd/MM/yyyy' }}</td>
                 <td class="py-3.5">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block bg-green-50 text-green-600">
-                    {{ tx.status === 'Available' ? 'متاح' : tx.status }}
-                  </span>
+                  @if (tx.status === 'Available') {
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block bg-green-50 text-green-600">
+                      متاح
+                    </span>
+                  } @else if (tx.status === 'Refund') {
+                    <span class="refund-status px-2 py-0.5 rounded-md  bg-[#FEF2F2]   text-[10px] font-bold inline-block">
+                      مُسترجع
+                    </span>
+                  } @else {
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block bg-gray-50 text-gray-600">
+                      {{ tx.status }}
+                    </span>
+                  }
                 </td>
               </tr>
             } @empty {

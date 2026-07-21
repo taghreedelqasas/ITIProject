@@ -123,3 +123,23 @@ select {
   transition: all 0.2s ease !important;
 
 }
+
+/* Custom Scrollbar */
+/* شريط سكرول نحيف وأنيق */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px; /* تم تصغير العرض ليكون رفيع جداً */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: gray; /* لون بنفسجي ناعم متناسق مع التصميم */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a855f7;
+}
