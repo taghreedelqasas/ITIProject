@@ -86,11 +86,7 @@ export class PaymentsListComponent implements OnInit {
 
   private buildKpiCards(summary: PaymentsSummaryDto): KpiCardView[] {
     return [
-      {
-        title: 'المدفوعات المعلقة',
-        valueText: formatCurrencyFull(summary.pendingPayments.value),
-        icon: 'pending',
-      },
+    
       {
         title: 'أرباح الأطباء',
         valueText: formatCurrencyFull(summary.doctorsProfit.value),

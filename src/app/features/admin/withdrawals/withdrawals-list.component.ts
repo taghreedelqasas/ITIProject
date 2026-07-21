@@ -61,7 +61,6 @@ export class WithdrawalsListComponent implements OnInit {
     return [
       { title: 'طلبات السحب المعلقة', valueText: this.requests.length.toString(), icon: 'count' },
       { title: 'إجمالي المبلغ المطلوب سحبه', valueText: formatCurrencyFull(totalAmount), icon: 'total' },
-      { title: 'الطريقة الأكثر استخدامًا', valueText: mostUsedMethod, icon: 'method' },
     ];
   }
 
