@@ -579,7 +579,7 @@ export class ChatComponent implements AfterViewChecked, OnInit, OnDestroy {
       this.errorMessage.set('تعذر الوصول للمايك. تأكدي من إعطاء إذن استخدام الميكروفون للمتصفح.');
     }
   }
-
+// --------
   private stopRecording(): void {
     this.mediaRecorder?.stop();
     this.isRecording.set(false);
